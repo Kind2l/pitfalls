@@ -960,6 +960,56 @@ class GameModel {
     }
     return false;
   }
+
+  nextPlayer() {
+    let newCurrentPlayer = Number(this.currentPlayer) + 1;
+    if (newCurrentPlayer > this.maxPlayers) {
+      this.currentPlayer = 1;
+    } else {
+      this.currentPlayer = newCurrentPlayer;
+    }
+  }
+
+  updatePlayer(id, update) {
+    console.log("update player");
+    this.players[id] = update;
+  }
+
+  removeCard(playerId, cardId) {
+    let player = this.players[playerId];
+    let cardIndex = player.hand.findIndex((card) => card.id === cardId);
+    let [discardedCard] = player.hand.splice(cardIndex, 1);
+
+    this.discard.push(discardedCard);
+
+    console.log(
+      `Carte défaussée par le joueur ${this.players[playerId].username}.`
+    );
+  }
+
+  drawCard(playerId) {
+    const player = this.players[playerId];
+
+    // Vérifie si le deck contient des cartes
+    if (this.deck.length === 0) {
+      console.log("Le deck est vide, aucune carte à tirer.");
+      return;
+    }
+
+    // Tire une carte au hasard
+    const randomIndex = Math.floor(Math.random() * this.deck.length);
+    const drawnCard = this.deck[randomIndex];
+
+    // Retire la carte du deck
+    this.deck.splice(randomIndex, 1);
+
+    // Ajoute la carte à la main du joueur
+    player.hand.push(drawnCard);
+
+    console.log(
+      `Carte ${drawnCard.name} ajoutée à la main du joueur ${playerId}.`
+    );
+  }
 }
 
 module.exports = GameModel;

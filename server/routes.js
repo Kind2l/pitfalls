@@ -13,6 +13,7 @@ const {
   findServer,
   initServer,
   playerAction,
+  removeCard,
 } = require("@/controllers/gameController");
 
 module.exports = (io) => (socket) => {
@@ -34,10 +35,7 @@ module.exports = (io) => (socket) => {
   socket.on("server:initalization", handleRequest(initServer));
 
   socket.on("game:player-action", handleRequest(playerAction));
-
-  // socket.on("leave room", (roomName) => {
-  //   socket.leave(roomName);
-  // });
+  socket.on("game:player-remove-card", handleRequest(removeCard));
 
   // Disconnect event
   socket.on("disconnect", () => {
