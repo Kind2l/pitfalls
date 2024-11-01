@@ -174,13 +174,9 @@ exports.startGame = (req, res) => {
   });
 };
 
-exports.updateServer = (req, res) => {
-  req.io.to("subscribe - server list").emit("subscribe - server list", servers);
-  res.sendStatus(200);
-};
-
 exports.playerAction = (req, res) => {
   const { card } = req;
+  console.log(req);
   const server = servers[req.serverId];
   const { players } = server;
   const playerId = req.user.id;
@@ -198,13 +194,65 @@ exports.playerAction = (req, res) => {
   if (card.type === "attaque") {
     console.log("playerAction : Carte attaque");
 
-    const attackablePlayers = Object.values(players).filter((plr) => {
-      // Exclut le joueur lui-même de la liste des cibles potentielles
-      if (Number(plr.id) === Number(playerId)) {
-        return false;
+    // Vérifie si un joueur a été ciblé pour l'attaque
+    if (req.attackedPlayerId) {
+      const attackedPlayer = players[req.attackedPlayerId];
+
+      // Vérifie si le joueur ciblé existe
+      if (!attackedPlayer) {
+        return res({
+          success: false,
+          message: "Joueur ciblé non trouvé",
+        });
       }
 
-      // Association des malus et des bonus correspondants pour vérifier si le joueur peut être attaqué
+      // Vérifie si le joueur ciblé peut être attaqué
+      const bonusProtectionMap = {
+        feurouge: attackedPlayer.bonus.vehiculeprioritaire,
+        crevaison: attackedPlayer.bonus.increvable,
+        accident: attackedPlayer.bonus.asduvolant,
+        pannedessence: attackedPlayer.bonus.citerne,
+        limitedevitesse: attackedPlayer.bonus.vehiculeprioritaire,
+      };
+
+      const isProtectedByBonus = bonusProtectionMap[card.tag];
+      const hasBlockingState =
+        card.tag === "limitedevitesse"
+          ? attackedPlayer.states.limitedevitesse
+          : ["accident", "crevaison", "feurouge", "pannedessence"].some(
+              (state) => attackedPlayer.states[state]
+            );
+
+      // Vérifie si le joueur ciblé est protégé
+      if (isProtectedByBonus || hasBlockingState) {
+        return res({
+          success: false,
+          message: `Le joueur ${attackedPlayer.username} est protégé et ne peut pas être attaqué`,
+        });
+      }
+
+      // Applique l'effet de l'attaque sur le joueur ciblé
+      attackedPlayer.states[card.tag] = true;
+      servers[req.serverId].updatePlayer(attackedPlayer.id, attackedPlayer);
+      servers[req.serverId].removeCard(playerId, card.id);
+      servers[req.serverId].drawCard(playerId);
+      servers[req.serverId].nextPlayer();
+      res({
+        success: true,
+        message: `L'attaque a réussi contre ${attackedPlayer.username}`,
+        data: { actionState: true },
+      });
+      return req.io
+        .to(req.serverId)
+        .emit("game:next-round", servers[req.serverId]);
+    }
+
+    // Si aucun joueur n'a été ciblé, retourner la liste des joueurs pouvant être attaqués
+    const attackablePlayers = Object.values(players).filter((plr) => {
+      if (Number(plr.id) === Number(playerId)) {
+        return false; // Exclut le joueur lui-même
+      }
+
       const bonusProtectionMap = {
         feurouge: plr.bonus.vehiculeprioritaire,
         crevaison: plr.bonus.increvable,
@@ -235,14 +283,12 @@ exports.playerAction = (req, res) => {
     return res({
       success: true,
       message: "Liste des joueurs pouvant être attaqués",
-      data: { actionState: true, players: attackablePlayers },
+      data: { actionState: true, attackablePlayers: attackablePlayers },
     });
   }
 
   // Gestion des cartes de type "parade"
   if (card.type === "parade") {
-    console.log("playerAction : Carte parade");
-
     // État requis pour appliquer chaque carte parade
     const requiredMalusState = {
       feuvert: player.states.feurouge,
@@ -293,11 +339,38 @@ exports.playerAction = (req, res) => {
       });
     }
 
-    return res({
+    switch (card.tag) {
+      case "feuvert":
+        player.states.feurouge = false;
+        break;
+      case "findelimitedevitesse":
+        player.states.limitedevitesse = false;
+        break;
+      case "essence":
+        player.states.pannedessence = false;
+        break;
+      case "reparation":
+        player.states.accident = false;
+        break;
+      case "rouedesecours":
+        player.states.crevaison = false;
+        break;
+      default:
+        break;
+    }
+
+    servers[req.serverId].updatePlayer(playerId, player);
+    servers[req.serverId].removeCard(playerId, card.id);
+    servers[req.serverId].drawCard(playerId);
+    servers[req.serverId].nextPlayer();
+    res({
       success: true,
-      message: `La carte parade peut être appliquée`,
+      message: `La carte parade est appliquée`,
       data: { actionState: true },
     });
+    return req.io
+      .to(req.serverId)
+      .emit("game:next-round", servers[req.serverId]);
   }
 
   // Gestion des cartes de type "borne"
@@ -327,18 +400,28 @@ exports.playerAction = (req, res) => {
       });
     }
 
-    if (updatedScore >= 1000) {
+    if (updatedScore > 1000) {
       return res({
         success: true,
-        message: `Victoire ! Le joueur atteint 1000 points.`,
-        data: { actionState: true },
+        message: `Vous avez dépassé 1000 kms`,
+        data: { actionState: false },
       });
     } else {
-      return res({
+      player.score = updatedScore;
+      console.log("serv", servers[req.serverId]);
+
+      servers[req.serverId].updatePlayer(playerId, player);
+      servers[req.serverId].removeCard(playerId, card.id);
+      servers[req.serverId].drawCard(playerId);
+      servers[req.serverId].nextPlayer();
+      res({
         success: true,
-        message: `Ajout de ${card.value} points, score total : ${updatedScore}`,
+        message: `Ajout de ${card.value} kms`,
         data: { actionState: true },
       });
+      return req.io
+        .to(req.serverId)
+        .emit("game:next-round", servers[req.serverId]);
     }
   }
 
@@ -346,11 +429,43 @@ exports.playerAction = (req, res) => {
   if (card.type === "bonus") {
     console.log("playerAction : Carte bonus");
 
-    return res({
+    // Mise à jour du bonus et des états correspondants
+    switch (card.tag) {
+      case "asduvolant":
+        player.bonus.asduvolant = true; // Ajoute le bonus "As du volant"
+        player.states.accident = false; // Annule le malus "accident" si ce bonus est appliqué
+        break;
+      case "vehiculeprioritaire":
+        player.bonus.vehiculeprioritaire = true; // Ajoute le bonus "Véhicule prioritaire"
+        player.states.feurouge = false; // Annule le malus "feu rouge" si ce bonus est appliqué
+        player.states.limitedevitesse = false; // Annule le malus "limite de vitesse" si ce bonus est appliqué
+        break;
+      case "citerne":
+        player.bonus.citerne = true; // Ajoute le bonus "Citerne"
+        player.states.pannedessence = false; // Annule le malus "panne d'essence" si ce bonus est appliqué
+        break;
+      case "increvable":
+        player.bonus.increvable = true; // Ajoute le bonus "Increvable"
+        player.states.crevaison = false; // Annule le malus "crevaison" si ce bonus est appliqué
+        break;
+      default:
+        break;
+    }
+
+    // Mettre à jour les bonus et les états sur le serveur
+    console.log("serv", servers[req.serverId]);
+    servers[req.serverId].updatePlayer(playerId, player);
+    servers[req.serverId].removeCard(playerId, card.id);
+    servers[req.serverId].drawCard(playerId);
+    servers[req.serverId].nextPlayer();
+    res({
       success: true,
-      message: `Ajout du bonus`,
+      message: `Bonus ajouté.`,
       data: { actionState: true },
     });
+    return req.io
+      .to(req.serverId)
+      .emit("game:next-round", servers[req.serverId]);
   }
 
   // Gestion d'un type de carte inconnu
@@ -360,4 +475,13 @@ exports.playerAction = (req, res) => {
     success: false,
     message: "Type de carte non géré",
   });
+};
+
+exports.removeCard = (req, res) => {
+  const { card } = req;
+  const playerId = req.user.id;
+  servers[req.serverId].removeCard(playerId, card.id);
+  servers[req.serverId].drawCard(playerId);
+  servers[req.serverId].nextPlayer();
+  return req.io.to(req.serverId).emit("game:next-round", servers[req.serverId]);
 };
