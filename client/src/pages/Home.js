@@ -1,9 +1,11 @@
-import React from "react";
+import { useAuth } from "@Auth/SocketContext";
+import Header from "@Components/Header";
+import WelcomerMessages from "@Components/WelcomerMessages";
+import "@Styles/Home.scss";
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
-import WelcomerMessages from "../components/WelcomerMessages";
 
 const Home = () => {
+  const { logout } = useAuth();
   return (
     <>
       <Header />
@@ -12,10 +14,24 @@ const Home = () => {
           <p className="welcomer">{<WelcomerMessages />}</p>
 
           <div className="links">
-            <Link to="/server-list">Rejoindre une partie</Link>
-            <Link to="/create-server">Créer une partie</Link>
-            <Link to="/">Options</Link>
-            <Link to="/">Déconnexion</Link>
+            <Link className="primary-button green" to="/server-list">
+              Rejoindre une partie
+            </Link>
+            <Link className="primary-button blue" to="/create-server">
+              Créer une partie
+            </Link>
+            <Link className="primary-button orange" to="/">
+              Options
+            </Link>
+            <Link
+              className="primary-button red"
+              to="/"
+              onClick={() => {
+                logout();
+              }}
+            >
+              Déconnexion
+            </Link>
           </div>
         </div>
       </main>

@@ -1,0 +1,50 @@
+@import "../utils/variables.scss";
+
+.primary-button {
+  all: unset;
+  box-shadow: inset 0px 40px 0px -1rem rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  color: #ffffff;
+  padding: 15px 20px;
+  text-decoration: none;
+  width: fit-content;
+  margin: auto;
+  font-family: "Recursive", sans-serif;
+  font-variation-settings: "MONO" 0, "CASL" 0, "wght" 600, "slnt" 0, "CRSV" 0.5;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    filter: brightness(1.2);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    position: relative;
+    top: 1px;
+  }
+
+  &.blue {
+    background-color: $blue;
+  }
+
+  &.red {
+    background-color: $red;
+  }
+
+  &.green {
+    background-color: $green;
+  }
+
+  &.orange {
+    background-color: $orange;
+  }
+
+  &.black {
+    background-color: $black;
+  }
+
+  &.back-button {
+    margin-right: 0;
+  }
+}

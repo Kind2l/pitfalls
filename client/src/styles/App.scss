@@ -1,0 +1,36 @@
+@import url("https://fonts.googleapis.com/css2?family=Recursive:wght@400;500;700&display=swap");
+
+@import url("./utils/variables.scss");
+@import url("./components/Buttons.scss");
+@import url("./components/Notifications.scss");
+
+h1,
+h2 {
+  font-family: "Recursive", sans-serif;
+}
+
+body {
+  background: rgb(154, 220, 251);
+  background: linear-gradient(
+    180deg,
+    rgba(154, 220, 251, 1) 0%,
+    rgba(186, 231, 252, 1) 20%,
+    rgba(243, 251, 255, 0.9836309523809523) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#join {
+  ul {
+    list-style: none;
+
+    li {
+      display: flex;
+      justify-content: space-around;
+      padding: 0.5rem 0;
+    }
+  }
+}

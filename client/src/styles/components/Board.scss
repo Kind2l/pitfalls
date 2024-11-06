@@ -1,0 +1,229 @@
+.game-board {
+  .game-header {
+    position: relative;
+    height: 200px;
+    background-color: rebeccapurple;
+
+    .player-header {
+      position: absolute;
+      border: 1px solid black;
+      padding: 0.2em 0.5em;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 30%;
+
+      &__name {
+        text-align: center;
+      }
+
+      &__score {
+        text-align: center;
+        font-weight: 600;
+        font-size: 2rem;
+      }
+
+      &__states {
+        display: flex;
+        flex-wrap: wrap;
+        width: fit-content;
+
+        .state-item {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          font-size: 0.7rem;
+          background-color: rgb(159, 241, 159);
+          padding: 0.2rem;
+          flex: 1 1 auto;
+          border: 1px solid black;
+          border-radius: 15px;
+
+          &.active {
+            background-color: rgb(190, 39, 39);
+          }
+        }
+      }
+
+      &__bonus {
+        display: flex;
+        flex-wrap: wrap;
+        width: fit-content;
+
+        .bonus-item {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          font-size: 0.7rem;
+          background-color: rgb(0, 151, 252);
+          padding: 0.2rem;
+          flex: 1 1 auto;
+          border: 3px solid black;
+          border-radius: 15px;
+
+          &.inactive {
+            border-color: red;
+          }
+        }
+      }
+
+      &:nth-child(1) {
+        top: 0;
+        left: 10%;
+        border-radius: 0 0 10px 10px;
+      }
+
+      &:nth-child(2) {
+        top: 0;
+        right: 10%;
+        border-radius: 0 0 10px 10px;
+      }
+
+      &[data-order="1"] {
+        background-color: rgb(65, 85, 200);
+      }
+
+      &[data-order="2"] {
+        background-color: rgb(200, 75, 70);
+      }
+    }
+  }
+
+  .player-area {
+    &__hand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+
+      .card {
+        margin-left: -65px;
+        transition: transform 0.3s;
+        background-color: white;
+        height: 170px;
+        width: 120px;
+        margin-left: -20px;
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+
+        &:first-child {
+          margin-left: 0;
+        }
+
+        &:hover {
+          transform: scale(1.2);
+          z-index: 3;
+        }
+      }
+
+      .hand-row {
+        display: flex;
+        margin-bottom: -70px;
+        z-index: 1;
+        .card {
+          &:nth-child(1) {
+            transform: rotate(-10deg) translateY(15px);
+            z-index: 3;
+          }
+          &:nth-child(2) {
+            z-index: 2;
+          }
+
+          &:nth-last-child(1) {
+            transform: rotate(10deg) translateY(15px);
+            z-index: 1;
+          }
+        }
+      }
+
+      .hand-row--bottom {
+        margin-bottom: -40px;
+        z-index: 2;
+        .card {
+          margin-left: -10px;
+        }
+      }
+    }
+  }
+
+  .action-modal {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+
+    border-radius: 20px;
+    width: 50%;
+    min-height: 20%;
+    text-align: center;
+
+    &__buttons {
+      display: flex;
+      justify-content: space-around;
+
+      button {
+        all: unset;
+        padding: 2rem;
+        color: #ffffff;
+        font-weight: bolder;
+        text-transform: uppercase;
+        border-radius: 20px;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+
+        &:nth-child(1) {
+          background-color: rgb(65, 120, 200);
+        }
+
+        &:nth-child(2) {
+          background-color: rgb(182, 94, 94);
+        }
+
+        &:nth-child(3) {
+          background-color: rgb(0, 0, 0);
+        }
+      }
+    }
+  }
+
+  .notification-popup {
+    z-index: 9999;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    border-radius: 20%;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+
+    &.visible {
+      opacity: 1;
+    }
+  }
+
+  .attack-modal {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: red;
+    min-width: 100px;
+    min-height: 100px;
+  }
+}

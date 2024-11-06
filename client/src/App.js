@@ -1,14 +1,14 @@
+import { SocketProvider } from "@Auth/SocketContext";
+import ProtectedRoute from "@Components/ProtectedRoute";
+import Connection from "@Pages/Connection";
+import CreateServer from "@Pages/CreateServer";
+import Error from "@Pages/Error";
+import GameBoard from "@Pages/GameBoard";
+import Home from "@Pages/Home";
+import ServerSelection from "@Pages/ServerSelection";
+import "@Styles/App.scss";
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./App.scss";
-import { SocketProvider } from "./auth/SocketContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Connection from "./pages/Connection";
-import CreateServer from "./pages/CreateServer";
-import Error from "./pages/Error";
-import GameBoard from "./pages/GameBoard";
-import Home from "./pages/Home";
-import Join from "./pages/Join";
 
 const router = createBrowserRouter([
   {
@@ -25,7 +25,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/server-list",
-        element: <Join />,
+        element: <ServerSelection />,
       },
       {
         path: "/game/:serverId",

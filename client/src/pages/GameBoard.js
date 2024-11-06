@@ -1,8 +1,9 @@
+import { useAuth } from "@Auth/SocketContext";
+import Board from "@Components/Board";
+import WaitingRoom from "@Components/WaitingRoom";
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../auth/SocketContext";
-import Board from "../components/Board";
-import WaitingRoom from "../components/WaitingRoom";
 
 const GameBoard = () => {
   const { serverId } = useParams();
@@ -27,13 +28,13 @@ const GameBoard = () => {
   }, [socket]);
 
   return (
-    <main className="gameboard">
+    <div className="gameboard">
       {!gameIsStarted ? (
         <WaitingRoom setGameIsStarted={setGameIsStarted} />
       ) : (
         <Board setGameIsStarted={setGameIsStarted} />
       )}
-    </main>
+    </div>
   );
 };
 

@@ -1,6 +1,7 @@
+import { useAuth } from "@Auth/SocketContext";
+import "@Styles/components/Board.scss";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../auth/SocketContext";
 
 const Board = () => {
   const { socket, user } = useAuth();
@@ -245,7 +246,7 @@ const Board = () => {
   };
 
   return (
-    <div id="game-board">
+    <div className="game-board">
       <header className="game-header">
         {players &&
           Object.values(players).map((player) => {
@@ -267,19 +268,65 @@ const Board = () => {
         {<CardStack numberOfCards={deckCount} />}
       </section>
       <section className="player-area">
-        <div className="cards">
+        <div className="player-area__hand">
           {hand.length > 0 ? (
-            hand.map((card) => (
-              <button
-                key={card.id}
-                data-id={card.id}
-                className="card"
-                disabled={!isMyTurn}
-                onClick={() => handleClickCard(card)}
-              >
-                <span>{card.name}</span>
-              </button>
-            ))
+            <>
+              {/* Diviser le tableau des cartes en deux parties */}
+              <div className="hand-row">
+                {hand.slice(0, Math.floor(hand.length / 2)).map((card) => {
+                  const { name, tag, id, type } = card;
+                  return (
+                    <button
+                      key={id}
+                      data-id={id}
+                      data-type={type}
+                      className="card"
+                      disabled={!isMyTurn}
+                      onClick={() => handleClickCard(card)}
+                    >
+                      <span className="card-title">{name}</span>
+                      <span className="card-image">
+                        {type === "borne" ? (
+                          <span className={tag}>{tag}</span>
+                        ) : (
+                          <img
+                            src={"../images/" + tag + ".png"}
+                            alt={name}
+                          ></img>
+                        )}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="hand-row hand-row--bottom">
+                {hand.slice(Math.floor(hand.length / 2)).map((card) => {
+                  const { name, tag, id, type } = card;
+                  return (
+                    <button
+                      key={id}
+                      data-id={id}
+                      data-type={type}
+                      className="card"
+                      disabled={!isMyTurn}
+                      onClick={() => handleClickCard(card)}
+                    >
+                      <span className="card-title">{name}</span>
+                      <span className="card-image">
+                        {type === "borne" ? (
+                          <span className={tag}>{tag}</span>
+                        ) : (
+                          <img
+                            src={"../images/" + tag + ".png"}
+                            alt={name}
+                          ></img>
+                        )}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           ) : (
             <p>Aucune carte dans la main</p>
           )}

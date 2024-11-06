@@ -6,7 +6,6 @@ const cards = [
     name: "Véhicule prioritaire",
     tag: "vehiculeprioritaire",
     type: "bonus",
-    image: "vehiculeprioritaire.jpg",
     status: false,
   },
   {
@@ -14,7 +13,6 @@ const cards = [
     name: "Citerne d'essence",
     tag: "citerne",
     type: "bonus",
-    image: "citerne.jpg",
     status: false,
   },
   {
@@ -22,7 +20,6 @@ const cards = [
     name: "Increvable",
     tag: "increvable",
     type: "bonus",
-    image: "increvable.jpg",
     status: false,
   },
   {
@@ -30,7 +27,6 @@ const cards = [
     name: "As du volant",
     tag: "asduvolant",
     type: "bonus",
-    image: "asduvolant.jpg",
     status: false,
   },
 
@@ -39,7 +35,7 @@ const cards = [
     name: "Feu rouge",
     tag: "feurouge",
     type: "attaque",
-    image: "feurouge.jpg",
+
     status: false,
   },
   {
@@ -47,7 +43,7 @@ const cards = [
     name: "Feu rouge",
     tag: "feurouge",
     type: "attaque",
-    image: "feurouge.jpg",
+
     status: false,
   },
   {
@@ -55,7 +51,7 @@ const cards = [
     name: "Feu rouge",
     tag: "feurouge",
     type: "attaque",
-    image: "feurouge.jpg",
+
     status: false,
   },
   {
@@ -63,7 +59,7 @@ const cards = [
     name: "Feu rouge",
     tag: "feurouge",
     type: "attaque",
-    image: "feurouge.jpg",
+
     status: false,
   },
   {
@@ -71,7 +67,7 @@ const cards = [
     name: "Feu rouge",
     tag: "feurouge",
     type: "attaque",
-    image: "feurouge.jpg",
+
     status: false,
   },
 
@@ -80,7 +76,7 @@ const cards = [
     name: "Limite de vitesse",
     tag: "limitedevitesse",
     type: "attaque",
-    image: "limitedevitesse.jpg",
+
     status: false,
   },
   {
@@ -88,7 +84,7 @@ const cards = [
     name: "Limite de vitesse",
     tag: "limitedevitesse",
     type: "attaque",
-    image: "limitedevitesse.jpg",
+
     status: false,
   },
   {
@@ -96,7 +92,7 @@ const cards = [
     name: "Limite de vitesse",
     tag: "limitedevitesse",
     type: "attaque",
-    image: "limitedevitesse.jpg",
+
     status: false,
   },
   {
@@ -104,7 +100,7 @@ const cards = [
     name: "Limite de vitesse",
     tag: "limitedevitesse",
     type: "attaque",
-    image: "limitedevitesse.jpg",
+
     status: false,
   },
 
@@ -113,7 +109,7 @@ const cards = [
     name: "Panne d'essence",
     tag: "pannedessence",
     type: "attaque",
-    image: "pannedessence.jpg",
+
     status: false,
   },
   {
@@ -121,7 +117,7 @@ const cards = [
     name: "Panne d'essence",
     tag: "pannedessence",
     type: "attaque",
-    image: "pannedessence.jpg",
+
     status: false,
   },
   {
@@ -129,7 +125,7 @@ const cards = [
     name: "Panne d'essence",
     tag: "pannedessence",
     type: "attaque",
-    image: "pannedessence.jpg",
+
     status: false,
   },
 
@@ -138,7 +134,7 @@ const cards = [
     name: "Crevaison",
     tag: "crevaison",
     type: "attaque",
-    image: "crevaison.jpg",
+
     status: false,
   },
   {
@@ -146,7 +142,7 @@ const cards = [
     name: "Crevaison",
     tag: "crevaison",
     type: "attaque",
-    image: "crevaison.jpg",
+
     status: false,
   },
   {
@@ -154,7 +150,7 @@ const cards = [
     name: "Crevaison",
     tag: "crevaison",
     type: "attaque",
-    image: "crevaison.jpg",
+
     status: false,
   },
 
@@ -163,7 +159,7 @@ const cards = [
     name: "Accident",
     tag: "accident",
     type: "attaque",
-    image: "accident.jpg",
+
     status: false,
   },
   {
@@ -171,7 +167,7 @@ const cards = [
     name: "Accident",
     tag: "accident",
     type: "attaque",
-    image: "accident.jpg",
+
     status: false,
   },
   {
@@ -179,7 +175,7 @@ const cards = [
     name: "Accident",
     tag: "accident",
     type: "attaque",
-    image: "accident.jpg",
+
     status: false,
   },
 
@@ -188,7 +184,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -196,7 +192,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -204,7 +200,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -212,7 +208,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -220,7 +216,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -228,7 +224,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -236,7 +232,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -244,7 +240,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -252,7 +248,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -260,7 +256,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -268,7 +264,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -276,7 +272,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -284,7 +280,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
   {
@@ -292,7 +288,7 @@ const cards = [
     name: "Feu vert",
     tag: "feuvert",
     type: "parade",
-    image: "feuvert.jpg",
+
     status: false,
   },
 
@@ -301,7 +297,7 @@ const cards = [
     name: "Fin de limite de vitesse",
     tag: "findelimitedevitesse",
     type: "parade",
-    image: "findelimitedevitesse.jpg",
+
     status: false,
   },
   {
@@ -309,7 +305,7 @@ const cards = [
     name: "Fin de limite de vitesse",
     tag: "findelimitedevitesse",
     type: "parade",
-    image: "findelimitedevitesse.jpg",
+
     status: false,
   },
   {
@@ -317,7 +313,7 @@ const cards = [
     name: "Fin de limite de vitesse",
     tag: "findelimitedevitesse",
     type: "parade",
-    image: "findelimitedevitesse.jpg",
+
     status: false,
   },
   {
@@ -325,7 +321,7 @@ const cards = [
     name: "Fin de limite de vitesse",
     tag: "findelimitedevitesse",
     type: "parade",
-    image: "findelimitedevitesse.jpg",
+
     status: false,
   },
   {
@@ -333,7 +329,7 @@ const cards = [
     name: "Fin de limite de vitesse",
     tag: "findelimitedevitesse",
     type: "parade",
-    image: "findelimitedevitesse.jpg",
+
     status: false,
   },
   {
@@ -341,7 +337,7 @@ const cards = [
     name: "Fin de limite de vitesse",
     tag: "findelimitedevitesse",
     type: "parade",
-    image: "findelimitedevitesse.jpg",
+
     status: false,
   },
 
@@ -350,7 +346,7 @@ const cards = [
     name: "Essence",
     tag: "essence",
     type: "parade",
-    image: "essence.jpg",
+
     status: false,
   },
   {
@@ -358,7 +354,7 @@ const cards = [
     name: "Essence",
     tag: "essence",
     type: "parade",
-    image: "essence.jpg",
+
     status: false,
   },
   {
@@ -366,7 +362,7 @@ const cards = [
     name: "Essence",
     tag: "essence",
     type: "parade",
-    image: "essence.jpg",
+
     status: false,
   },
   {
@@ -374,7 +370,7 @@ const cards = [
     name: "Essence",
     tag: "essence",
     type: "parade",
-    image: "essence.jpg",
+
     status: false,
   },
   {
@@ -382,7 +378,7 @@ const cards = [
     name: "Essence",
     tag: "essence",
     type: "parade",
-    image: "essence.jpg",
+
     status: false,
   },
   {
@@ -390,7 +386,7 @@ const cards = [
     name: "Essence",
     tag: "essence",
     type: "parade",
-    image: "essence.jpg",
+
     status: false,
   },
 
@@ -399,7 +395,7 @@ const cards = [
     name: "Roue de secours",
     tag: "rouedesecours",
     type: "parade",
-    image: "rouedesecours.jpg",
+
     status: false,
   },
   {
@@ -407,7 +403,7 @@ const cards = [
     name: "Roue de secours",
     tag: "rouedesecours",
     type: "parade",
-    image: "rouedesecours.jpg",
+
     status: false,
   },
   {
@@ -415,7 +411,7 @@ const cards = [
     name: "Roue de secours",
     tag: "rouedesecours",
     type: "parade",
-    image: "rouedesecours.jpg",
+
     status: false,
   },
   {
@@ -423,7 +419,7 @@ const cards = [
     name: "Roue de secours",
     tag: "rouedesecours",
     type: "parade",
-    image: "rouedesecours.jpg",
+
     status: false,
   },
   {
@@ -431,7 +427,7 @@ const cards = [
     name: "Roue de secours",
     tag: "rouedesecours",
     type: "parade",
-    image: "rouedesecours.jpg",
+
     status: false,
   },
   {
@@ -439,7 +435,7 @@ const cards = [
     name: "Roue de secours",
     tag: "rouedesecours",
     type: "parade",
-    image: "rouedesecours.jpg",
+
     status: false,
   },
 
@@ -448,7 +444,7 @@ const cards = [
     name: "Réparation",
     tag: "reparation",
     type: "parade",
-    image: "reparation.jpg",
+
     status: false,
   },
   {
@@ -456,7 +452,7 @@ const cards = [
     name: "Réparation",
     tag: "reparation",
     type: "parade",
-    image: "reparation.jpg",
+
     status: false,
   },
   {
@@ -464,7 +460,7 @@ const cards = [
     name: "Réparation",
     tag: "reparation",
     type: "parade",
-    image: "reparation.jpg",
+
     status: false,
   },
   {
@@ -472,7 +468,7 @@ const cards = [
     name: "Réparation",
     tag: "reparation",
     type: "parade",
-    image: "reparation.jpg",
+
     status: false,
   },
   {
@@ -480,7 +476,7 @@ const cards = [
     name: "Réparation",
     tag: "reparation",
     type: "parade",
-    image: "reparation.jpg",
+
     status: false,
   },
   {
@@ -488,7 +484,7 @@ const cards = [
     name: "Réparation",
     tag: "reparation",
     type: "parade",
-    image: "reparation.jpg",
+
     status: false,
   },
 
@@ -497,7 +493,7 @@ const cards = [
     name: "25",
     tag: "25",
     type: "borne",
-    image: "25.jpg",
+
     status: false,
     value: 25,
   },
@@ -506,7 +502,7 @@ const cards = [
     name: "25",
     tag: "25",
     type: "borne",
-    image: "25.jpg",
+
     status: false,
     value: 25,
   },
@@ -515,7 +511,7 @@ const cards = [
     name: "25",
     tag: "25",
     type: "borne",
-    image: "25.jpg",
+
     status: false,
     value: 25,
   },
@@ -524,7 +520,7 @@ const cards = [
     name: "25",
     tag: "25",
     type: "borne",
-    image: "25.jpg",
+
     status: false,
     value: 25,
   },
@@ -533,7 +529,7 @@ const cards = [
     name: "25",
     tag: "25",
     type: "borne",
-    image: "25.jpg",
+
     status: false,
     value: 25,
   },
@@ -542,7 +538,7 @@ const cards = [
     name: "25",
     tag: "25",
     type: "borne",
-    image: "25.jpg",
+
     status: false,
     value: 25,
   },
@@ -551,7 +547,7 @@ const cards = [
     name: "25",
     tag: "25",
     type: "borne",
-    image: "25.jpg",
+
     status: false,
     value: 25,
   },
@@ -560,7 +556,7 @@ const cards = [
     name: "25",
     tag: "25",
     type: "borne",
-    image: "25.jpg",
+
     status: false,
     value: 25,
   },
@@ -569,7 +565,7 @@ const cards = [
     name: "25",
     tag: "25",
     type: "borne",
-    image: "25.jpg",
+
     status: false,
     value: 25,
   },
@@ -578,7 +574,7 @@ const cards = [
     name: "25",
     tag: "25",
     type: "borne",
-    image: "25.jpg",
+
     status: false,
     value: 25,
   },
@@ -588,7 +584,7 @@ const cards = [
     name: "50",
     tag: "50",
     type: "borne",
-    image: "50.jpg",
+
     status: false,
     value: 50,
   },
@@ -597,7 +593,7 @@ const cards = [
     name: "50",
     tag: "50",
     type: "borne",
-    image: "50.jpg",
+
     status: false,
     value: 50,
   },
@@ -606,7 +602,7 @@ const cards = [
     name: "50",
     tag: "50",
     type: "borne",
-    image: "50.jpg",
+
     status: false,
     value: 50,
   },
@@ -615,7 +611,7 @@ const cards = [
     name: "50",
     tag: "50",
     type: "borne",
-    image: "50.jpg",
+
     status: false,
     value: 50,
   },
@@ -624,7 +620,7 @@ const cards = [
     name: "50",
     tag: "50",
     type: "borne",
-    image: "50.jpg",
+
     status: false,
     value: 50,
   },
@@ -633,7 +629,7 @@ const cards = [
     name: "50",
     tag: "50",
     type: "borne",
-    image: "50.jpg",
+
     status: false,
     value: 50,
   },
@@ -642,7 +638,7 @@ const cards = [
     name: "50",
     tag: "50",
     type: "borne",
-    image: "50.jpg",
+
     status: false,
     value: 50,
   },
@@ -651,7 +647,7 @@ const cards = [
     name: "50",
     tag: "50",
     type: "borne",
-    image: "50.jpg",
+
     status: false,
     value: 50,
   },
@@ -660,7 +656,7 @@ const cards = [
     name: "50",
     tag: "50",
     type: "borne",
-    image: "50.jpg",
+
     status: false,
     value: 50,
   },
@@ -669,7 +665,7 @@ const cards = [
     name: "50",
     tag: "50",
     type: "borne",
-    image: "50.jpg",
+
     status: false,
     value: 50,
   },
@@ -679,7 +675,7 @@ const cards = [
     name: "75",
     tag: "75",
     type: "borne",
-    image: "75.jpg",
+
     status: false,
     value: 75,
   },
@@ -688,7 +684,7 @@ const cards = [
     name: "75",
     tag: "75",
     type: "borne",
-    image: "75.jpg",
+
     status: false,
     value: 75,
   },
@@ -697,7 +693,7 @@ const cards = [
     name: "75",
     tag: "75",
     type: "borne",
-    image: "75.jpg",
+
     status: false,
     value: 75,
   },
@@ -706,7 +702,7 @@ const cards = [
     name: "75",
     tag: "75",
     type: "borne",
-    image: "75.jpg",
+
     status: false,
     value: 75,
   },
@@ -715,7 +711,7 @@ const cards = [
     name: "75",
     tag: "75",
     type: "borne",
-    image: "75.jpg",
+
     status: false,
     value: 75,
   },
@@ -724,7 +720,7 @@ const cards = [
     name: "75",
     tag: "75",
     type: "borne",
-    image: "75.jpg",
+
     status: false,
     value: 75,
   },
@@ -733,7 +729,7 @@ const cards = [
     name: "75",
     tag: "75",
     type: "borne",
-    image: "75.jpg",
+
     status: false,
     value: 75,
   },
@@ -742,7 +738,7 @@ const cards = [
     name: "75",
     tag: "75",
     type: "borne",
-    image: "75.jpg",
+
     status: false,
     value: 75,
   },
@@ -751,7 +747,7 @@ const cards = [
     name: "75",
     tag: "75",
     type: "borne",
-    image: "75.jpg",
+
     status: false,
     value: 75,
   },
@@ -760,7 +756,7 @@ const cards = [
     name: "75",
     tag: "75",
     type: "borne",
-    image: "75.jpg",
+
     status: false,
     value: 75,
   },
@@ -769,7 +765,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -779,7 +775,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -788,7 +784,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -797,7 +793,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -806,7 +802,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -815,7 +811,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -824,7 +820,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -833,7 +829,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -842,7 +838,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -851,7 +847,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -860,7 +856,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -869,7 +865,7 @@ const cards = [
     name: "100",
     tag: "100",
     type: "borne",
-    image: "100.jpg",
+
     status: false,
     value: 100,
   },
@@ -878,7 +874,7 @@ const cards = [
     name: "200",
     tag: "200",
     type: "borne",
-    image: "200.jpg",
+
     status: false,
     value: 200,
   },
@@ -887,7 +883,7 @@ const cards = [
     name: "200",
     tag: "200",
     type: "borne",
-    image: "200.jpg",
+
     status: false,
     value: 200,
   },
@@ -896,7 +892,7 @@ const cards = [
     name: "200",
     tag: "200",
     type: "borne",
-    image: "200.jpg",
+
     status: false,
     value: 200,
   },
@@ -905,7 +901,7 @@ const cards = [
     name: "200",
     tag: "200",
     type: "borne",
-    image: "200.jpg",
+
     status: false,
     value: 200,
   },
