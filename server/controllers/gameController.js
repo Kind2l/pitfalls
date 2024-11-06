@@ -1,5 +1,5 @@
-const GameModel = require("../models/GameModel");
-const servers = require("../utils/servers");
+const GameModel = require("@/models/GameModel");
+const { servers, users } = require("@/utils/data");
 const { v4: uuidv4 } = require("uuid");
 
 // createServer - Crée un nouveau serveur et l'ajoute à la liste des serveurs
@@ -12,8 +12,10 @@ exports.createServer = (req, res) => {
     req.maxPlayers
   );
 
-  // newServer.addPlayer(req.id, req.username);
   servers[uniqueId] = newServer;
+
+  console.log("servers", servers);
+
   req.socket.join(`server_${uniqueId}`);
   res({
     success: true,
@@ -52,7 +54,7 @@ exports.addPlayer = (req, res) => {
 };
 
 exports.joinServer = (req, res) => {
-  const findServer = Object.values(servers).find((s) => s.id === req.serverId);
+  const findServer = servers[req.serverId];
   if (
     Object.keys(findServer.players).length > findServer.maxPlayers ||
     findServer.start === true
@@ -62,18 +64,69 @@ exports.joinServer = (req, res) => {
       message: `Le serveur est complet ou le jeu a déjà commencé`,
     });
   }
+
   req.socket.join(req.serverId);
+
   this.addPlayer(req, res);
+
   req.io.emit("subscription:server-list", { servers });
   req.io.to(req.serverId).emit("server:update", servers[req.serverId]);
+  users.updateUser({ ...req.user, update: { current_server: req.serverId } });
+};
+
+exports.leaveServer = (req, res) => {
+  const server = servers[req.serverId];
+
+  if (!server) {
+    return res({
+      success: false,
+      message: `Le serveur est introuvable`,
+    });
+  }
+
+  let playerFound = false;
+
+  for (const [playerKey, player] of Object.entries(server.players)) {
+    if (player.id === req.user.id) {
+      playerFound = player;
+      delete server.players[playerKey];
+      break;
+    }
+  }
+
+  if (!playerFound) {
+    return res({
+      success: false,
+      message: `Le joueur n'existe pas sur le serveur`,
+    });
+  }
+
+  if (Object.keys(server.players).length === 0) {
+    delete servers[req.serverId];
+  } else if (String(server.author) === String(playerFound.username)) {
+    const remainingPlayers = Object.values(server.players);
+    const newAuthor =
+      remainingPlayers[Math.floor(Math.random() * remainingPlayers.length)];
+    server.author = newAuthor.username;
+  }
+
+  req.socket.leave(req.serverId);
+  req.io.emit("subscription:server-list", { servers });
+  req.io.to(req.serverId).emit("server:update", server);
+
+  return res({
+    success: true,
+    message: `Le joueur a quitté le serveur avec succès`,
+  });
 };
 
 exports.serverList = (req, res) => {
+  console.log("servers", servers);
   res({
     success: true,
     message: `Liste des serveurs`,
     data: {
-      servers,
+      servers: servers,
     },
   });
 };
@@ -133,23 +186,6 @@ exports.initServer = (req, res) => {
   });
 
   req.io.to(req.serverId).emit("server:update", servers[req.serverId]);
-};
-
-// leaveServer - Supprime un joueur d'un serveur
-exports.leaveServer = (req, res) => {
-  req.socket.leave(req.server.id);
-
-  // Émet un événement pour mettre à jour la liste des serveurs pour tous les clients abonnés
-  req.io.to("subscribe - server list").emit("subscribe - server list", servers);
-
-  // Renvoie une réponse au joueur
-  res({
-    success: true,
-    message: `${req.user.username} a quitté le serveur`,
-    data: {
-      server: servers[req.server.id],
-    },
-  });
 };
 
 // Démarre le jeu sur un serveur existant

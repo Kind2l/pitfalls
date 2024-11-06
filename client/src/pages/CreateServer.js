@@ -1,6 +1,8 @@
+import { useAuth } from "@Auth/SocketContext";
+import "@Styles/CreateServer.scss";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/SocketContext";
+import BackButton from "../components/BackButton";
 
 const CreateServer = () => {
   const [serverName, setServerName] = useState("");
@@ -55,42 +57,47 @@ const CreateServer = () => {
   };
 
   return (
-    <main id="create-server">
-      <form onSubmit={handleSubmit}>
-        <div>
-          <h3>Nom du serveur</h3>
+    <div className="create-server">
+      <form className="create-server-content" onSubmit={handleSubmit}>
+        <h2>Créer une partie</h2>
+        <section>
           <input
             type="text"
+            placeholder="Nom du serveur"
             id="server-name"
             value={serverName}
             onChange={(e) => setServerName(e.target.value)}
             required
           />
-        </div>
+        </section>
 
-        <div>
+        <section>
           <h3>Nombre de joueurs</h3>
           <div className="player-selection">
             {[2, 3, 4].map((playerCount) => (
-              <label key={playerCount}>
+              <div key={playerCount + "key"}>
                 <input
+                  id={playerCount + "players"}
                   type="radio"
                   name="max-players"
                   value={playerCount}
                   checked={maxPlayers === playerCount}
                   onChange={handlePlayerCountChange}
                 />
-                {playerCount}
-              </label>
+                <label htmlFor={playerCount + "players"} key={playerCount}>
+                  {playerCount}
+                </label>
+              </div>
             ))}
           </div>
-        </div>
+        </section>
 
         {errorMessage && <p className="error">{errorMessage}</p>}
 
         <button type="submit">Créer Serveur</button>
+        <BackButton />
       </form>
-    </main>
+    </div>
   );
 };
 

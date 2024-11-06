@@ -2,7 +2,9 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const SocketContext = createContext();
-const socketIo = io("http://localhost:4000");
+const socketIo = io("http://localhost:4000", {
+  reconnection: false,
+});
 
 export const SocketProvider = ({ children }) => {
   const socket = socketIo;
@@ -17,6 +19,7 @@ export const SocketProvider = ({ children }) => {
     const token = localStorage.getItem("token");
 
     if (token) {
+      console.log("validatetoken");
       socket.emit("user:validate-token", { token }, (response) => {
         if (response.success) {
           setUser({
@@ -26,6 +29,7 @@ export const SocketProvider = ({ children }) => {
           });
           setIsAuthenticated(true);
         } else {
+          console.log(response.message);
           localStorage.removeItem("token");
         }
       });
@@ -45,11 +49,15 @@ export const SocketProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    socket.emit("user:logout", { username: user.username }, (response) => {
+      console.log(response);
+    });
     setUser({
       id: null,
       username: null,
       token: null,
     });
+
     setIsAuthenticated(false);
   };
 

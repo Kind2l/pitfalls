@@ -1,5 +1,6 @@
+import logo from "@Images/logo.png";
+import "@Styles/Header.scss";
 import React from "react";
-import logo from "../images/logo.png";
 
 function Header() {
   return (

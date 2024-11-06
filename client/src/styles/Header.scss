@@ -1,0 +1,12 @@
+header {
+  max-height: 20vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5% 20%;
+
+  .logo img {
+    max-width: 100%;
+    height: auto;
+  }
+}

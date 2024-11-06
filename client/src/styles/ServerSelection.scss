@@ -1,0 +1,114 @@
+@import "./utils/variables.scss";
+.server-selection {
+  @include main-padding;
+
+  &-content {
+    background-color: white;
+    box-shadow: 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
+    border-radius: 27px 27px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+    padding: 2rem 3rem;
+    max-height: 80vh;
+
+    ul.list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 0;
+      padding: 1rem;
+      max-height: 70vh;
+      overflow: auto;
+      overflow-x: clip;
+
+      li {
+        display: grid;
+        grid-template-columns: 1fr;
+        row-gap: 1rem;
+        text-align: center;
+        align-items: center;
+        background-color: rgba(216, 216, 216, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 15px;
+
+        &.full button {
+          background-color: #2b2b2b;
+          &:hover {
+            transform: scale(1);
+          }
+        }
+
+        &.empty {
+          display: flex;
+          justify-content: center;
+        }
+      }
+
+      &::-webkit-scrollbar {
+        height: 3px;
+        width: 5px;
+      }
+      &::-webkit-scrollbar-track {
+        border-radius: 5px;
+      }
+
+      &::-webkit-scrollbar-thumb,
+      &::-webkit-scrollbar-thumb:hover,
+      &::-webkit-scrollbar-thumb:active {
+        background-color: #0055c5;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-track-piece {
+        background-color: #cfd8da;
+        border-radius: 10px;
+        &:end {
+          margin-bottom: 1.2rem;
+        }
+        &:start {
+          margin-top: 1.2rem;
+        }
+      }
+
+      button {
+        all: unset;
+        box-shadow: inset 0px 40px 0px -15px rgba(255, 255, 255, 0.1);
+        background-color: #03680b;
+        border-radius: 12px;
+        cursor: pointer;
+        color: #ffffff;
+        padding: 15px 20px;
+        text-decoration: none;
+        width: fit-content;
+        margin: auto;
+        font-family: "Recursive", sans-serif;
+        font-variation-settings: "MONO" 0, "CASL" 0, "wght" 600, "slnt" 0,
+          "CRSV" 0.5;
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+          background-color: #d63434;
+          transform: scale(1.05);
+        }
+
+        &:active {
+          position: relative;
+          top: 1px;
+        }
+      }
+    }
+    > p {
+      a {
+        text-decoration: none;
+        color: $blue;
+        font-weight: bold;
+        &:hover {
+          color: $red;
+        }
+      }
+    }
+  }
+}

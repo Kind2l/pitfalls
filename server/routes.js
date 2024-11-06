@@ -1,5 +1,6 @@
 const {
   login,
+  logout,
   register,
   validateToken,
   disconnect,
@@ -8,6 +9,7 @@ const {
 const {
   createServer,
   joinServer,
+  leaveServer,
   addPlayer,
   serverList,
   findServer,
@@ -26,20 +28,22 @@ module.exports = (io) => (socket) => {
   socket.on("user:login", handleRequest(login));
   socket.on("user:register", handleRequest(register));
   socket.on("user:validate-token", handleRequest(validateToken));
+  socket.on("user:logout", handleRequest(logout));
 
   socket.on("server:create", handleRequest(createServer));
   socket.on("server:add-player", handleRequest(addPlayer));
   socket.on("server:get-list", handleRequest(serverList));
   socket.on("server:join", handleRequest(joinServer));
+  socket.on("server:leave-server", handleRequest(leaveServer));
   socket.on("server:find", handleRequest(findServer));
   socket.on("server:initalization", handleRequest(initServer));
 
   socket.on("game:player-action", handleRequest(playerAction));
   socket.on("game:player-remove-card", handleRequest(removeCard));
-
-  // Disconnect event
   socket.on("disconnect", () => {
-    disconnect(socket.id);
+    disconnect({ socket_id: socket.id }, (res) => {
+      console.log(res);
+    });
     console.log(`${socket.id} is disconnected`);
   });
 };
