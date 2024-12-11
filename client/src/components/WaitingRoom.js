@@ -15,7 +15,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
 
   useEffect(() => {
     // Rechercher le serveur à l'initialisation du composant
-    socket.emit("server:find", { serverId: serverId }, (response) => {
+    socket.emit("server:find", { server_id: serverId }, (response) => {
       if (!response.success) {
         console.error(response);
       } else {
@@ -29,7 +29,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
   }, []);
 
   const handleSubmit = () => {
-    socket.emit("server:initalization", { serverId: serverId }, (response) => {
+    socket.emit("server:initalization", { server_id: serverId }, (response) => {
       if (!response.success) {
         console.error(response);
       } else {
@@ -41,7 +41,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
   const handleLeaveServer = () => {
     socket.emit(
       "server:leave-server",
-      { user, serverId: serverId },
+      { user, server_id: serverId },
       (response) => {
         if (!response.success) {
           console.error(response);
@@ -55,7 +55,6 @@ const WaitingRoom = ({ setGameIsStarted }) => {
   useEffect(() => {
     // Écoute des mises à jour du serveur
     socket.on("server:update", (data) => {
-      console.log("update", data);
       setGameIsStarted(data.start);
       setPlayers(data.players);
       setMaxPlayers(data.maxPlayers);
@@ -63,11 +62,11 @@ const WaitingRoom = ({ setGameIsStarted }) => {
       setAuthor(data.author);
     });
 
-    // Nettoyage de l'écouteur d'événements lors du démontage du composant
     return () => {
       socket.off("server:update");
     };
-  }, [socket, setGameIsStarted]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket]);
 
   return (
     <div className="waiting-room">

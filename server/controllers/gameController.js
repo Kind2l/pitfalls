@@ -1,5 +1,11 @@
 const GameModel = require("@/models/GameModel");
-const { servers, users } = require("@/utils/data");
+const {
+  users,
+  servers,
+  updateUser,
+  findServerOfUser,
+  removeUserFromServer,
+} = require("@/utils/data");
 const { v4: uuidv4 } = require("uuid");
 
 // createServer - Crée un nouveau serveur et l'ajoute à la liste des serveurs
@@ -13,21 +19,18 @@ exports.createServer = (req, res) => {
   );
 
   servers[uniqueId] = newServer;
-
-  console.log("servers", servers);
-
   req.socket.join(`server_${uniqueId}`);
   res({
     success: true,
     message: `Le serveur est créé`,
     data: {
-      server: servers[uniqueId],
+      server_id: uniqueId,
     },
   });
 };
 
 exports.addPlayer = (req, res) => {
-  const server = servers[req.serverId];
+  const server = servers[req.server_id];
   if (!server) {
     return res({
       success: false,
@@ -42,7 +45,7 @@ exports.addPlayer = (req, res) => {
       message: "Le serveur est plein",
     });
   }
-  req.socket.join(req.serverId);
+  req.socket.join(req.server_id);
   res({
     success: true,
     message: `L'utilisateur ${req.user.username} a été ajouté au serveur`,
@@ -54,10 +57,11 @@ exports.addPlayer = (req, res) => {
 };
 
 exports.joinServer = (req, res) => {
-  const findServer = servers[req.serverId];
+  const server = servers[req.server_id];
+
   if (
-    Object.keys(findServer.players).length > findServer.maxPlayers ||
-    findServer.start === true
+    Object.keys(server.players).length > server.maxPlayers ||
+    server.start === true
   ) {
     return res({
       success: false,
@@ -65,18 +69,24 @@ exports.joinServer = (req, res) => {
     });
   }
 
-  req.socket.join(req.serverId);
+  req.socket.join(req.server_id);
 
   this.addPlayer(req, res);
 
   req.io.emit("subscription:server-list", { servers });
-  req.io.to(req.serverId).emit("server:update", servers[req.serverId]);
-  users.updateUser({ ...req.user, update: { current_server: req.serverId } });
+  req.io.to(req.server_id).emit("server:update", servers[req.server_id]);
+  updateUser({
+    username: req.user.username,
+    update: { current_server: req.server_id },
+  });
 };
 
 exports.leaveServer = (req, res) => {
-  const server = servers[req.serverId];
+  let server_id = findServerOfUser({ username: req.user.username });
+  let server = servers[server_id];
+  let playerFound = false;
 
+  // Vérifier si le serveur existe
   if (!server) {
     return res({
       success: false,
@@ -84,35 +94,38 @@ exports.leaveServer = (req, res) => {
     });
   }
 
-  let playerFound = false;
-
-  for (const [playerKey, player] of Object.entries(server.players)) {
-    if (player.id === req.user.id) {
-      playerFound = player;
-      delete server.players[playerKey];
-      break;
-    }
-  }
-
-  if (!playerFound) {
+  // Supprimer le joueur du serveur
+  if (removeUserFromServer({ username: req.user.username })) {
+    playerFound = true;
+  } else {
     return res({
       success: false,
       message: `Le joueur n'existe pas sur le serveur`,
     });
   }
 
-  if (Object.keys(server.players).length === 0) {
-    delete servers[req.serverId];
-  } else if (String(server.author) === String(playerFound.username)) {
-    const remainingPlayers = Object.values(server.players);
-    const newAuthor =
-      remainingPlayers[Math.floor(Math.random() * remainingPlayers.length)];
+  const players = Object.values(server.players);
+  players.sort((a, b) => a.position - b.position);
+
+  players.forEach((player, index) => {
+    player.position = index + 1;
+  });
+
+  if (players.length === 0) {
+    delete servers[server_id];
+    req.io.emit("subscription:server-list", { servers });
+  } else if (String(server.author) === String(req.user.username)) {
+    const newAuthor = players[Math.floor(Math.random() * players.length)];
     server.author = newAuthor.username;
+    req.io.to(server_id).emit("server:update", servers[server_id]);
   }
 
-  req.socket.leave(req.serverId);
+  // Retirer le joueur du canal Socket.io du serveur
+  req.socket.leave(server_id);
+
+  // Envoyer des mises à jour aux clients
   req.io.emit("subscription:server-list", { servers });
-  req.io.to(req.serverId).emit("server:update", server);
+  req.io.to(server_id).emit("server:update", server);
 
   return res({
     success: true,
@@ -121,7 +134,6 @@ exports.leaveServer = (req, res) => {
 };
 
 exports.serverList = (req, res) => {
-  console.log("servers", servers);
   res({
     success: true,
     message: `Liste des serveurs`,
@@ -132,15 +144,15 @@ exports.serverList = (req, res) => {
 };
 
 exports.findServer = (req, res) => {
-  let serverId = req.serverId;
-  if (!serverId) {
+  let server_id = req.server_id;
+  if (!server_id) {
     res({
       success: false,
       message: `Aucun identifiant de serveur`,
     });
     return;
   }
-  let server = servers[serverId];
+  let server = servers[server_id];
 
   if (!server) {
     res({
@@ -158,15 +170,15 @@ exports.findServer = (req, res) => {
 };
 
 exports.initServer = (req, res) => {
-  let serverId = req.serverId;
-  if (!serverId) {
+  let server_id = req.server_id;
+  if (!server_id) {
     res({
       success: false,
       message: `Aucun identifiant de serveur`,
     });
     return;
   }
-  let server = servers[serverId];
+  let server = servers[server_id];
 
   if (!server) {
     res({
@@ -185,12 +197,12 @@ exports.initServer = (req, res) => {
     data: server,
   });
 
-  req.io.to(req.serverId).emit("server:update", servers[req.serverId]);
+  req.io.to(req.server_id).emit("server:update", servers[req.server_id]);
 };
 
 // Démarre le jeu sur un serveur existant
 exports.startGame = (req, res) => {
-  const server = servers.find((s) => s.id === parseInt(req.serverId));
+  const server = servers.find((s) => s.id === parseInt(req.server_id));
 
   // Vérifie si le serveur existe et si il y a suffisamment de joueurs
   if (!server || server.players.length < 2) {
@@ -212,14 +224,13 @@ exports.startGame = (req, res) => {
 
 exports.playerAction = (req, res) => {
   const { card } = req;
+  const server = servers[req.server_id];
   console.log(req);
-  const server = servers[req.serverId];
-  const { players } = server;
-  const playerId = req.user.id;
-  const player = players[playerId];
+  const players = server.players;
+  const playerUsername = req.user.username;
+  const player = players[playerUsername];
 
   if (!card) {
-    console.log("playerAction : Aucune carte sélectionnée");
     return res({
       success: false,
       message: "Aucune carte sélectionnée",
@@ -228,8 +239,6 @@ exports.playerAction = (req, res) => {
 
   // Gestion des cartes de type "attaque"
   if (card.type === "attaque") {
-    console.log("playerAction : Carte attaque");
-
     // Vérifie si un joueur a été ciblé pour l'attaque
     if (req.attackedPlayerId) {
       const attackedPlayer = players[req.attackedPlayerId];
@@ -269,23 +278,23 @@ exports.playerAction = (req, res) => {
 
       // Applique l'effet de l'attaque sur le joueur ciblé
       attackedPlayer.states[card.tag] = true;
-      servers[req.serverId].updatePlayer(attackedPlayer.id, attackedPlayer);
-      servers[req.serverId].removeCard(playerId, card.id);
-      servers[req.serverId].drawCard(playerId);
-      servers[req.serverId].nextPlayer();
+      servers[req.server_id].updatePlayer(attackedPlayer.id, attackedPlayer);
+      servers[req.server_id].removeCard(playerUsername, card.id);
+      servers[req.server_id].drawCard(playerUsername);
+      servers[req.server_id].nextPlayer();
       res({
         success: true,
         message: `L'attaque a réussi contre ${attackedPlayer.username}`,
         data: { actionState: true },
       });
       return req.io
-        .to(req.serverId)
-        .emit("game:next-round", servers[req.serverId]);
+        .to(req.server_id)
+        .emit("game:next-round", servers[req.server_id]);
     }
 
     // Si aucun joueur n'a été ciblé, retourner la liste des joueurs pouvant être attaqués
     const attackablePlayers = Object.values(players).filter((plr) => {
-      if (Number(plr.id) === Number(playerId)) {
+      if (plr.username === playerUsername) {
         return false; // Exclut le joueur lui-même
       }
 
@@ -395,24 +404,22 @@ exports.playerAction = (req, res) => {
         break;
     }
 
-    servers[req.serverId].updatePlayer(playerId, player);
-    servers[req.serverId].removeCard(playerId, card.id);
-    servers[req.serverId].drawCard(playerId);
-    servers[req.serverId].nextPlayer();
+    servers[req.server_id].updatePlayer(playerUsername, player);
+    servers[req.server_id].removeCard(playerUsername, card.id);
+    servers[req.server_id].drawCard(playerUsername);
+    servers[req.server_id].nextPlayer();
     res({
       success: true,
       message: `La carte parade est appliquée`,
       data: { actionState: true },
     });
     return req.io
-      .to(req.serverId)
-      .emit("game:next-round", servers[req.serverId]);
+      .to(req.server_id)
+      .emit("game:next-round", servers[req.server_id]);
   }
 
   // Gestion des cartes de type "borne"
   if (card.type === "borne") {
-    console.log("playerAction : Carte borne");
-
     const updatedScore = player.score + card.value;
 
     if (
@@ -442,29 +449,30 @@ exports.playerAction = (req, res) => {
         message: `Vous avez dépassé 1000 kms`,
         data: { actionState: false },
       });
+    }
+    if (updatedScore === 1000) {
+      servers[req.server_id].updatePlayer(playerUsername, player);
+      servers[req.server_id].removeCard(playerUsername, card.id);
+      return this.endGame(req, res);
     } else {
       player.score = updatedScore;
-      console.log("serv", servers[req.serverId]);
-
-      servers[req.serverId].updatePlayer(playerId, player);
-      servers[req.serverId].removeCard(playerId, card.id);
-      servers[req.serverId].drawCard(playerId);
-      servers[req.serverId].nextPlayer();
+      servers[req.server_id].updatePlayer(playerUsername, player);
+      servers[req.server_id].removeCard(playerUsername, card.id);
+      servers[req.server_id].drawCard(playerUsername);
+      servers[req.server_id].nextPlayer();
       res({
         success: true,
         message: `Ajout de ${card.value} kms`,
         data: { actionState: true },
       });
       return req.io
-        .to(req.serverId)
-        .emit("game:next-round", servers[req.serverId]);
+        .to(req.server_id)
+        .emit("game:next-round", servers[req.server_id]);
     }
   }
 
   // Gestion des cartes de type "bonus"
   if (card.type === "bonus") {
-    console.log("playerAction : Carte bonus");
-
     // Mise à jour du bonus et des états correspondants
     switch (card.tag) {
       case "asduvolant":
@@ -489,24 +497,19 @@ exports.playerAction = (req, res) => {
     }
 
     // Mettre à jour les bonus et les états sur le serveur
-    console.log("serv", servers[req.serverId]);
-    servers[req.serverId].updatePlayer(playerId, player);
-    servers[req.serverId].removeCard(playerId, card.id);
-    servers[req.serverId].drawCard(playerId);
-    servers[req.serverId].nextPlayer();
+    servers[req.server_id].updatePlayer(playerUsername, player);
+    servers[req.server_id].removeCard(playerUsername, card.id);
+    servers[req.server_id].drawCard(playerUsername);
+    // servers[req.server_id].nextPlayer();
     res({
       success: true,
       message: `Bonus ajouté.`,
       data: { actionState: true },
     });
     return req.io
-      .to(req.serverId)
-      .emit("game:next-round", servers[req.serverId]);
+      .to(req.server_id)
+      .emit("game:next-round", servers[req.server_id]);
   }
-
-  // Gestion d'un type de carte inconnu
-  console.log("playerAction : Type de carte inconnu");
-
   return res({
     success: false,
     message: "Type de carte non géré",
@@ -515,9 +518,15 @@ exports.playerAction = (req, res) => {
 
 exports.removeCard = (req, res) => {
   const { card } = req;
-  const playerId = req.user.id;
-  servers[req.serverId].removeCard(playerId, card.id);
-  servers[req.serverId].drawCard(playerId);
-  servers[req.serverId].nextPlayer();
-  return req.io.to(req.serverId).emit("game:next-round", servers[req.serverId]);
+  const playerUsername = req.user.username;
+  servers[req.server_id].removeCard(playerUsername, card.id);
+  servers[req.server_id].drawCard(playerUsername);
+  servers[req.server_id].nextPlayer();
+  return req.io
+    .to(req.server_id)
+    .emit("game:next-round", servers[req.server_id]);
+};
+
+exports.endGame = (req, res) => {
+  servers[req.server_id].end();
 };

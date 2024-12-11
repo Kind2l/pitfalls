@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Connection = () => {
-  const [choice, setChoice] = useState(false);
+  const [choice, setChoice] = useState(true);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 

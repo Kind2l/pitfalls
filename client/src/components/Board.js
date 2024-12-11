@@ -3,6 +3,12 @@ import "@Styles/components/Board.scss";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import accident_ico from "../images/icons/accident.png";
+import crevaison_ico from "../images/icons/crevaison.png";
+import feurouge_ico from "../images/icons/feurouge.png";
+import limitedevitesse_ico from "../images/icons/limitedevitesse.png";
+import pannedessence_ico from "../images/icons/pannedessence.png";
+
 const Board = () => {
   const { socket, user } = useAuth();
   const { serverId } = useParams();
@@ -27,9 +33,9 @@ const Board = () => {
   }
 
   useEffect(() => {
-    socket.emit("server:find", { serverId }, (response) => {
+    socket.emit("server:find", { server_id: serverId }, (response) => {
       if (response.success) {
-        let playerData = response.data.players[user.id];
+        let playerData = response.data.players[user.username];
         setCurrentPlayer(response.data.currentPlayer);
         setHand(playerData.hand);
         setPlayerEnvironment(playerData);
@@ -45,9 +51,11 @@ const Board = () => {
 
   useEffect(() => {
     socket.on("game:next-round", () => {
-      socket.emit("server:find", { serverId }, (response) => {
+      socket.emit("server:find", { server_id: serverId }, (response) => {
         if (response.success) {
-          let playerData = response.data.players[user.id];
+          let playerData = response.data.players[user.username];
+          console.log("playerdata", playerData);
+
           setCurrentPlayer(response.data.currentPlayer);
           setHand(playerData.hand);
           setPlayerEnvironment(playerData);
@@ -68,32 +76,6 @@ const Board = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
-
-  useEffect(() => {
-    socket.emit(
-      "game:player-action",
-      { serverId, card: selectedCard, attackedPlayerId: attackedPlayer, user },
-      (response) => {
-        if (response.success) {
-          if (response.data.actionState === false) {
-            setNotification({ title: "Erreur", content: response.message });
-            console.error(response.message);
-          }
-          console.log(response.message);
-        } else {
-          setNotification({
-            title: "Erreur serveur",
-            content: response.message,
-          });
-          console.error(response.message);
-        }
-
-        setSelectedCard(null);
-        setAttackedPlayer(null);
-      }
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attackedPlayer, setAttackedPlayer]);
 
   useEffect(() => {
     if (Number(position) === Number(currentPlayer)) {
@@ -142,26 +124,26 @@ const Board = () => {
 
   function PlayerHeaderStates(states) {
     const labels = {
-      feurouge: "Feu rouge",
-      limitedevitesse: "Limite de vitesse",
-      accident: "Accident",
-      crevaison: "Crevaison",
-      pannedessence: "Panne d'essence",
+      feurouge: feurouge_ico,
+      limitedevitesse: limitedevitesse_ico,
+      accident: accident_ico,
+      crevaison: crevaison_ico,
+      pannedessence: pannedessence_ico,
     };
 
     return (
       <div className="player-header__states">
-        {Object.entries(states).map(([key, value]) => (
-          <span
-            key={key + value}
-            className={`state-item ${value ? "active" : "inactive"}`}
-          >
-            {labels[key]}
-          </span>
-        ))}
+        {Object.entries(states).map(([key, value]) =>
+          value ? (
+            <span key={key} className="state-item">
+              <img src={labels[key]} alt={key} />
+            </span>
+          ) : null
+        )}
       </div>
     );
   }
+
   function PlayerHeaderBonus(bonus) {
     const labels = {
       asduvolant: "As du volant",
@@ -172,14 +154,13 @@ const Board = () => {
 
     return (
       <div className="player-header__bonus">
-        {Object.entries(bonus).map(([key, value]) => (
-          <span
-            key={key + value}
-            className={`bonus-item ${value ? "active" : "inactive"}`}
-          >
-            {labels[key]}
-          </span>
-        ))}
+        {Object.entries(bonus).map(([key, value]) =>
+          value ? (
+            <span key={key} className="state-item">
+              <img src={labels[key]} alt={key} />
+            </span>
+          ) : null
+        )}
       </div>
     );
   }
@@ -188,7 +169,7 @@ const Board = () => {
     return <span className="player-header__name">{username}</span>;
   }
   function PlayerHeaderScore(score) {
-    return <span className="player-header__score">{score} Km</span>;
+    return <span className="player-header__score">{score}</span>;
   }
 
   const handleClickCard = (card) => {
@@ -200,37 +181,112 @@ const Board = () => {
 
   const handleUseCard = () => {
     if (selectedCard) {
-      socket.emit(
-        "game:player-action",
-        { serverId, card: selectedCard, user },
-        (response) => {
-          if (response.success) {
-            if (response.data.actionState === false) {
-              setNotification({ title: "Erreur", content: response.message });
+      if (selectedCard.type === "attaque") {
+        if (attackedPlayer) {
+          socket.emit(
+            "game:player-action",
+            {
+              server_id: serverId,
+              card: selectedCard,
+              attackedPlayerId: attackedPlayer,
+              user,
+            },
+            (response) => {
+              if (response.success) {
+                if (response.data.actionState === false) {
+                  setNotification({
+                    title: "Erreur",
+                    content: response.message,
+                  });
+                  console.error(response.message);
+                }
+                console.log(response.message);
+              } else {
+                setNotification({
+                  title: "Erreur serveur",
+                  content: response.message,
+                });
+                console.error(response.message);
+              }
+
               setSelectedCard(null);
-              return console.error(response.message);
+              setAttackedPlayer(null);
+            }
+          );
+        } else {
+          let attackables = Object.values(players).filter((player) => {
+            if (player.id === user.id) return false;
+
+            const hasOtherMalus =
+              player.states.feurouge ||
+              player.states.accident ||
+              player.states.crevaison ||
+              player.states.pannedessence;
+            if (hasOtherMalus && selectedCard.tag !== "limitedevitesse") {
+              return false;
             }
 
-            if (selectedCard.type === "attaque") {
-              setAttackablePlayers(response.data.attackablePlayers);
-              return;
+            if (
+              (selectedCard.tag === "accident" && player.bonus.asduvolant) ||
+              (selectedCard.tag === "crevaison" && player.bonus.increvable) ||
+              (selectedCard.tag === "pannedessence" && player.bonus.citerne) ||
+              (selectedCard.tag === "feurouge" &&
+                player.bonus.vehiculeprioritaire)
+            ) {
+              return false;
             }
-            return console.log(response.message);
+
+            return true;
+          });
+
+          if (attackables.length > 0) {
+            console.log(attackables);
+            setAttackablePlayers(attackables);
+            setShowAttackPopup(true);
+            setShowActionPopup(false);
           } else {
-            return console.error(
-              "Erreur lors de la récupération du serveur :",
-              response
-            );
+            setNotification({
+              title: "Info",
+              content: "Aucun joueur attaquable.",
+            });
+            setAttackablePlayers(null);
+            setShowAttackPopup(false);
+            setShowActionPopup(false);
+            setAttackedPlayer(null);
           }
         }
-      );
+      } else {
+        socket.emit(
+          "game:player-action",
+          { server_id: serverId, card: selectedCard, user },
+          (response) => {
+            if (response.success) {
+              if (response.data.actionState === false) {
+                setNotification({ title: "Erreur", content: response.message });
+                setSelectedCard(null);
+                setAttackedPlayer(null);
+                setAttackablePlayers(null);
+                setShowAttackPopup(false);
+                return console.error(response.message);
+              }
+              return console.log(response.message);
+            } else {
+              return console.error(
+                "Erreur lors de la récupération du serveur :",
+                response
+              );
+            }
+          }
+        );
+      }
     }
   };
+
   const handleRemoveCard = () => {
     if (selectedCard) {
       socket.emit(
         "game:player-remove-card",
-        { serverId, card: selectedCard, user },
+        { server_id: serverId, card: selectedCard, user },
         (response) => {
           if (response.success) {
             console.log("Success");
@@ -271,61 +327,28 @@ const Board = () => {
         <div className="player-area__hand">
           {hand.length > 0 ? (
             <>
-              {/* Diviser le tableau des cartes en deux parties */}
-              <div className="hand-row">
-                {hand.slice(0, Math.floor(hand.length / 2)).map((card) => {
-                  const { name, tag, id, type } = card;
-                  return (
-                    <button
-                      key={id}
-                      data-id={id}
-                      data-type={type}
-                      className="card"
-                      disabled={!isMyTurn}
-                      onClick={() => handleClickCard(card)}
-                    >
-                      <span className="card-title">{name}</span>
-                      <span className="card-image">
-                        {type === "borne" ? (
-                          <span className={tag}>{tag}</span>
-                        ) : (
-                          <img
-                            src={"../images/" + tag + ".png"}
-                            alt={name}
-                          ></img>
-                        )}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="hand-row hand-row--bottom">
-                {hand.slice(Math.floor(hand.length / 2)).map((card) => {
-                  const { name, tag, id, type } = card;
-                  return (
-                    <button
-                      key={id}
-                      data-id={id}
-                      data-type={type}
-                      className="card"
-                      disabled={!isMyTurn}
-                      onClick={() => handleClickCard(card)}
-                    >
-                      <span className="card-title">{name}</span>
-                      <span className="card-image">
-                        {type === "borne" ? (
-                          <span className={tag}>{tag}</span>
-                        ) : (
-                          <img
-                            src={"../images/" + tag + ".png"}
-                            alt={name}
-                          ></img>
-                        )}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+              {Object(hand).map((card) => {
+                const { name, tag, id, type } = card;
+                return (
+                  <button
+                    key={id}
+                    data-id={id}
+                    data-type={type}
+                    className="card"
+                    disabled={!isMyTurn}
+                    onClick={() => handleClickCard(card)}
+                  >
+                    <span className="card-title">{name}</span>
+                    <span className="card-image">
+                      {type === "borne" ? (
+                        <span className={tag}>{tag}</span>
+                      ) : (
+                        <img src={"../images/" + tag + ".png"} alt={name}></img>
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
             </>
           ) : (
             <p>Aucune carte dans la main</p>
@@ -335,11 +358,22 @@ const Board = () => {
 
       {showActionPopup && (
         <div className="action-modal">
-          <span>Que voulez vous faire ?</span>
+          <div className="action-modal__title">
+            <h3>Que voulez vous faire de cette carte ?</h3>
+          </div>
           <div className="action-modal__buttons">
-            <button onClick={handleUseCard}>Utiliser</button>
-            <button onClick={handleRemoveCard}>Jeter</button>
-            <button onClick={() => setSelectedCard(null)}>Annuler</button>
+            <button className="primary-button blue" onClick={handleUseCard}>
+              Utiliser
+            </button>
+            <button className="primary-button red" onClick={handleRemoveCard}>
+              Jeter
+            </button>
+            <button
+              className="primary-button black"
+              onClick={() => setSelectedCard(null)}
+            >
+              Annuler
+            </button>
           </div>
         </div>
       )}
@@ -364,6 +398,8 @@ const Board = () => {
               setAttackedPlayer(null);
               setAttackablePlayers(null);
               setShowAttackPopup(false);
+              setNotification(null);
+              setShowActionPopup(false);
             }}
           >
             Annuler

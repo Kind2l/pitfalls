@@ -34,7 +34,7 @@ const ServerSelection = () => {
 
   // Permet de rejoindre le serveur suite au clic.
   const handleServerJoin = (server) => {
-    socket.emit("server:join", { user, serverId: server.id }, (response) => {
+    socket.emit("server:join", { user, server_id: server.id }, (response) => {
       if (response.success) {
         navigate(`/game/${response.data.server.id}`);
       } else {

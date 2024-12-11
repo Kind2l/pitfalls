@@ -11,7 +11,7 @@ const GameBoard = () => {
   const [gameIsStarted, setGameIsStarted] = useState(false);
 
   useEffect(() => {
-    socket.emit("server:find", { serverId: serverId }, (response) => {
+    socket.emit("server:find", { server_id: serverId }, (response) => {
       if (!response.success) {
         console.error(response);
       } else {

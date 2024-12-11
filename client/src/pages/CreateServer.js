@@ -35,19 +35,18 @@ const CreateServer = () => {
         if (!response.success) {
           setErrorMessage(response.message);
         } else {
-          const serverId = response.data.server.id;
-          addPlayerToServer(serverId);
+          addPlayerToServer(response.data.server_id);
         }
       }
     );
   };
 
-  const addPlayerToServer = (serverId) => {
-    socket.emit("server:add-player", { user, serverId }, (response) => {
+  const addPlayerToServer = (server_id) => {
+    socket.emit("server:join", { user, server_id }, (response) => {
       if (!response.success) {
         setErrorMessage(response.message);
       } else {
-        navigate(`/game/${serverId}`);
+        navigate(`/game/${server_id}`);
       }
     });
   };
