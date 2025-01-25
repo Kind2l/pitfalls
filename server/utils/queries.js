@@ -47,7 +47,7 @@ const insertUserInDatabase = async (username, email, hashedPassword) => {
       "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
       [username, email, hashedPassword]
     );
-    return results.insertId;
+    return Number(results.insertId);
   } catch (err) {
     console.error("Erreur dans insertUserInDatabase:", err);
     throw err;

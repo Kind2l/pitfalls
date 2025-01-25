@@ -349,7 +349,7 @@ exports.register = async (req, callback) => {
 
     console.log(`register: Enregistrement réussi pour ${username}`);
     // Retourner les données utilisateur et le token
-    callback({
+    return callback({
       success: true,
       message: `Enregistrement réussi pour ${username}`,
       data: { id: userId, username, email, token },
@@ -372,39 +372,74 @@ exports.register = async (req, callback) => {
  * @param {Object} req - Les données de la requête contenant le token.
  * @param {Function} callback - Fonction de rappel pour retourner le résultat.
  */
+/**
+ * Vérifie le token pour connecter directement l'utilisateur.
+ *
+ * @param {Object} req - Les données de la requête contenant le token.
+ * @param {Function} callback - Fonction de rappel pour retourner le résultat.
+ */
 exports.validateConnectToken = async (req, callback) => {
+  console.log("validateConnectToken: Entrée dans la fonction");
   const { token } = req;
 
+  // Validation du token
+  console.log("validateConnectToken: Validation du token", token);
   const tokenError = validateToken(token);
   if (tokenError) {
+    console.log(
+      "validateConnectToken: Erreur de validation du token",
+      tokenError
+    );
     return callback({
       success: false,
       message: tokenError,
     });
   }
 
+  // Vérification du JWT
+  console.log("validateConnectToken: Vérification du token avec jwt");
   jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
     if (err) {
-      console.log("Erreur de vérification JWT :", err);
+      console.log("validateConnectToken: Erreur de vérification JWT :", err);
       return callback({ success: false, message: "Token invalide" });
     }
 
+    // Récupération de l'utilisateur depuis la base de données
+    console.log("validateConnectToken: Décodage du token réussi", decoded);
     try {
       const userRecord = await findUserByIdInDatabase(decoded.id);
+      console.log(
+        "validateConnectToken: Résultat de findUserByIdInDatabase",
+        userRecord
+      );
 
       if (userRecord.length === 0) {
+        console.log("validateConnectToken: Utilisateur non trouvé");
         return callback({
           success: false,
           message: "Utilisateur non trouvé",
         });
       }
 
+      // Vérification de l'existence de l'utilisateur
       let existingUser = findUserByUsername(userRecord[0].username);
+      console.log(
+        "validateConnectToken: Vérification de l'utilisateur existant",
+        existingUser
+      );
       let userIsWaiting = false;
       let server_id = null;
 
+      // Si l'utilisateur est déjà connecté
       if (existingUser) {
+        console.log(
+          "validateConnectToken: Utilisateur existant trouvé",
+          existingUser
+        );
         if (existingUser.removalTimer === false) {
+          console.log(
+            "validateConnectToken: Utilisateur connecté sur un autre navigateur"
+          );
           return callback({
             success: false,
             message: "Connecté sur un autre navigateur.",
@@ -412,10 +447,18 @@ exports.validateConnectToken = async (req, callback) => {
         } else if (existingUser.removalTimer && existingUser.current_server) {
           userIsWaiting = true;
           server_id = existingUser.current_server;
+          console.log(
+            "validateConnectToken: Utilisateur en attente sur un serveur",
+            server_id
+          );
         }
       }
 
+      // Mise à jour ou ajout de l'utilisateur
       if (userIsWaiting) {
+        console.log(
+          "validateConnectToken: Mise à jour de l'utilisateur en attente"
+        );
         updateUser({
           username: userRecord[0].username,
           update: { socket_id: req.socket.id },
@@ -425,6 +468,7 @@ exports.validateConnectToken = async (req, callback) => {
           activate: false,
         });
       } else {
+        console.log("validateConnectToken: Ajout de l'utilisateur");
         addUser({
           id: Number(userRecord[0].id),
           socket_id: req.socket.id,
@@ -432,10 +476,10 @@ exports.validateConnectToken = async (req, callback) => {
         });
       }
 
+      // Réponse avec les données utilisateur
       console.log(
-        `Connexion du joueur ${userRecord[0].username} - ${req.socket.id}`
+        `validateConnectToken: Connexion du joueur ${userRecord[0].username} - ${req.socket.id}`
       );
-
       callback({
         success: true,
         data: {
@@ -445,7 +489,10 @@ exports.validateConnectToken = async (req, callback) => {
         },
       });
     } catch (error) {
-      console.log("Erreur lors de la validation du token :", error);
+      console.log(
+        "validateConnectToken: Erreur lors de la validation du token :",
+        error
+      );
       return callback({
         success: false,
         message: "Erreur lors de validation du token",
@@ -461,34 +508,56 @@ exports.validateConnectToken = async (req, callback) => {
  * @param {Function} callback - Fonction de rappel pour retourner le résultat.
  */
 exports.validateRequestToken = async (req, callback) => {
+  console.log("validateRequestToken: Entrée dans la fonction");
   const { token } = req;
 
+  // Validation du token
+  console.log("validateRequestToken: Validation du token", token);
   const tokenError = validateToken(token);
   if (tokenError) {
+    console.log(
+      "validateRequestToken: Erreur de validation du token",
+      tokenError
+    );
     return callback({
       success: false,
       message: tokenError,
     });
   }
 
+  // Vérification du JWT
+  console.log("validateRequestToken: Vérification du token avec jwt");
   jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
     if (err) {
-      console.log("Erreur de vérification JWT :", err);
+      console.log("validateRequestToken: Erreur de vérification JWT :", err);
       return callback({
         success: false,
         message: "Token invalide pour la requête",
       });
     }
 
+    // Décodage réussi, on récupère l'utilisateur
+    console.log("validateRequestToken: Décodage du token réussi", decoded);
     try {
       const userRecord = await findUserByIdInDatabase(decoded.id);
+      console.log(
+        "validateRequestToken: Résultat de findUserByIdInDatabase",
+        userRecord
+      );
+
       if (userRecord.length === 0) {
+        console.log("validateRequestToken: Utilisateur non trouvé");
         return callback({
           success: false,
           message: "Utilisateur non trouvé pour la requête",
         });
       }
 
+      // Réponse de succès avec les données de l'utilisateur
+      console.log(
+        "validateRequestToken: Validation réussie, utilisateur trouvé",
+        userRecord[0].username
+      );
       return callback({
         success: true,
         message: "Token correct, la requête peut poursuivre",
@@ -499,7 +568,7 @@ exports.validateRequestToken = async (req, callback) => {
       });
     } catch (error) {
       console.log(
-        "Erreur lors de la validation du token pour la requête :",
+        "validateRequestToken: Erreur lors de la validation du token pour la requête :",
         error
       );
       return callback({
@@ -524,37 +593,55 @@ exports.validateRequestToken = async (req, callback) => {
  * logout({ username: "Player123" }, (response) => console.log(response));
  */
 exports.logout = (req, callback) => {
+  console.log("logout: Entrée dans la fonction");
+
   const { socket, username } = req;
   let user;
 
   // Trouve l'utilisateur par username ou socket.id
   if (username) {
+    console.log(
+      `logout: Recherche de l'utilisateur par username - ${username}`
+    );
     user = findUserByUsername(username);
   } else if (socket) {
+    console.log(
+      `logout: Recherche de l'utilisateur par socket.id - ${socket.id}`
+    );
     user = findUserBySocketId(socket.id);
   }
 
   // Si l'utilisateur n'existe pas, renvoie une erreur
   if (!user) {
-    console.log(`Utilisateur non trouvé`);
+    console.log("logout: Utilisateur non trouvé");
     return callback({ success: false, message: "Utilisateur non trouvé" });
   }
 
+  console.log(`logout: Utilisateur trouvé - ${user.username}`);
+
   // Retire l'utilisateur du serveur
+  console.log(`logout: Retrait de l'utilisateur du serveur - ${user.username}`);
   removeUserFromServerByUsername(user.username);
 
   // Supprime l'utilisateur de la liste des utilisateurs
+  console.log(
+    `logout: Suppression de l'utilisateur de la liste des utilisateurs - ${user.username}`
+  );
   const removedFromListOfUsers = removeUserByUsername(user.username);
 
   // Vérifie si la suppression a échoué
   if (!removedFromListOfUsers) {
+    console.log(
+      `logout: Échec de la suppression complète pour ${user.username}`
+    );
     return callback({
-      success: true,
+      success: false,
       message: `L'utilisateur ${user.username} n'a pas pu être entièrement déconnecté.`,
     });
   }
 
   // Retourne un succès si tout s'est bien passé
+  console.log(`logout: Utilisateur ${user.username} déconnecté avec succès`);
   return callback({
     success: true,
     message: `Utilisateur ${user.username} déconnecté avec succès.`,
@@ -587,7 +674,7 @@ exports.disconnect = (req, callback) => {
   }
 
   // Vérifie si l'utilisateur est sur un serveur
-  console.log("disconnect: Est-ce-que l'utilisateur est dans un serveur");
+  console.log("disconnect: Est-ce-que l'utilisateur est dans un serveur ?");
   if (user.current_server) {
     console.log("disconnect: L'utilisateur est bien dans un serveur");
 
@@ -598,23 +685,25 @@ exports.disconnect = (req, callback) => {
       "disconnect: Tentative de suppression via removeUserFromServerByUsername"
     );
     removeUserFromServerByUsername(user.username);
-    console.log("disconnect: Supprimée via removeUserFromServerByUsername");
-    console.log(Object.keys(servers[serverId].players).length);
+    console.log(
+      "disconnect: Utilisateur supprimé via removeUserFromServerByUsername"
+    );
+
+    console.log(
+      `disconnect: Nombre de joueurs dans le serveur ${serverId}: `,
+      Object.keys(servers[serverId].players).length
+    );
 
     console.log("disconnect: Vérification que le serveur est vide");
-    if (
-      Object.keys(servers[serverId].players) &&
-      Object.keys(servers[serverId].players).length === 0
-    ) {
+    if (Object.keys(servers[serverId].players).length === 0) {
       let filteredServers = getFilteredServers();
       io.emit("subscription:server-list", { servers: filteredServers });
       console.log(
-        "disconnect: Serveur vide, suppression du serveur et emit subscription:server-list"
+        "disconnect: Serveur vide, suppression du serveur et emission de subscription:server-list"
       );
       delete servers[serverId];
       console.log("disconnect: Suppression du serveur réussie");
     } else if (
-      Object.keys(servers[serverId].players) &&
       Object.keys(servers[serverId].players).length === 1 &&
       servers[serverId].start === true &&
       servers[serverId].gameOver === false
@@ -630,7 +719,7 @@ exports.disconnect = (req, callback) => {
   // Supprime l'utilisateur de la liste des utilisateurs
   console.log("disconnect: Tentative de suppression via removeUserByUsername");
   const removedFromListOfUsers = removeUserByUsername(user.username);
-  console.log("disconnect: Supprimée via removeUserByUsername");
+  console.log("disconnect: Utilisateur supprimé via removeUserByUsername");
 
   // Met à jour la liste des serveurs filtrés
   let filteredServers = getFilteredServers();
@@ -641,15 +730,17 @@ exports.disconnect = (req, callback) => {
 
   // Vérifie si la suppression a échoué
   if (!removedFromListOfUsers) {
-    ("disconnect: L'utilisateur n'a pas pu être retiré de users ");
-
+    console.log("disconnect: L'utilisateur n'a pas pu être retiré de users ");
     return callback({
-      success: true,
+      success: false,
       message: `L'utilisateur ${user.username} n'a pas pu être entièrement déconnecté.`,
     });
   }
 
   // Retourne un succès si tout s'est bien passé
+  console.log(
+    `disconnect: Utilisateur ${user.username} déconnecté avec succès`
+  );
   return callback({
     success: true,
     message: `Utilisateur ${user.username} déconnecté avec succès.`,

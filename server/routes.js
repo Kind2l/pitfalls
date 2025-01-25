@@ -20,22 +20,43 @@ const {
 } = require("./controllers/gameController");
 
 const tokenMiddleware = async (req, requestName) => {
-  const token = req.user ? req.user.token : null;
   console.log(`Nouvelle requête : ${requestName}`);
 
+  // Récupération du token depuis la requête
+  const token = req?.user?.token || null;
+
+  // Vérification que le token est fourni
+  if (!token) {
+    console.error(
+      `tokenMiddleware: Aucun token fourni pour la requête ${requestName}.`
+    );
+    throw {
+      success: false,
+      message: "Token manquant. L'utilisateur n'est pas authentifié.",
+    };
+  }
+
   return new Promise((resolve, reject) => {
+    console.log(`tokenMiddleware: Validation du token pour ${requestName}.`);
+
     validateRequestToken({ token }, (result) => {
-      if (!result.success) {
-        console.log(
-          `Erreur de validation de token pour la requête ${requestName}`,
+      if (!result?.success) {
+        // Échec de la validation du token
+        console.error(
+          `Erreur de validation du token pour la requête ${requestName}:`,
           result
         );
-        reject(result);
-      } else {
-        console.log(`La requête ${requestName} peut poursuivre`);
-        req.user = result.data;
-        resolve(true);
+        return reject({
+          success: false,
+          message:
+            result?.message || "Échec de la validation du token. Accès refusé.",
+        });
       }
+
+      // Validation réussie
+      console.log(`tokenMiddleware: Validation réussie pour ${requestName}.`);
+      req.user = result.data; // Met à jour les informations utilisateur
+      resolve(true);
     });
   });
 };
@@ -62,9 +83,12 @@ module.exports = (io) => (socket) => {
       }
     };
 
-  socket.on("user:login", handleRequest(login));
-  socket.on("user:register", handleRequest(register));
-  socket.on("user:validate-token", handleRequest(validateConnectToken));
+  socket.on("user:login", handleRequest(login, false, "user:login"));
+  socket.on("user:register", handleRequest(register, false, "user:register"));
+  socket.on(
+    "user:validate-token",
+    handleRequest(validateConnectToken, false, "user:validate-token")
+  );
   socket.on("user:logout", handleRequest(logout, true, "user:logout"));
 
   socket.on(

@@ -10,7 +10,7 @@ const Login = () => {
   const [error, setError] = useState("");
 
   // Regex patterns
-  const usernameRegex = /^[a-zA-Z0-9_-]{4,13}$/;
+  const usernameRegex = /^[a-zA-Z0-9_-]{4,19}$/;
 
   // Validation functions
   const validateUsername = (username) => {
@@ -51,9 +51,10 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-
-    const usernameError = validateUsername(username);
-    const passwordError = validatePassword(password);
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+    const usernameError = validateUsername(trimmedUsername);
+    const passwordError = validatePassword(trimmedPassword);
 
     if (usernameError) {
       setError(usernameError);
@@ -69,8 +70,8 @@ const Login = () => {
       socket.emit(
         "user:login",
         {
-          username: username,
-          password: password,
+          username: trimmedUsername,
+          password: trimmedPassword,
         },
         (response) => {
           if (!response.success) {

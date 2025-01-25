@@ -10,7 +10,7 @@ const Register = ({ setChoice }) => {
   const { socket } = useAuth();
 
   // Regex patterns
-  const usernameRegex = /^[a-zA-Z0-9_-]{4,13}$/;
+  const usernameRegex = /^[a-zA-Z0-9_-]{4,19}$/;
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   // Validation functions
@@ -60,9 +60,13 @@ const Register = ({ setChoice }) => {
     e.preventDefault();
     setError("");
 
-    const usernameError = validateUsername(username);
-    const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+    const trimmedEmail = email.trim();
+
+    const usernameError = validateUsername(trimmedUsername);
+    const passwordError = validatePassword(trimmedPassword);
+    const emailError = validateEmail(trimmedEmail);
 
     if (usernameError) {
       setError(usernameError);
@@ -82,9 +86,9 @@ const Register = ({ setChoice }) => {
     socket.emit(
       "user:register",
       {
-        username: username,
-        email: email,
-        password: password,
+        username: trimmedUsername,
+        password: trimmedPassword,
+        email: trimmedEmail,
       },
       (response) => {
         if (!response.success) {
