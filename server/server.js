@@ -14,7 +14,7 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "https://pitfalls.kindll.fr/",
+    origin: "https://pitfalls.kindll.fr",
     methods: ["GET", "POST"],
   },
 });
