@@ -26,13 +26,13 @@ const tokenMiddleware = async (req, requestName) => {
   return new Promise((resolve, reject) => {
     validateRequestToken({ token }, (result) => {
       if (!result.success) {
-        log(
+        console.log(
           `Erreur de validation de token pour la requête ${requestName}`,
           result
         );
         reject(result);
       } else {
-        log(`La requête ${requestName} peut poursuivre`);
+        console.log(`La requête ${requestName} peut poursuivre`);
         req.user = result.data;
         resolve(true);
       }
@@ -46,14 +46,16 @@ module.exports = (io) => (socket) => {
     async (req, res) => {
       req.socket = socket;
       req.io = io;
-      log(`Nouvelle requete ${requestName}`);
+      console.log(`Nouvelle requete ${requestName}`);
       if (useTokenMiddleware) {
         try {
           await tokenMiddleware(req, requestName);
           handler(req, res);
         } catch (error) {
-          log(`Problème avec le middleware pour la requête ${requestName}`);
-          log(error);
+          console.log(
+            `Problème avec le middleware pour la requête ${requestName}`
+          );
+          console.log(error);
         }
       } else {
         handler(req, res);
@@ -96,6 +98,6 @@ module.exports = (io) => (socket) => {
 
   socket.on("disconnect", () => {
     disconnect({ socket, io }, (res) => {});
-    log(`${socket.id} is disconnected`);
+    console.log(`${socket.id} is disconnected`);
   });
 };

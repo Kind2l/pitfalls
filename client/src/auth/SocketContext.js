@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 const SocketContext = createContext();
 
 // Connexion au serveur Socket.io avec une option pour désactiver la reconnexion automatique
-const socketIo = io("https://localhost:4000", {
+const socketIo = io("https://pitfalls.onrender.com", {
   reconnection: false,
 });
 
