@@ -5,19 +5,16 @@ const { db } = require("./db");
  * @param {string} username - Nom d'utilisateur à rechercher.
  * @returns {Promise<object[]>} Résultat de la requête contenant l'utilisateur correspondant.
  */
-const findUserByUsernameInDatabase = (username) => {
-  return new Promise((resolve, reject) => {
-    db.query(
-      "SELECT * FROM users WHERE username = ?",
-      [username],
-      (err, results) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(results);
-      }
-    );
-  });
+const findUserByUsernameInDatabase = async (username) => {
+  try {
+    const [results] = await db.query("SELECT * FROM users WHERE username = ?", [
+      username,
+    ]);
+    return results;
+  } catch (err) {
+    console.error("Erreur dans findUserByUsernameInDatabase:", err);
+    throw err;
+  }
 };
 
 /**
@@ -25,15 +22,16 @@ const findUserByUsernameInDatabase = (username) => {
  * @param {string} email - Adresse à rechercher.
  * @returns {Promise<object[]>} Résultat de la requête contenant l'utilisateur correspondant.
  */
-const findUserByEmailInDatabase = (email) => {
-  return new Promise((resolve, reject) => {
-    db.query("SELECT * FROM users WHERE email = ?", [email], (err, results) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(results);
-    });
-  });
+const findUserByEmailInDatabase = async (email) => {
+  try {
+    const [results] = await db.query("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
+    return results;
+  } catch (err) {
+    console.error("Erreur dans findUserByEmailInDatabase:", err);
+    throw err;
+  }
 };
 
 /**
@@ -43,19 +41,17 @@ const findUserByEmailInDatabase = (email) => {
  * @param {string} hashedPassword - Hash du mot de passe de l'utilisateur.
  * @returns {Promise<number>} Promesse résolue avec l'ID de l'utilisateur inséré.
  */
-const insertUserInDatabase = (username, email, hashedPassword) => {
-  return new Promise((resolve, reject) => {
-    db.query(
+const insertUserInDatabase = async (username, email, hashedPassword) => {
+  try {
+    const [results] = await db.query(
       "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-      [username, email, hashedPassword],
-      (err, results) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(results.insertId);
-      }
+      [username, email, hashedPassword]
     );
-  });
+    return results.insertId;
+  } catch (err) {
+    console.error("Erreur dans insertUserInDatabase:", err);
+    throw err;
+  }
 };
 
 /**
@@ -64,19 +60,16 @@ const insertUserInDatabase = (username, email, hashedPassword) => {
  * @param {string} token - Nouveau token à attribuer à l'utilisateur.
  * @returns {Promise<void>} Promesse résolue si la mise à jour est réussie.
  */
-const updateUserTokenInDatabase = (username, token) => {
-  return new Promise((resolve, reject) => {
-    db.query(
-      "UPDATE users SET token = ? WHERE username = ?",
-      [token, username],
-      (err) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve();
-      }
-    );
-  });
+const updateUserTokenInDatabase = async (username, token) => {
+  try {
+    await db.query("UPDATE users SET token = ? WHERE username = ?", [
+      token,
+      username,
+    ]);
+  } catch (err) {
+    console.error("Erreur dans updateUserTokenInDatabase:", err);
+    throw err;
+  }
 };
 
 /**
@@ -84,15 +77,16 @@ const updateUserTokenInDatabase = (username, token) => {
  * @param {number} userId - ID de l'utilisateur à rechercher.
  * @returns {Promise<object[]>} Résultat de la requête contenant l'utilisateur correspondant.
  */
-const findUserByIdInDatabase = (userId) => {
-  return new Promise((resolve, reject) => {
-    db.query("SELECT * FROM users WHERE id = ?", [userId], (err, results) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(results);
-    });
-  });
+const findUserByIdInDatabase = async (userId) => {
+  try {
+    const [results] = await db.query("SELECT * FROM users WHERE id = ?", [
+      userId,
+    ]);
+    return results;
+  } catch (err) {
+    console.error("Erreur dans findUserByIdInDatabase:", err);
+    throw err;
+  }
 };
 
 module.exports = {
