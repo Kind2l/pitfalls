@@ -100,12 +100,22 @@ const validateToken = (token) => {
  * @returns {void} - Utilise la fonction callback pour renvoyer le résultat.
  */
 exports.login = async (req, callback) => {
+  console.log("login: Entrée dans la fonction");
+
   const { username, password } = req;
 
+  console.log(
+    `login: Données reçues - username: ${username}, password: [masqué]`
+  );
+
+  // Validation des entrées
   const usernameError = validateUsername(username);
   const passwordError = validatePassword(password);
 
   if (usernameError) {
+    console.log(
+      `login: Erreur de validation - usernameError: ${usernameError}`
+    );
     return callback({
       success: false,
       message: usernameError,
@@ -113,6 +123,9 @@ exports.login = async (req, callback) => {
   }
 
   if (passwordError) {
+    console.log(
+      `login: Erreur de validation - passwordError: ${passwordError}`
+    );
     return callback({
       success: false,
       message: passwordError,
@@ -121,10 +134,15 @@ exports.login = async (req, callback) => {
 
   try {
     // Vérifie si l'utilisateur est déjà connecté
+    console.log(
+      `login: Vérification de l'utilisateur en mémoire - username: ${username}`
+    );
     const existingUser = findUserByUsername(username);
 
     if (existingUser) {
-      // L'utilisateur est déjà connecté sur un autre navigateur
+      console.log(
+        `login: Utilisateur déjà connecté sur un autre navigateur - username: ${username}`
+      );
       return callback({
         success: false,
         message: "Connecté sur un autre navigateur.",
@@ -132,11 +150,15 @@ exports.login = async (req, callback) => {
     }
 
     // Recherche de l'utilisateur dans la base de données
+    console.log(
+      `login: Recherche de l'utilisateur dans la base de données - username: ${username}`
+    );
     const userRecords = await findUserByUsernameInDatabase(username);
 
     if (userRecords.length === 0) {
-      // Aucun utilisateur trouvé
-      console.log("Nom d'utilisateur introuvable :", username);
+      console.log(
+        `login: Aucun utilisateur trouvé pour - username: ${username}`
+      );
       return callback({
         success: false,
         message: "Nom d'utilisateur ou mot de passe incorrect",
@@ -144,11 +166,18 @@ exports.login = async (req, callback) => {
     }
 
     const userRecord = userRecords[0];
+    console.log(
+      `login: Utilisateur trouvé - ID: ${userRecord.id}, username: ${userRecord.username}`
+    );
 
     // Vérification du mot de passe
+    console.log(
+      `login: Vérification du mot de passe pour - username: ${username}`
+    );
     const isPasswordValid = await bcrypt.compare(password, userRecord.password);
+
     if (!isPasswordValid) {
-      console.log("Mot de passe incorrect pour :", username);
+      console.log(`login: Mot de passe incorrect pour - username: ${username}`);
       return callback({
         success: false,
         message: "Nom d'utilisateur ou mot de passe incorrect",
@@ -156,22 +185,31 @@ exports.login = async (req, callback) => {
     }
 
     // Génération d'un token JWT
+    console.log(`login: Génération du token JWT pour - username: ${username}`);
     const token = jwt.sign(
       { id: userRecord.id, username },
       process.env.JWT_SECRET
     );
 
     // Mise à jour du token dans la base de données
+    console.log(
+      `login: Mise à jour du token dans la base de données pour - username: ${username}`
+    );
     await updateUserTokenInDatabase(username, token);
 
     // Mise à jour ou ajout de l'utilisateur en mémoire
+    console.log(
+      `login: Ajout ou mise à jour de l'utilisateur en mémoire - username: ${username}`
+    );
     addUser({
       id: userRecord.id,
       username,
       socket_id: req.socket.id,
     });
 
-    console.log(`Connexion réussie pour l'utilisateur ${username}`);
+    console.log(
+      `login: Connexion réussie pour l'utilisateur - username: ${username}`
+    );
 
     // Succès de la connexion
     return callback({
@@ -185,7 +223,7 @@ exports.login = async (req, callback) => {
     });
   } catch (err) {
     // Gestion des erreurs
-    console.log("Erreur lors de la tentative de connexion :", err);
+    console.error("login: Erreur lors de la tentative de connexion :", err);
     return callback({
       success: false,
       message: "Erreur interne du serveur",
@@ -200,19 +238,32 @@ exports.login = async (req, callback) => {
  * @param {Function} callback - Fonction de rappel pour retourner le résultat.
  */
 exports.register = async (req, callback) => {
+  console.log(
+    "register: Entrée dans la fonction avec les données suivantes :",
+    req
+  );
   const { username, email, password } = req;
+
+  // Vérification des données reçues
   if (!username || !email || !password) {
+    console.log("register: Données manquantes -", {
+      username,
+      email,
+      password,
+    });
     return callback({
       success: false,
       message: "Données non complétées",
     });
   }
 
+  // Validation des données
   const usernameError = validateUsername(username);
   const emailError = validateEmail(email);
   const passwordError = validatePassword(password);
 
   if (usernameError) {
+    console.log("register: Erreur de validation du username :", usernameError);
     return callback({
       success: false,
       message: usernameError,
@@ -220,6 +271,7 @@ exports.register = async (req, callback) => {
   }
 
   if (emailError) {
+    console.log("register: Erreur de validation de l'email :", emailError);
     return callback({
       success: false,
       message: emailError,
@@ -227,6 +279,10 @@ exports.register = async (req, callback) => {
   }
 
   if (passwordError) {
+    console.log(
+      "register: Erreur de validation du mot de passe :",
+      passwordError
+    );
     return callback({
       success: false,
       message: passwordError,
@@ -234,9 +290,12 @@ exports.register = async (req, callback) => {
   }
 
   try {
+    console.log("register: Vérification des utilisateurs existants");
+
     // Vérifier si le nom d'utilisateur existe déjà
     const existingUsername = await findUserByUsernameInDatabase(username);
     if (existingUsername.length > 0) {
+      console.log(`register: Nom d'utilisateur déjà pris - ${username}`);
       return callback({
         success: false,
         message: "Nom d'utilisateur non valide",
@@ -246,30 +305,34 @@ exports.register = async (req, callback) => {
     // Vérifier si l'email existe déjà
     const existingEmail = await findUserByEmailInDatabase(email);
     if (existingEmail.length > 0) {
+      console.log(`register: Email déjà utilisé - ${email}`);
       return callback({
         success: false,
         message: "Email non valide",
       });
     }
 
+    console.log("register: Hachage du mot de passe");
     // Hacher le mot de passe
     const hashedPassword = await bcrypt.hash(password, 5);
 
+    console.log("register: Insertion de l'utilisateur dans la base de données");
     // Insérer l'utilisateur dans la base de données
     const user = await insertUserInDatabase(username, email, hashedPassword);
     if (!user) {
-      console.log(`Erreur lors de l'enregistrement (${username})`);
+      console.log(`register: Erreur lors de l'insertion en base (${username})`);
       return callback({
         success: false,
         message: "Erreur lors de l'enregistrement",
       });
     }
 
+    console.log("register: Récupération de l'utilisateur inséré");
     // Trouver l'utilisateur
     const insertedUser = await findUserByEmailInDatabase(email);
     if (!insertedUser || insertedUser.length === 0) {
       console.log(
-        `Utilisateur non trouvé après l'enregistrement (${username})`
+        `register: Utilisateur non trouvé après insertion (${username})`
       );
       return callback({
         success: false,
@@ -277,13 +340,14 @@ exports.register = async (req, callback) => {
       });
     }
 
+    console.log("register: Création du token JWT");
     // Créer un token JWT
     const userId = insertedUser[0].id;
     const token = jwt.sign({ id: userId, username }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    console.log(`Enregistrement réussi pour ${username}`);
 
+    console.log(`register: Enregistrement réussi pour ${username}`);
     // Retourner les données utilisateur et le token
     callback({
       success: true,
@@ -291,7 +355,10 @@ exports.register = async (req, callback) => {
       data: { id: userId, username, email, token },
     });
   } catch (error) {
-    console.log(`Erreur lors de l'enregistrement pour ${username}`, error);
+    console.error(
+      `register: Erreur lors de l'enregistrement pour ${username}`,
+      error
+    );
     return callback({
       success: false,
       message: "Erreur lors de l'enregistrement",
