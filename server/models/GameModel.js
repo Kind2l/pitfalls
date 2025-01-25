@@ -1,6 +1,7 @@
 const PlayerModel = require("./PlayerModel");
 
-function generateCards(cardCounts = {}) {
+function generateCards(custom) {
+  let cardCounts = custom || {};
   const baseCards = [
     {
       id: "",
@@ -71,6 +72,14 @@ function generateCards(cardCounts = {}) {
       status: false,
       value: 100,
     },
+    {
+      id: "",
+      name: "200",
+      tag: "200",
+      type: "borne",
+      status: false,
+      value: 200,
+    },
   ];
 
   const bonusCards = [
@@ -115,15 +124,16 @@ function generateCards(cardCounts = {}) {
     pannedessence: 3,
     crevaison: 3,
     accident: 3,
-    feuvert: 36,
+    feuvert: 14,
     findelimitedevitesse: 6,
-    essence: 7,
+    essence: 6,
     rouedesecours: 6,
     reparation: 6,
     25: 10,
     50: 10,
     75: 10,
-    100: 1,
+    100: 12,
+    200: 4,
   };
 
   let generatedCards = [];
@@ -150,21 +160,58 @@ function generateCards(cardCounts = {}) {
 }
 
 class GameModel {
-  constructor(id, name, author, maxPlayers) {
+  constructor(id, name, author, maxPlayers, custom) {
     this.id = id;
     this.name = name;
     this.author = author;
-    this.players = {};
+    this.players = new Proxy(
+      {},
+      {
+        set: (target, key, value) => {
+          // Validation : vérifier que la valeur est un joueur valide
+          if (
+            value &&
+            typeof value.id === "number" &&
+            typeof value.username === "string"
+          ) {
+            console.log(`Ajout/mise à jour du joueur : ${key}`);
+            target[key] = value; // Ajout/mise à jour du joueur
+          } else {
+            console.error(
+              `Tentative d'ajout d'une valeur invalide à players :`,
+              value
+            );
+          }
+          return true;
+        },
+        deleteProperty: (target, key) => {
+          console.log(`Suppression du joueur : ${key}`);
+          delete target[key];
+          return true;
+        },
+      }
+    );
     this.maxPlayers = maxPlayers;
     this.deck = [];
     this.discard = [];
     this.start = false;
+    this.gameOver = false;
     this.currentPlayer = 1;
+    this.requiredScore = 1000;
+    this.podium = [];
+    this.custom = custom;
   }
 
   reset() {
     // Mélange du deck
-    this.deck = generateCards();
+    console.log("reset");
+    if (this.custom) {
+      console.log("reset custom");
+      this.deck = generateCards(this.custom);
+    } else {
+      console.log("reset classic");
+      this.deck = generateCards();
+    }
     this.deck = this.deck.sort(() => Math.random() - 0.5);
 
     const playersArray = Object.values(this.players);
@@ -182,10 +229,18 @@ class GameModel {
     playersArray.forEach((player, index) => {
       player.position = positions[index];
     });
+    console.log("reset end");
   }
 
   startGame() {
     this.start = true;
+  }
+
+  endGame() {
+    this.gameOver = true;
+    const players = Object.values(this.players);
+    const sortedPlayers = players.sort((a, b) => b.score - a.score);
+    this.podium = sortedPlayers.map((player) => player.username);
   }
 
   addPlayer(id, username) {
@@ -200,12 +255,21 @@ class GameModel {
   }
 
   nextPlayer() {
+    console.log("nextPlayer: Entrée dans la fonction");
+
     let newCurrentPlayer = Number(this.currentPlayer) + 1;
-    if (newCurrentPlayer > this.maxPlayers) {
+    console.log("nextPlayer: currentPlayer", this.currentPlayer);
+    console.log("nextPlayer: newCurrentPlayer", newCurrentPlayer);
+    console.log("nextPlayer: players", this.players);
+
+    if (newCurrentPlayer > Object.keys(this.players).length) {
       this.currentPlayer = 1;
+      console.log("nextPlayer: newCurrentPlayer", newCurrentPlayer);
     } else {
       this.currentPlayer = newCurrentPlayer;
+      console.log("nextPlayer: newCurrentPlayer", newCurrentPlayer);
     }
+    console.log("nextPlayer:", this.players);
   }
 
   updatePlayer(id, update) {

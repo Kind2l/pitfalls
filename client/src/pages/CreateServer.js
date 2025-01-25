@@ -1,13 +1,52 @@
 import { useAuth } from "@Auth/SocketContext";
+import BackButton from "@Components/BackButton";
 import "@Styles/CreateServer.scss";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BackButton from "../components/BackButton";
 
 const CreateServer = () => {
   const [serverName, setServerName] = useState("");
   const [maxPlayers, setMaxPlayers] = useState(2);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isCustomServer, setIsCustomServer] = useState(false);
+  const [cardCounts, setCardCounts] = useState({
+    feurouge: { count: 5, minCount: 5, maxCount: 15, name: "Feu rouge" },
+    limitedevitesse: {
+      count: 4,
+      minCount: 4,
+      maxCount: 12,
+      name: "Limite de vitesse",
+    },
+    pannedessence: {
+      count: 3,
+      minCount: 3,
+      maxCount: 9,
+      name: "Panne d'essence",
+    },
+    crevaison: { count: 3, minCount: 3, maxCount: 9, name: "Crevaison" },
+    accident: { count: 3, minCount: 3, maxCount: 9, name: "Accident" },
+    feuvert: { count: 14, minCount: 14, maxCount: 42, name: "Feu vert" },
+    findelimitedevitesse: {
+      count: 6,
+      minCount: 6,
+      maxCount: 18,
+      name: "Fin de limite de vitesse",
+    },
+    essence: { count: 6, minCount: 6, maxCount: 18, name: "Essence" },
+    rouedesecours: {
+      count: 6,
+      minCount: 6,
+      maxCount: 18,
+      name: "Roue de secours",
+    },
+    reparation: { count: 6, minCount: 6, maxCount: 18, name: "Réparation" },
+    25: { count: 10, minCount: 10, maxCount: 30, name: "25 Kms" },
+    50: { count: 10, minCount: 10, maxCount: 30, name: "50 Kms" },
+    75: { count: 10, minCount: 10, maxCount: 30, name: "75 Kms" },
+    100: { count: 12, minCount: 12, maxCount: 36, name: "100 Kms" },
+    200: { count: 4, minCount: 4, maxCount: 12, name: "200 Kms" },
+  });
+
   const { socket, user } = useAuth();
   const navigate = useNavigate();
 
@@ -19,23 +58,95 @@ const CreateServer = () => {
       return;
     }
 
+    // Validation du nom du serveur
+    if (!isServerNameValid(serverName)) {
+      setErrorMessage("Le nom du serveur est invalide.");
+      return;
+    }
+
     if (maxPlayers < 2 || maxPlayers > 4) {
       setErrorMessage("Le nombre de joueurs doit être compris entre 2 et 4.");
       return;
     }
 
+    if (isCustomServer) {
+      const isValid = Object.keys(cardCounts).every((key) => {
+        const { count, minCount, maxCount } = cardCounts[key];
+        return count >= minCount && count <= maxCount;
+      });
+
+      if (!isValid) {
+        setErrorMessage(
+          "Les valeurs des cartes doivent être comprises entre la valeur par défaut et trois fois cette valeur."
+        );
+        return;
+      }
+    }
+
     createServer();
   };
 
+  const isServerNameValid = (name) => {
+    const serverNameRegex = /^[a-zA-Z0-9][a-zA-Z0-9\s\-'!?_]{1,28}[a-zA-Z0-9]$/;
+    return serverNameRegex.test(name);
+  };
+
   const createServer = () => {
+    // Vérification des variables nécessaires
+    if (!user || !serverName || !socket) {
+      console.error(
+        "Des informations nécessaires pour créer le serveur sont manquantes."
+      );
+      setErrorMessage(
+        "Impossible de créer le serveur. Veuillez vérifier les informations fournies."
+      );
+      return;
+    }
+
+    // Construction des données pour les cartes si le serveur est personnalisé
+    const cardData = isCustomServer
+      ? {
+          feurouge: cardCounts?.feurouge?.count || 5,
+          limitedevitesse: cardCounts?.limitedevitesse?.count || 4,
+          pannedessence: cardCounts?.pannedessence?.count || 3,
+          crevaison: cardCounts?.crevaison?.count || 3,
+          accident: cardCounts?.accident?.count || 3,
+          feuvert: cardCounts?.feuvert?.count || 14,
+          findelimitedevitesse: cardCounts?.findelimitedevitesse?.count || 6,
+          essence: cardCounts?.essence?.count || 6,
+          rouedesecours: cardCounts?.rouedesecours?.count || 6,
+          reparation: cardCounts?.reparation?.count || 6,
+          25: cardCounts?.[25]?.count || 10,
+          50: cardCounts?.[50]?.count || 10,
+          75: cardCounts?.[75]?.count || 10,
+          100: cardCounts?.[100]?.count || 12,
+          200: cardCounts?.[200]?.count || 4,
+        }
+      : null;
+
+    // Émission de l'événement au serveur via socket
     socket.emit(
       "server:create",
-      { user, serverName, maxPlayers },
+      {
+        user,
+        serverName: String(serverName),
+        maxPlayers: Number(maxPlayers),
+        cardCounts: cardData,
+      },
       (response) => {
-        if (!response.success) {
-          setErrorMessage(response.message);
+        // Gestion de la réponse
+        if (!response?.success) {
+          console.error(
+            "Erreur lors de la création du serveur :",
+            response?.message || "Réponse inconnue."
+          );
+          setErrorMessage(
+            response?.message ||
+              "Une erreur est survenue lors de la création du serveur."
+          );
         } else {
-          addPlayerToServer(response.data.server_id);
+          console.log("Serveur créé avec succès :", response?.data?.server_id);
+          addPlayerToServer(response?.data?.server_id);
         }
       }
     );
@@ -57,45 +168,260 @@ const CreateServer = () => {
 
   return (
     <div className="create-server">
-      <form className="create-server-content" onSubmit={handleSubmit}>
-        <h2>Créer une partie</h2>
-        <section>
-          <input
-            type="text"
-            placeholder="Nom du serveur"
-            id="server-name"
-            value={serverName}
-            onChange={(e) => setServerName(e.target.value)}
-            required
-          />
-        </section>
+      <div className="create-server-content">
+        <form onSubmit={handleSubmit}>
+          <h2>Créer une partie</h2>
+          <section>
+            <input
+              type="text"
+              placeholder="Nom du serveur"
+              id="server-name"
+              value={serverName}
+              onChange={(e) => setServerName(e.target.value)}
+              minLength={4}
+              maxLength={30}
+              required
+            />
+          </section>
 
-        <section>
-          <h3>Nombre de joueurs</h3>
-          <div className="player-selection">
-            {[2, 3, 4].map((playerCount) => (
-              <div key={playerCount + "key"}>
+          <section className="server-type-selection">
+            <h3 className="server-type-selection__title">Type de serveur</h3>
+            <div className="server-type-selection__content">
+              <div>
                 <input
-                  id={playerCount + "players"}
+                  id="standard-server"
                   type="radio"
-                  name="max-players"
-                  value={playerCount}
-                  checked={maxPlayers === playerCount}
-                  onChange={handlePlayerCountChange}
+                  name="server-type"
+                  value="standard"
+                  checked={!isCustomServer}
+                  onChange={() => setIsCustomServer(false)}
                 />
-                <label htmlFor={playerCount + "players"} key={playerCount}>
-                  {playerCount}
+                <label
+                  htmlFor="standard-server"
+                  className="primary-button bg-green"
+                >
+                  Standard
                 </label>
               </div>
-            ))}
+              <div>
+                <input
+                  id="custom-server"
+                  type="radio"
+                  name="server-type"
+                  value="custom"
+                  checked={isCustomServer}
+                  onChange={() => setIsCustomServer(true)}
+                />
+                <label
+                  htmlFor="custom-server"
+                  className="primary-button bg-orange"
+                >
+                  Personnalisé
+                </label>
+              </div>
+            </div>
+          </section>
+
+          {isCustomServer && (
+            <div>
+              <h3>Définissez le nombre de cartes</h3>
+
+              {/* Cartes d'attaque */}
+              <div className="card-group attack">
+                <h4>Cartes d'attaque</h4>
+                <div className="card-counts">
+                  {[
+                    "feurouge",
+                    "limitedevitesse",
+                    "pannedessence",
+                    "crevaison",
+                    "accident",
+                  ].map((key) => (
+                    <div key={key} className="card-counts__element">
+                      <div className="card-counts__title">
+                        {cardCounts[key].name}
+                      </div>
+                      <div className="card-counts__buttons">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCardCounts((prevCounts) => ({
+                              ...prevCounts,
+                              [key]: {
+                                ...prevCounts[key],
+                                count: Math.max(
+                                  prevCounts[key].count - 1,
+                                  prevCounts[key].minCount
+                                ),
+                              },
+                            }))
+                          }
+                        >
+                          -
+                        </button>
+                        <span>{cardCounts[key].count}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCardCounts((prevCounts) => ({
+                              ...prevCounts,
+                              [key]: {
+                                ...prevCounts[key],
+                                count: Math.min(
+                                  prevCounts[key].count + 1,
+                                  prevCounts[key].maxCount
+                                ),
+                              },
+                            }))
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cartes de parade */}
+              <div className="card-group parade">
+                <h4>Cartes de parade</h4>
+                <div className="card-counts">
+                  {[
+                    "feuvert",
+                    "findelimitedevitesse",
+                    "essence",
+                    "rouedesecours",
+                    "reparation",
+                  ].map((key) => (
+                    <div key={key} className="card-counts__element">
+                      <div className="card-counts__title">
+                        {cardCounts[key].name}
+                      </div>
+                      <div className="card-counts__buttons">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCardCounts((prevCounts) => ({
+                              ...prevCounts,
+                              [key]: {
+                                ...prevCounts[key],
+                                count: Math.max(
+                                  prevCounts[key].count - 1,
+                                  prevCounts[key].minCount
+                                ),
+                              },
+                            }))
+                          }
+                        >
+                          -
+                        </button>
+                        <span>{cardCounts[key].count}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCardCounts((prevCounts) => ({
+                              ...prevCounts,
+                              [key]: {
+                                ...prevCounts[key],
+                                count: Math.min(
+                                  prevCounts[key].count + 1,
+                                  prevCounts[key].maxCount
+                                ),
+                              },
+                            }))
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Cartes de distance */}
+              <div className="card-group borne">
+                <h4>Cartes de distance</h4>
+                <div className="card-counts">
+                  {["25", "50", "75", "100", "200"].map((key) => (
+                    <div key={key} className="card-counts__element">
+                      <div className="card-counts__title">
+                        {cardCounts[key].name}
+                      </div>
+                      <div className="card-counts__buttons">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCardCounts((prevCounts) => ({
+                              ...prevCounts,
+                              [key]: {
+                                ...prevCounts[key],
+                                count: Math.max(
+                                  prevCounts[key].count - 1,
+                                  prevCounts[key].minCount
+                                ),
+                              },
+                            }))
+                          }
+                        >
+                          -
+                        </button>
+                        <span>{cardCounts[key].count}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCardCounts((prevCounts) => ({
+                              ...prevCounts,
+                              [key]: {
+                                ...prevCounts[key],
+                                count: Math.min(
+                                  prevCounts[key].count + 1,
+                                  prevCounts[key].maxCount
+                                ),
+                              },
+                            }))
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div>
+            <h3>Nombre de joueurs</h3>
+            <div className="player-selection">
+              {[2, 3, 4].map((playerCount) => (
+                <div key={playerCount + "key"}>
+                  <input
+                    id={playerCount + "players"}
+                    type="radio"
+                    name="max-players"
+                    value={playerCount}
+                    checked={maxPlayers === playerCount}
+                    onChange={handlePlayerCountChange}
+                  />
+                  <label htmlFor={playerCount + "players"} key={playerCount}>
+                    {playerCount}
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
-        </section>
 
-        {errorMessage && <p className="error">{errorMessage}</p>}
+          {errorMessage && <p className="error">{errorMessage}</p>}
 
-        <button type="submit">Créer Serveur</button>
+          <button className="primary-button bg-blue" type="submit">
+            Créer Serveur
+          </button>
+        </form>
         <BackButton />
-      </form>
+      </div>
     </div>
   );
 };

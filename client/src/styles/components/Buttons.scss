@@ -1,4 +1,4 @@
-@import "../utils/variables.scss";
+@use "../utils/variables.scss" as Vars;
 
 .primary-button {
   all: unset;
@@ -22,26 +22,6 @@
   &:active {
     position: relative;
     top: 1px;
-  }
-
-  &.blue {
-    background-color: $blue;
-  }
-
-  &.red {
-    background-color: $red;
-  }
-
-  &.green {
-    background-color: $green;
-  }
-
-  &.orange {
-    background-color: $orange;
-  }
-
-  &.black {
-    background-color: $black;
   }
 
   &.back-button {

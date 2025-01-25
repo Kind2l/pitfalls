@@ -23,28 +23,28 @@ const Home = () => {
 
           <div className="links">
             <Link
-              className="primary-button green"
+              className="primary-button bg-green"
               to="/server-list"
               onClick={() => handleLinkClick("open")}
             >
               Rejoindre une partie
             </Link>
             <Link
-              className="primary-button blue"
+              className="primary-button bg-blue"
               to="/create-server"
               onClick={() => handleLinkClick("open")}
             >
               Créer une partie
             </Link>
             <Link
-              className="primary-button orange"
+              className="primary-button bg-orange"
               to="/settings"
               onClick={() => handleLinkClick("open")}
             >
               Options
             </Link>
             <Link
-              className="primary-button red"
+              className="primary-button bg-red"
               to="/"
               onClick={() => {
                 handleLinkClick("open"); // Jouer l'effet "open"

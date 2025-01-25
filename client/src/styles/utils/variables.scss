@@ -1,8 +1,13 @@
-$blue: #151e9b;
-$red: #d63434;
-$green: #4b9407;
-$orange: #e08243;
-$black: #3a3a3a;
+$blue: #003049;
+$sky: rgb(91, 168, 220);
+$red: #d62828;
+$green: #3cbd47;
+$orange: #f77f00;
+$black: #191919;
+$white: #ffffff;
+$grey: #b4b4b4;
+$background: #f9f9f9;
+$dark_white: rgb(252, 252, 252);
 
 @mixin main-padding {
   padding: 2rem 5%;

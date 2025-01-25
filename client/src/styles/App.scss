@@ -1,26 +1,81 @@
-@import url("https://fonts.googleapis.com/css2?family=Recursive:wght@400;500;700&display=swap");
-
-@import url("./utils/variables.scss");
-@import url("./components/Buttons.scss");
-@import url("./components/Notifications.scss");
-
-h1,
-h2 {
-  font-family: "Recursive", sans-serif;
-}
+@use "Reset";
+@use "./utils/fonts" as Fonts;
+@use "./utils/variables" as Vars;
+@use "./components/Buttons.scss" as Button;
+@use "./components/Notifications.scss" as Notifications;
+@import "https://fonts.googleapis.com/css2?family=Recursive:wght@400;500;700&display=swap";
 
 body {
-  background: rgb(154, 220, 251);
-  background: linear-gradient(
-    180deg,
-    rgba(154, 220, 251, 1) 0%,
-    rgba(186, 231, 252, 1) 20%,
-    rgba(243, 251, 255, 0.9836309523809523) 100%
-  );
-  background-repeat: no-repeat;
-  background-size: cover;
-  min-height: 100vh;
-  overflow: hidden;
+  background-color: Vars.$background;
+  overflow-x: hidden;
+  font-family: "Lato", serif;
+  font-style: normal;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 25px;
+}
+h1,
+h2,
+h3 {
+  font-family: "Outfit", serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1.3rem;
+  margin: 0.6rem 0;
+  line-height: 1.8rem;
+  color: Vars.$blue;
+}
+
+p {
+  margin-bottom: 1.2rem;
+}
+
+a {
+  font-family: "Outfit", serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.color {
+  &-blue {
+    color: Vars.$blue;
+  }
+  &-red {
+    color: Vars.$red;
+  }
+  &-green {
+    color: Vars.$green;
+  }
+  &-orange {
+    color: Vars.$orange;
+  }
+  &-black {
+    color: Vars.$black;
+  }
+}
+
+.bg {
+  &-blue {
+    background-color: Vars.$blue;
+  }
+  &-red {
+    background-color: Vars.$red;
+  }
+  &-green {
+    background-color: Vars.$green;
+  }
+  &-orange {
+    background-color: Vars.$orange;
+  }
+  &-black {
+    background-color: Vars.$black;
+  }
+  &-grey {
+    background-color: Vars.$grey;
+  }
 }
 
 #join {
@@ -33,4 +88,13 @@ body {
       padding: 0.5rem 0;
     }
   }
+}
+
+.test {
+  position: absolute; /* Positionnement */
+  top: 20vh;
+  left: 20vw;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white; /* Optionnel, pour un effet visuel */
+  pointer-events: none; /* Permet aux clics de passer à travers */
 }

@@ -15,7 +15,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
 
   useEffect(() => {
     // Rechercher le serveur à l'initialisation du composant
-    socket.emit("server:find", { server_id: serverId }, (response) => {
+    socket.emit("server:find", { user, server_id: serverId }, (response) => {
       if (!response.success) {
         console.error(response);
       } else {
@@ -29,37 +29,38 @@ const WaitingRoom = ({ setGameIsStarted }) => {
   }, []);
 
   const handleSubmit = () => {
-    socket.emit("server:initalization", { server_id: serverId }, (response) => {
-      if (!response.success) {
-        console.error(response);
-      } else {
-        console.log(response);
-      }
-    });
-  };
-
-  const handleLeaveServer = () => {
     socket.emit(
-      "server:leave-server",
+      "server:initalization",
       { user, server_id: serverId },
       (response) => {
         if (!response.success) {
           console.error(response);
         } else {
-          navigate(`/`);
+          console.log(response);
         }
       }
     );
   };
 
+  const handleLeaveServer = () => {
+    socket.emit("server:leave", { user, server_id: serverId }, (response) => {
+      if (!response.success) {
+        console.error(response);
+      } else {
+        navigate(`/`);
+      }
+    });
+  };
+
   useEffect(() => {
     // Écoute des mises à jour du serveur
     socket.on("server:update", (data) => {
-      setGameIsStarted(data.start);
-      setPlayers(data.players);
-      setMaxPlayers(data.maxPlayers);
-      setGameIsStarted(data.start);
-      setAuthor(data.author);
+      if (data) {
+        data.start && setGameIsStarted(data.start);
+        data.players && setPlayers(data.players);
+        data.maxPlayers && setMaxPlayers(data.maxPlayers);
+        data.author && setAuthor(data.author);
+      }
     });
 
     return () => {
@@ -82,18 +83,27 @@ const WaitingRoom = ({ setGameIsStarted }) => {
             <li>Aucun joueur connecté.</li>
           )}
         </ul>
-        {String(author) === String(user.username) &&
-        Number(Object.keys(players).length) >= 2 &&
-        Number(Object.keys(players).length) <= Number(maxPlayers) ? (
-          <button onClick={() => handleSubmit()}>Démarrer la partie</button>
-        ) : null}
-        <button
-          onClick={() => {
-            handleLeaveServer();
-          }}
-        >
-          Quitter la partie
-        </button>
+
+        <div className="waiting-room-content__buttons">
+          {String(author) === String(user.username) &&
+          Number(Object.keys(players).length) >= 2 &&
+          Number(Object.keys(players).length) <= Number(maxPlayers) ? (
+            <button
+              className="primary-button bg-green"
+              onClick={() => handleSubmit()}
+            >
+              Démarrer la partie
+            </button>
+          ) : null}
+          <button
+            className="primary-button bg-red"
+            onClick={() => {
+              handleLeaveServer();
+            }}
+          >
+            Quitter la partie
+          </button>
+        </div>
         <p className="id-server">ID du serveur : {serverId}</p>
       </div>
     </div>

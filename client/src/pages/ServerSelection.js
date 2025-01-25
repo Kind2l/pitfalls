@@ -12,7 +12,7 @@ const ServerSelection = () => {
 
   // Récupère la liste des serveurs lors du premier chargement
   useEffect(() => {
-    socket.emit("server:get-list", {}, (response) => {
+    socket.emit("server:get-list", { user }, (response) => {
       if (response.success) {
         setServers(response.data.servers);
       } else {
@@ -24,6 +24,7 @@ const ServerSelection = () => {
   // Met à jour la liste des serveurs en temps réel
   useEffect(() => {
     socket.on("subscription:server-list", (data) => {
+      console.log(data);
       setServers(data.servers);
     });
 
@@ -65,7 +66,7 @@ const ServerSelection = () => {
                   } joueurs`}
                 </span>
                 <button
-                  className="primary-button green"
+                  className="primary-button bg-green"
                   onClick={() => {
                     Object.keys(server.players).length !== server.maxPlayers &&
                       handleServerJoin(server);
@@ -80,7 +81,10 @@ const ServerSelection = () => {
           )}
         </ul>
         <p>
-          Vous pouvez aussi <Link to={"/create-server"}>créer une partie</Link>
+          Vous pouvez aussi{" "}
+          <Link to={"/create-server"} className="color-orange">
+            créer une partie
+          </Link>
           {" !"}
         </p>
         <BackButton />

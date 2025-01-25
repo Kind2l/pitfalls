@@ -1,0 +1,39 @@
+@use "@Styles/utils/variables" as Vars;
+@import "@Styles/utils/mixins";
+
+.game-rules {
+  max-width: 800px;
+  font-family: Arial, sans-serif;
+  padding: 1rem;
+  @include container-rounded;
+  margin-top: 2rem;
+}
+
+.game-rules h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.game-rules h3 {
+  position: relative;
+  color: Vars.$black;
+  margin-top: 20px;
+  cursor: pointer;
+  border: 1px solid Vars.$grey;
+  border-radius: 15px;
+  padding: 0.5rem;
+}
+
+.game-rules .rules-paragraph {
+  max-height: 0vh;
+  overflow: hidden;
+  transition: max-height ease 0.5s;
+
+  h4 {
+    font-weight: 600;
+  }
+
+  &.show {
+    max-height: 100vh;
+  }
+}

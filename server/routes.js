@@ -1,10 +1,11 @@
 const {
   login,
   logout,
-  register,
-  validateToken,
   disconnect,
-} = require("@/controllers/socketController");
+  register,
+  validateConnectToken,
+  validateRequestToken,
+} = require("./controllers/socketController");
 
 const {
   createServer,
@@ -16,34 +17,85 @@ const {
   initServer,
   playerAction,
   removeCard,
-} = require("@/controllers/gameController");
+} = require("./controllers/gameController");
+
+const tokenMiddleware = async (req, requestName) => {
+  const token = req.user ? req.user.token : null;
+  console.log(`Nouvelle requête : ${requestName}`);
+
+  return new Promise((resolve, reject) => {
+    validateRequestToken({ token }, (result) => {
+      if (!result.success) {
+        log(
+          `Erreur de validation de token pour la requête ${requestName}`,
+          result
+        );
+        reject(result);
+      } else {
+        log(`La requête ${requestName} peut poursuivre`);
+        req.user = result.data;
+        resolve(true);
+      }
+    });
+  });
+};
 
 module.exports = (io) => (socket) => {
-  const handleRequest = (handler) => (req, res) => {
-    req.socket = socket;
-    req.io = io;
-    handler(req, res);
-  };
+  const handleRequest =
+    (handler, useTokenMiddleware = false, requestName) =>
+    async (req, res) => {
+      req.socket = socket;
+      req.io = io;
+      log(`Nouvelle requete ${requestName}`);
+      if (useTokenMiddleware) {
+        try {
+          await tokenMiddleware(req, requestName);
+          handler(req, res);
+        } catch (error) {
+          log(`Problème avec le middleware pour la requête ${requestName}`);
+          log(error);
+        }
+      } else {
+        handler(req, res);
+      }
+    };
 
   socket.on("user:login", handleRequest(login));
   socket.on("user:register", handleRequest(register));
-  socket.on("user:validate-token", handleRequest(validateToken));
-  socket.on("user:logout", handleRequest(logout));
+  socket.on("user:validate-token", handleRequest(validateConnectToken));
+  socket.on("user:logout", handleRequest(logout, true, "user:logout"));
 
-  socket.on("server:create", handleRequest(createServer));
-  socket.on("server:add-player", handleRequest(addPlayer));
-  socket.on("server:get-list", handleRequest(serverList));
-  socket.on("server:join", handleRequest(joinServer));
-  socket.on("server:leave-server", handleRequest(leaveServer));
-  socket.on("server:find", handleRequest(findServer));
-  socket.on("server:initalization", handleRequest(initServer));
+  socket.on(
+    "server:create",
+    handleRequest(createServer, true, "server:create")
+  );
+  socket.on(
+    "server:add-player",
+    handleRequest(addPlayer, true, "server:add-player")
+  );
+  socket.on(
+    "server:get-list",
+    handleRequest(serverList, true, "server:get-list")
+  );
+  socket.on("server:join", handleRequest(joinServer, true, "server:join"));
+  socket.on("server:leave", handleRequest(leaveServer, true, "server:leave"));
+  socket.on("server:find", handleRequest(findServer, true, "server:find"));
+  socket.on(
+    "server:initalization",
+    handleRequest(initServer, true, "server:initalization")
+  );
 
-  socket.on("game:player-action", handleRequest(playerAction));
-  socket.on("game:player-remove-card", handleRequest(removeCard));
+  socket.on(
+    "game:player-action",
+    handleRequest(playerAction, true, "game:player-action")
+  );
+  socket.on(
+    "game:player-remove-card",
+    handleRequest(removeCard, true, "game:player-remove-card")
+  );
+
   socket.on("disconnect", () => {
-    disconnect({ socket_id: socket.id }, (res) => {
-      console.log(res);
-    });
-    console.log(`${socket.id} is disconnected`);
+    disconnect({ socket, io }, (res) => {});
+    log(`${socket.id} is disconnected`);
   });
 };

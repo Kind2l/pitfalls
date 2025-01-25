@@ -7,11 +7,11 @@ import { useParams } from "react-router-dom";
 
 const GameBoard = () => {
   const { serverId } = useParams();
-  const { socket } = useAuth();
+  const { socket, user } = useAuth();
   const [gameIsStarted, setGameIsStarted] = useState(false);
 
   useEffect(() => {
-    socket.emit("server:find", { server_id: serverId }, (response) => {
+    socket.emit("server:find", { user, server_id: serverId }, (response) => {
       if (!response.success) {
         console.error(response);
       } else {
@@ -23,7 +23,9 @@ const GameBoard = () => {
 
   useEffect(() => {
     socket.on("server:update", (data) => {
-      setGameIsStarted(data.start);
+      if (data) {
+        data.start && setGameIsStarted(data.start);
+      }
     });
   }, [socket]);
 

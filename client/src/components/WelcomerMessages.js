@@ -6,25 +6,25 @@ function WelcomerMessages() {
   const heure = new Date().getHours();
   const phrases = {
     night: [
-      `On joue tard le soir, ${user.username} ?`,
-      `Encore en forme à cette heure, ${user.username} ?`,
-      `Les meilleurs joueurs sont nocturnes, n'est-ce pas ${user.username} ?`,
-      `On enchaîne les parties nocturnes, ${user.username} !`,
-      `Amusez-vous bien, ${user.username} !`,
+      `Les vrais joueurs sont encore là, pas vrai ${user.username} ?`,
+      `Tard dans la nuit, mais toujours prêt, ${user.username} ?`,
+      `Une session nocturne pour briller, ${user.username} !`,
+      `C'est à cette heure que les légendes se forment, ${user.username} !`,
+      `Pas de repos pour les champions comme vous, ${user.username} !`,
     ],
     day: [
-      `Bonjour ${user.username}, prêt pour une partie ?`,
-      `Amusez-vous bien, ${user.username} !`,
-      `Bonne journée, ${user.username} !`,
-      `Une petite partie, ${user.username} ?`,
-      `Bonne chance pour la prochaine partie, ${user.username} !`,
+      `Un bon moment pour jouer, qu'en dites-vous ${user.username} ?`,
+      `Du soleil et des victoires, ${user.username} !`,
+      `C'est une belle journée pour une partie, ${user.username} !`,
+      `Des parties et des sourires, bonne chance ${user.username} !`,
+      `On commence la journée en force, ${user.username} !`,
     ],
     evening: [
-      `Bonsoir ${user.username}, prêt à gagner ?`,
-      `Rien de tel qu'une partie pour finir la journée, ${user.username} !`,
-      `Une partie du soir pour se détendre, ${user.username} ?`,
-      `On termine la journée en beauté, ${user.username} ?`,
-      `Bonne soirée ${user.username} !`,
+      `Prêt à faire des merveilles ce soir, ${user.username} ?`,
+      `Le soir, c'est l'heure des pros, vous en êtes ${user.username} !`,
+      `Relax et focus pour la partie du soir, ${user.username} !`,
+      `La soirée ne fait que commencer, ${user.username} !`,
+      `Finissez la journée en beauté, bonne chance ${user.username} !`,
     ],
   };
 

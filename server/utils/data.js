@@ -1,127 +1,413 @@
 let users = {};
 let servers = {};
 
+/**
+ * Ajoute un utilisateur à la liste des utilisateurs connectés.
+ *
+ * @param {object} params - Les paramètres de l'utilisateur à ajouter.
+ * @param {string} params.username - Le nom d'utilisateur.
+ * @param {number} params.id - L'ID unique de l'utilisateur.
+ * @param {string} params.socket_id - Le Socket ID de l'utilisateur.
+ * @returns {boolean} - Retourne `true` si l'utilisateur a été ajouté avec succès, sinon `false`.
+ *
+ */
 const addUser = ({ username, id, socket_id }) => {
-  if (username && id !== undefined && id !== null && socket_id) {
-    users[username] = {
-      username: username,
-      id: Number(id),
-      socket_id: socket_id,
-      current_server: null,
-      removalTimer: false,
-    };
-    return true;
-  } else {
+  // Vérifie si tous les paramètres requis sont fournis et valides
+  if (!username || id === undefined || id === null || !socket_id) {
+    console.log("Échec de l'ajout de l'utilisateur : paramètres invalides", {
+      username,
+      id,
+      socket_id,
+    });
     return false;
   }
+
+  // Ajoute l'utilisateur à la liste
+  users[username] = {
+    username,
+    id: Number(id),
+    socket_id,
+    current_server: null, // L'utilisateur n'est connecté à aucun serveur par défaut
+    removalTimer: false, // Indique si un compte à rebours de suppression est actif
+  };
+
+  console.log(`Utilisateur ${username} ajouté avec succès`);
+  return true;
 };
 
 const updateUser = ({ username, update }) => {
-  let user = findUser({ username: username });
-
-  if (user) {
-    if (update.socket_id) {
-      users[username].socket_id = update.socket_id;
-    }
-    if (update.current_server) {
-      users[username].current_server = update.current_server;
-    }
-    return true;
-  } else {
+  let user = findUserByUsername(username);
+  if (!user) {
     return false;
   }
+  if (update.socket_id) {
+    users[username].socket_id = update.socket_id;
+  }
+  if (update.current_server) {
+    users[username].current_server = update.current_server;
+  }
+  return true;
 };
 
-const removeUser = ({ username }) => {
-  let user = findUser({ username });
+/**
+ * Supprime un utilisateur par son nom d'utilisateur (username).
+ * @param {object} param - L'objet contenant le nom d'utilisateur.
+ * @param {string} param.username - Le nom d'utilisateur à supprimer.
+ * @returns {boolean} Retourne `true` si l'utilisateur a été supprimé, sinon `false`.
+ */
+const removeUserByUsername = (username) => {
+  let user = findUserByUsername(username);
   if (user) {
     if (user.current_server) {
-      removeUserFromServer({ username: username });
+      removeUserFromServer(username);
     }
     delete users[username];
-    console.log(`suppression du joueur ${username} `);
+    console.log(`Suppression du joueur ${username}`);
     return true;
   }
+  console.log("État des utilisateurs:", users);
+  console.log("État des serveurs:", servers);
   return false;
 };
 
-const findUser = ({ username, id, socket_id }) => {
-  if (username) {
-    return users[username] || null;
-  }
+/**
+ * Supprime un utilisateur par son SocketId.
+ * @param {object} param - L'objet contenant le SocketId de l'utilisateur.
+ * @param {string} param.socketId - Le SocketId de l'utilisateur à supprimer.
+ * @returns {boolean} Retourne `true` si l'utilisateur a été supprimé, sinon `false`.
+ *
+ */
+const removeUserBySocketId = (socketId) => {
+  // Trouver l'utilisateur par son socketId
+  const user = Object.values(users).find((u) => u.socketId === socketId);
 
-  if (id) {
-    let user = Object.values(users).find((user) => user.id === id);
-    if (user) {
-      return user;
+  if (user) {
+    if (user.current_server) {
+      removeUserFromServer({ username: user.username });
     }
+    delete users[user.username];
+    console.log(`Suppression du joueur avec SocketId ${socketId}`);
+    return true;
   }
-
-  if (socket_id) {
-    let user = Object.values(users).find(
-      (user) => user.socket_id === socket_id
-    );
-    if (user) {
-      return user;
-    }
-  }
-
-  return null;
+  console.log("État des utilisateurs:", users);
+  console.log("État des serveurs:", servers);
+  return false;
 };
 
-const setUserTimer = (data) => {
-  let username = data.username;
-  let activate = data.activate;
+/**
+ * Recherche un utilisateur dans la liste des utilisateurs par son nom d'utilisateur (username).
+ *
+ * @param {string} username - Le nom d'utilisateur à rechercher.
+ * @returns {object|null} - L'utilisateur correspondant s'il est trouvé, sinon `null`.
+ *
+ */
+const findUserByUsername = (username) => {
+  if (!username) {
+    return null;
+  }
+  return users[username] || null;
+};
 
-  if (!users[username]) {
+/**
+ * Recherche un utilisateur dans la liste des utilisateurs par son identifiant de socket (socket_id).
+ *
+ * @param {string} socket_id - L'identifiant de socket à rechercher.
+ * @returns {object|null} - L'utilisateur correspondant s'il est trouvé, sinon `null`.
+ *
+ */
+const findUserBySocketId = (socket_id) => {
+  if (!socket_id) {
+    return null;
+  }
+  return (
+    Object.values(users).find((user) => user.socket_id === socket_id) || null
+  );
+};
+
+// const setUserTimer = (data) => {
+//   let username = data.username;
+//   let activate = data.activate;
+
+//   if (!users[username]) {
+//     return null;
+//   }
+
+//   if (activate) {
+//     users[username].removalTimer = setTimeout(() => {
+//       let server_id = users[username].current_server;
+//       removeUser({ username: username });
+//     }, 10000); // 10 secondes
+//   } else {
+//     if (users[username].removalTimer) {
+//       clearTimeout(users[username].removalTimer);
+//       users[username].removalTimer = null;
+//     }
+//   }
+
+// };
+
+/**
+ * Trouve l'ID du serveur auquel un utilisateur est connecté en utilisant son nom d'utilisateur.
+ *
+ * @param {object} params - Paramètres pour la recherche de l'utilisateur.
+ * @returns {string|null}  - L'ID du serveur auquel l'utilisateur est connecté ou null si l'utilisateur n'est pas connecté à un serveur.
+ *
+ */
+const findUserServerByUsername = (username) => {
+  console.log("findUserServerByUsername: Entrée dans la fonction");
+  console.log(
+    "findUserServerByUsername: Y-a-t'il un nom d'utilisateur ?",
+    username
+  );
+  if (!username) {
+    return false;
+  }
+  let user = users[username];
+  console.log("findUserServerByUsername: Y-a-t'il un utilisateur ?", user);
+
+  return user ? user.current_server : null;
+};
+
+/**
+ * Supprime un utilisateur d'un serveur en utilisant son nom d'utilisateur.
+ *
+ * @param {string} username - Le nom d'utilisateur à supprimer du serveur.
+ * @returns {boolean} Retourne `true` si l'utilisateur a été supprimé avec succès, sinon `false`.
+ *
+ */
+const removeUserFromServer = (username) => {
+  console.log("removeUserFromServer: Entrée dans la fonction");
+  console.log(
+    "removeUserFromServer: Y-a-t'il un nom d'utilisateur ?",
+    username
+  );
+  if (!username) {
+    return false;
+  }
+
+  // Récupère l'ID du serveur auquel l'utilisateur appartient
+  console.log(
+    "removeUserFromServer: Recherche de l'ID serveur de l'utilisateur"
+  );
+  const serverId = findUserServerByUsername(username);
+  console.log(serverId);
+  // Vérifie si un serveur est associé à cet utilisateur
+  if (!serverId) {
+    return false;
+  }
+
+  console.log("removeUserFromServer: Vérification de la présence du serveur");
+  if (!servers[serverId]) {
+    return false;
+  }
+  // Récupère la liste des joueurs sur le serveur
+  // const serverPlayers = getUsersFromServerByServerId(serverId);
+  console.log(
+    "removeUserFromServer: Vérification de la présence de joueurs dans le serveur"
+  );
+  if (!servers[serverId].players) {
+    return false;
+  }
+  console.log("removeUserFromServer: Vérification de la présence du joueur");
+  if (!servers[serverId].players[username]) {
+    return false;
+  }
+  console.log("removeUserFromServer: Suppression du joueur dans le serveur");
+  delete servers[serverId].players[username];
+  console.log("removeUserFromServer: Vérification que le joueur soit l'auteur");
+  let playerIsOwner = checkIfPlayerIsOwner(username);
+  console.log(playerIsOwner);
+  playerIsOwner && setNewOwner(serverId);
+  console.log("removeUserFromServer: Nettoyage serveur si inactif");
+  cleanupInactiveServer(serverId);
+
+  // Parcourt les joueurs pour trouver et supprimer l'utilisateur
+  // for (const playerId in serverPlayers) {
+  //   if (serverPlayers[playerId].username === username) {
+  //     delete serverPlayers[playerId];
+  //     log(`${username} a été supprimé du serveur ${serverId}`);
+
+  //     users[username].current_server = null;
+  //     return true;
+  //   }
+  // }
+  return true;
+};
+
+/**
+ * Supprime un utilisateur d'un serveur en utilisant son nom d'utilisateur.
+ *
+ * @param {string} username - Le nom d'utilisateur à supprimer du serveur.
+ * @returns {boolean} Retourne `true` si l'utilisateur a été supprimé avec succès, sinon `false`.
+ *
+ */
+const getUsersFromServerByServerId = (serverId) => {
+  if (!serverId) {
     return null;
   }
 
-  if (activate) {
-    users[username].removalTimer = setTimeout(() => {
-      let server_id = users[username].current_server;
-      removeUser({ username: username });
-    }, 10000); // 10 secondes
+  if (servers[serverId]) {
+    return servers[serverId].players || null;
   } else {
-    if (users[username].removalTimer) {
-      clearTimeout(users[username].removalTimer);
-      users[username].removalTimer = null;
-    } else {
-    }
+    console.log(`Serveur ${serverId} introuvable`);
+    return false;
   }
 };
 
-const findServerOfUser = ({ username }) => {
-  let user = users[username];
-  if (user) {
-    if (user.current_server) {
-      return user.current_server;
-    } else {
-      return null;
+/**
+ * Retourne une version filtrée des serveurs sans inclure les cartes des joueurs ni les cartes restantes.
+ *
+ * @param {object} servers - Liste des serveurs (clés : server_id, valeurs : GameModel).
+ * @returns {object} - Version des serveurs avec les informations essentielles uniquement.
+ */
+const getFilteredServers = () => {
+  // Création d'une copie filtrée des serveurs
+  const filteredServers = {};
+
+  for (const [serverId, server] of Object.entries(servers)) {
+    filteredServers[serverId] = {
+      id: server.id,
+      name: server.name,
+      author: server.author,
+      players: {},
+      maxPlayers: server.maxPlayers,
+      currentPlayer: server.currentPlayer,
+      start: server.start,
+    };
+
+    // Filtrage des joueurs pour exclure les cartes
+    for (const [username, player] of Object.entries(server.players)) {
+      filteredServers[serverId].players[username] = {
+        id: player.id,
+        username: player.username,
+        score: player.score,
+        bonus: player.bonus,
+        states: player.states,
+      };
     }
   }
-  return null;
+
+  return filteredServers;
 };
 
-const removeUserFromServer = ({ username }) => {
-  let server_id = findServerOfUser({ username: username });
-  if (!server_id) {
+/**
+ * Supprime le serveur si il n'y a plus de joueurs et que la partie n'a pas démarré.
+ *
+ * @param {string} serverId - L'ID du serveur à vérifier.
+ * @returns {void}
+ */
+const cleanupInactiveServer = (serverId) => {
+  const server = servers[serverId];
+
+  if (!server) {
+    console.log(`Aucun serveur trouvé avec l'ID : ${serverId}`);
+    return null;
+  }
+
+  // Vérifie si le serveur est vide et que la partie n'a pas commencé
+  if (Object.keys(server.players).length === 0 && server.start === false) {
+    delete servers[serverId];
+    console.log(`Serveur ${serverId} supprimé car il est vide et non démarré.`);
+    return true;
+  }
+  console.log(`Encore des joueurs dans le serveur ${serverId}`);
+
+  return false;
+};
+
+/**
+ * Vérifie si un joueur est le joueur actuel de la partie
+ *
+ * @param {string} username - Le nom d'utilisateur à vérifier.
+ * @returns {boolean} - Retourne `true` si le joueur est le propriétaire, sinon `false`.
+ */
+const checkIfPlayerIsCurrentPlayer = (username) => {
+  if (!username) {
     return false;
   }
 
-  const serverPlayers = servers[server_id].players;
+  const serverId = findUserServerByUsername(username);
 
-  for (const playerId in serverPlayers) {
-    if (serverPlayers[playerId].username === username) {
-      delete serverPlayers[playerId];
-      return true;
-    }
+  if (!serverId) {
+    return false;
   }
 
-  console.error(
-    `L'utilisateur ${username} n'a pas été trouvé sur le serveur ${server_id}`
+  const server = servers[serverId];
+  if (!server) {
+    return false;
+  }
+  console.log("positii");
+  console.log(server.players[username].position);
+
+  return server.currentPlayer === server.players[username].position;
+};
+
+/**
+ * Vérifie si un joueur est le propriétaire du serveur dans lequel il se trouve.
+ *
+ * @param {string} username - Le nom d'utilisateur à vérifier.
+ * @returns {boolean} - Retourne `true` si le joueur est le propriétaire, sinon `false`.
+ */
+const checkIfPlayerIsOwner = (username) => {
+  const user = findUserByUsername(username);
+
+  if (!user) {
+    console.log(`Utilisateur ${username} non trouvé`);
+    return false;
+  }
+
+  const serverId = user.current_server;
+
+  if (!serverId) {
+    console.log(`L'utilisateur ${username} n'est connecté à aucun serveur`);
+    return false;
+  }
+
+  const server = servers[serverId];
+
+  if (!server) {
+    console.log(`Aucun serveur trouvé avec l'ID : ${serverId}`);
+    return false;
+  }
+
+  return server.author === username;
+};
+
+/**
+ * Définit un nouveau propriétaire parmi les joueurs qui sont dans le serveur.
+ *
+ * @param {string} serverId - L'ID du serveur.
+ * @returns {boolean} - Retourne `true` si le nouveau propriétaire a été défini, sinon `false`.
+ */
+const setNewOwner = (serverId) => {
+  const server = servers[serverId];
+
+  if (!server) {
+    console.log(`Aucun serveur trouvé avec l'ID : ${serverId}`);
+    return false;
+  }
+
+  const currentOwner = server.author;
+  const remainingPlayers = Object.values(server.players).filter(
+    (player) => player.username !== currentOwner
   );
-  return false;
+
+  if (remainingPlayers.length === 0) {
+    console.log(
+      `Aucun joueur restant pour devenir le nouveau propriétaire du serveur ${serverId}`
+    );
+    return false;
+  }
+
+  // Sélectionner un nouveau propriétaire au hasard parmi les joueurs restants
+  const randomIndex = Math.floor(Math.random() * remainingPlayers.length);
+  const newOwner = remainingPlayers[randomIndex];
+  server.author = newOwner.username;
+
+  console.log(
+    `Nouveau propriétaire du serveur ${serverId} : ${newOwner.username}`
+  );
+  return true;
 };
 
 module.exports = {
@@ -129,9 +415,16 @@ module.exports = {
   servers,
   addUser,
   updateUser,
-  removeUser,
-  findUser,
-  setUserTimer,
-  findServerOfUser,
+  removeUserBySocketId,
+  removeUserByUsername,
+  findUserByUsername,
+  findUserBySocketId,
+  findUserServerByUsername,
   removeUserFromServer,
+  getUsersFromServerByServerId,
+  getFilteredServers,
+  cleanupInactiveServer,
+  checkIfPlayerIsOwner,
+  checkIfPlayerIsCurrentPlayer,
+  setNewOwner,
 };

@@ -1,4 +1,4 @@
-import logo from "@Images/logo.png";
+import logo from "@Images/logo.svg";
 import "@Styles/Header.scss";
 import React from "react";
 

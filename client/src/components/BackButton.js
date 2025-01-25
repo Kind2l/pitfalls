@@ -12,7 +12,10 @@ const BackButton = () => {
   };
 
   return (
-    <button onClick={handleBack} className="back-button primary-button black">
+    <button
+      onClick={handleBack}
+      className="back-button primary-button bg-black"
+    >
       Retour
     </button>
   );

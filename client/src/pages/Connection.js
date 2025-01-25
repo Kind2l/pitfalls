@@ -5,6 +5,7 @@ import Register from "@Components/Register";
 import "@Styles/Connection.scss";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import GameRules from "../components/GameRules";
 
 const Connection = () => {
   const [choice, setChoice] = useState(true);
@@ -40,8 +41,10 @@ const Connection = () => {
         </div>
 
         <div className="connection-content">
-          {choice === true ? <Login /> : <Register />}
+          {choice === true ? <Login /> : <Register setChoice={setChoice} />}
         </div>
+
+        <GameRules />
       </main>
     </>
   );

@@ -1,12 +1,12 @@
-require("module-alias/register");
+require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
 const socketIo = require("socket.io");
-const routes = require("@/routes");
+const routes = require("./routes");
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -14,7 +14,8 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://pitfalls.kindll.fr/",
+    methods: ["GET", "POST"],
   },
 });
 
