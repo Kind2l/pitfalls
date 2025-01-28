@@ -2,11 +2,8 @@
 @import "@Styles/utils/mixins";
 
 .game-rules {
-  max-width: 800px;
-  font-family: Arial, sans-serif;
-  padding: 1rem;
-  @include container-rounded;
-  margin-top: 2rem;
+  padding: 2rem 0;
+  width: 100%;
 }
 
 .game-rules h2 {
@@ -14,26 +11,47 @@
   text-align: center;
 }
 
-.game-rules h3 {
-  position: relative;
-  color: Vars.$black;
-  margin-top: 20px;
-  cursor: pointer;
-  border: 1px solid Vars.$grey;
-  border-radius: 15px;
-  padding: 0.5rem;
+.game-rules .show-rules {
+  display: block;
+  margin: auto;
 }
 
 .game-rules .rules-paragraph {
+  margin-top: 1rem;
   max-height: 0vh;
   overflow: hidden;
-  transition: max-height ease 0.5s;
+  padding: 0rem 1rem;
+  background-color: Vars.$white;
+  border-radius: 27px;
+  color: Vars.$white;
+  transition: max-height ease 0.5s, padding ease 0.5s,
+    background-color step-end 0.5s;
+
+  p,
+  h3 {
+    color: Vars.$white;
+    transition: color ease 0.5s;
+  }
+
+  h3 {
+    // text-decoration-line: underline;
+    text-align: center;
+  }
 
   h4 {
-    font-weight: 600;
+    font-size: 1.1rem;
   }
 
   &.show {
-    max-height: 100vh;
+    p {
+      color: Vars.$black;
+    }
+    h3 {
+      color: Vars.$blue;
+    }
+    padding: 2rem 1rem;
+    max-height: 200vh;
+    box-shadow: 0px -1px 15px -5px Vars.$black_transparent;
+    transition: padding ease-in-out 0.5s;
   }
 }

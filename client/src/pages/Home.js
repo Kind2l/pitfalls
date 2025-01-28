@@ -1,17 +1,34 @@
 import { useAuth } from "@Auth/SocketContext";
+import { useSound } from "@Auth/SoundContext";
 import Header from "@Components/Header";
-import { useSound } from "@Components/SoundContext";
 import WelcomerMessages from "@Components/WelcomerMessages";
-import "@Styles/Home.scss";
+import "@Styles/Home/Home.scss";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
-  const { playBackgroundMusic, playEffect } = useSound(); // Déstructuration de playEffect
   const { logout } = useAuth();
+  const {
+    playMusic,
+    playEffect,
+    currentMusicName,
+    // stopMusic,
+    // changeEffectVolume,
+  } = useSound();
 
-  // Fonction pour jouer l'effet "open" au clic
+  useEffect(() => {
+    console.log(currentMusicName);
+    if (currentMusicName) {
+      if (String(currentMusicName) === "bghome") {
+        return;
+      }
+    }
+    playMusic("bghome");
+  }, []);
+
+  // Fonction pour jouer un effet sonore
   const handleLinkClick = (effectName) => {
-    playEffect(effectName); // Appelle l'effet "open" (par exemple 'open' comme effet sonore)
+    playEffect(effectName);
   };
 
   return (
@@ -19,13 +36,16 @@ const Home = () => {
       <Header />
       <main className="home">
         <div className="home-content">
-          <p className="welcomer">{<WelcomerMessages />}</p>
+          <p className="welcomer">
+            <WelcomerMessages />
+          </p>
 
           <div className="links">
             <Link
               className="primary-button bg-green"
               to="/server-list"
               onClick={() => handleLinkClick("open")}
+              aria-label="Rejoindre une partie"
             >
               Rejoindre une partie
             </Link>
@@ -33,6 +53,7 @@ const Home = () => {
               className="primary-button bg-blue"
               to="/create-server"
               onClick={() => handleLinkClick("open")}
+              aria-label="Créer une partie"
             >
               Créer une partie
             </Link>
@@ -40,6 +61,7 @@ const Home = () => {
               className="primary-button bg-orange"
               to="/settings"
               onClick={() => handleLinkClick("open")}
+              aria-label="Options"
             >
               Options
             </Link>
@@ -47,9 +69,10 @@ const Home = () => {
               className="primary-button bg-red"
               to="/"
               onClick={() => {
-                handleLinkClick("open"); // Jouer l'effet "open"
+                handleLinkClick("close");
                 logout();
               }}
+              aria-label="Déconnexion"
             >
               Déconnexion
             </Link>

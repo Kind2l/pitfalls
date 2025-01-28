@@ -1,4 +1,5 @@
 import { useAuth } from "@Auth/SocketContext";
+import Orbit from "@Components/Orbit.js";
 import "@Styles/components/Board.scss";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -465,7 +466,7 @@ const Board = () => {
       </header>
       <section className="game-area">
         <CardStack numberOfCards={deckCount} />
-        {/* {players && <Orbit players={players} />} */}
+        {players && <Orbit players={players} />}
       </section>
       <section className="player-area">
         <div className="player-area__hand">

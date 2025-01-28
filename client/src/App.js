@@ -1,6 +1,8 @@
+import { LoaderProvider } from "@Auth/LoaderContext";
+import { NotificationProvider } from "@Auth/NotificationContext";
 import { SocketProvider } from "@Auth/SocketContext";
+import { SoundProvider } from "@Auth/SoundContext";
 import ProtectedRoute from "@Components/ProtectedRoute";
-import { SoundProvider } from "@Components/SoundContext";
 import Connection from "@Pages/Connection";
 import CreateServer from "@Pages/CreateServer";
 import Error from "@Pages/Error";
@@ -48,13 +50,17 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <SocketProvider>
-      <SoundProvider>
-        <div className="App">
-          <RouterProvider router={router} />
-        </div>
-      </SoundProvider>
-    </SocketProvider>
+    <LoaderProvider>
+      <SocketProvider>
+        <NotificationProvider>
+          <SoundProvider>
+            <div className="App">
+              <RouterProvider router={router} />
+            </div>
+          </SoundProvider>
+        </NotificationProvider>
+      </SocketProvider>
+    </LoaderProvider>
   );
 }
 

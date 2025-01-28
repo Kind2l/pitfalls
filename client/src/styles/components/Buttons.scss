@@ -9,10 +9,10 @@
   padding: 15px 20px;
   text-decoration: none;
   width: fit-content;
+  height: fit-content;
   margin: auto;
-  font-family: "Recursive", sans-serif;
-  font-variation-settings: "MONO" 0, "CASL" 0, "wght" 600, "slnt" 0, "CRSV" 0.5;
   transition: all 0.2s ease-in-out;
+  flex-wrap: nowrap;
 
   &:hover {
     filter: brightness(1.2);
@@ -22,9 +22,5 @@
   &:active {
     position: relative;
     top: 1px;
-  }
-
-  &.back-button {
-    margin-right: 0;
   }
 }

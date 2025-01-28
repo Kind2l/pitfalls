@@ -1,56 +1,73 @@
+import { useNotification } from "@Auth/NotificationContext.js";
+import { useAuth } from "@Auth/SocketContext";
+import { useSound } from "@Auth/SoundContext";
+import "@Styles/Connection/Login.scss";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/SocketContext";
+import { useLoader } from "../auth/LoaderContext";
 
 const Login = () => {
+  const { socket, login } = useAuth();
+  const { hideLoader, showLoader } = useLoader();
+  const { addNotification } = useNotification();
+
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-  const { socket, login } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const { playEffect } = useSound();
 
-  // Regex patterns
-  const usernameRegex = /^[a-zA-Z0-9_-]{4,19}$/;
+  const usernameRegex =
+    /^(?!.*[-_]$)(?![-_])[a-zA-Z0-9àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ\-_.]{4,20}$/;
+  const passwordRegex = /^[a-zA-Z0-9$/!?:#+]{6,24}$/;
 
   // Validation functions
   const validateUsername = (username) => {
     if (username.length < 4) {
-      return "Nom d'utilisateur trop court. Il doit faire au moins 4 caractères.";
+      return "Le nom d'utilisateur doit contenir 4 caractères minimum.";
     }
-    if (username.length > 13) {
-      return "Nom d'utilisateur trop long. Il doit faire au plus 13 caractères.";
+    if (username.length > 20) {
+      return "Le nom d'utilisateur doit contenir 20 caractères maximum.";
     }
     if (!usernameRegex.test(username)) {
       return "Caractères spéciaux autorisés pour le nom d'utilisateur: - _";
     }
-    return "";
+    return false;
   };
 
   const validatePassword = (password) => {
-    if (password.length < 8) {
-      return "Le mot de passe doit contenir 8 caractères";
+    if (password.length < 6) {
+      return "Le mot de passe doit contenir 6 caractères minimum.";
     }
-    if (password.length > 20) {
-      return "Le mot de passe doit contenir moins de 20 caractères";
+    if (password.length > 24) {
+      return "Le mot de passe doit contenir  24 caractères maximum.";
     }
     if (!/[a-z]/.test(password)) {
-      return "Mot de passe doit contenir au moins une minuscule.";
+      return "Le mot de passe doit contenir au moins une minuscule.";
     }
     if (!/[A-Z]/.test(password)) {
-      return "Mot de passe doit contenir au moins une majuscule.";
+      return "Le mot de passe doit contenir au moins une majuscule.";
     }
     if (!/\d/.test(password)) {
-      return "Mot de passe doit contenir au moins un chiffre.";
+      return "Le mot de passe doit contenir au moins un chiffre.";
     }
-    if (/[^a-zA-Z0-9$/\!?:#+]/.test(password)) {
+    if (!passwordRegex.test(password)) {
       return "Caractères spéciaux autorisés pour le mot de passe :  $ / ! ? : # +";
     }
     return "";
   };
 
+  const handlePasswordView = (e) => {
+    setShowPassword(!showPassword);
+    e.preventDefault();
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+
     const trimmedUsername = username.trim();
     const trimmedPassword = password.trim();
     const usernameError = validateUsername(trimmedUsername);
@@ -67,6 +84,7 @@ const Login = () => {
     }
 
     if (username && password) {
+      showLoader();
       socket.emit(
         "user:login",
         {
@@ -74,39 +92,67 @@ const Login = () => {
           password: trimmedPassword,
         },
         (response) => {
+          hideLoader();
           if (!response.success) {
             setError(response.message);
           } else {
             login(response.data);
+            addNotification("Connexion réussie.");
+
             navigate("/");
           }
         }
       );
     } else {
-      setError("Complétez les champs ci-dessus");
+      setError("Veuillez compléter les informations ci-dessus.");
     }
   };
 
   return (
     <>
-      <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          placeholder="Nom d'utilisateur"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <div className="error">{error}</div>
-        <button className="submit primary-button bg-blue" type="submit">
-          Connexion
-        </button>
-      </form>
+      <div className="login">
+        <form onSubmit={handleLogin}>
+          <div className="form-input">
+            <input
+              type="text"
+              placeholder="Nom d'utilisateur"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              minLength={4}
+              maxLength={20}
+            />
+          </div>
+          <div className="form-input">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              minLength={6}
+              maxLength={24}
+            />
+            {password && (
+              <button className="password-eye" onClick={handlePasswordView}>
+                <img
+                  src={`./images/${
+                    showPassword ? "open-eye" : "close-eye"
+                  }.svg`}
+                  alt="Afficher ou non le mot de passe"
+                />
+              </button>
+            )}
+          </div>
+
+          <div className="form-error">{error}</div>
+          <button
+            className="submit primary-button bg-blue"
+            type="submit"
+            onClick={() => playEffect("open")}
+          >
+            Connexion
+          </button>
+        </form>
+      </div>
     </>
   );
 };

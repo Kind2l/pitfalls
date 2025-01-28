@@ -2,7 +2,6 @@
 @use "./utils/fonts" as Fonts;
 @use "./utils/variables" as Vars;
 @use "./components/Buttons.scss" as Button;
-@use "./components/Notifications.scss" as Notifications;
 @import "https://fonts.googleapis.com/css2?family=Recursive:wght@400;500;700&display=swap";
 
 body {
@@ -40,6 +39,9 @@ a {
 }
 
 .color {
+  &-sky {
+    color: Vars.$sky;
+  }
   &-blue {
     color: Vars.$blue;
   }
@@ -58,6 +60,9 @@ a {
 }
 
 .bg {
+  &-sky {
+    background-color: Vars.$sky;
+  }
   &-blue {
     background-color: Vars.$blue;
   }
@@ -78,23 +83,16 @@ a {
   }
 }
 
-#join {
-  ul {
-    list-style: none;
-
-    li {
-      display: flex;
-      justify-content: space-around;
-      padding: 0.5rem 0;
-    }
-  }
+.cherry-font {
+  font-family: "Cherry Bomb One", serif;
+  font-style: normal;
 }
 
-.test {
-  position: absolute; /* Positionnement */
-  top: 20vh;
-  left: 20vw;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white; /* Optionnel, pour un effet visuel */
-  pointer-events: none; /* Permet aux clics de passer à travers */
+.form-error {
+  display: flex;
+  width: 80%;
+  margin: auto;
+  font-size: 0.7rem;
+  color: Vars.$orange;
+  line-height: 0.99rem;
 }

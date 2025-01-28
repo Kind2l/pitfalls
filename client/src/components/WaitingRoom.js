@@ -1,4 +1,6 @@
+import { useNotification } from "@Auth/NotificationContext.js";
 import { useAuth } from "@Auth/SocketContext";
+import Header from "@Components/Header";
 import "@Styles/components/WaitingRoom.scss";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -11,7 +13,10 @@ const WaitingRoom = ({ setGameIsStarted }) => {
   // Utilisation de useState pour les joueurs, le nombre maximum de joueurs et l'auteur
   const [players, setPlayers] = useState([]);
   const [maxPlayers, setMaxPlayers] = useState(0);
-  const [author, setAuthor] = useState(null);
+  const [author, setAuthor] = useState("null");
+
+  const [serverName, setserverName] = useState("");
+  const { addNotification } = useNotification();
 
   useEffect(() => {
     // Rechercher le serveur à l'initialisation du composant
@@ -23,6 +28,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
         setPlayers(response.data.players);
         setMaxPlayers(response.data.maxPlayers);
         setAuthor(response.data.author);
+        setserverName(response.data.name);
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -40,6 +46,24 @@ const WaitingRoom = ({ setGameIsStarted }) => {
         }
       }
     );
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Pitfalls - Invitation à une partie", // Titre de la page
+          text: `Je t'invite à me rejoindre sur le jeu Pitfalls! Ma partie s'appelle "${serverName}" !`,
+          url: "https://pitfalls.kindll.fr",
+        });
+        console.log("Partage réussi");
+      } catch (error) {
+        console.error("Échec du partage", error);
+      }
+    } else {
+      navigator.clipboard.writeText("https://pitfalls.kindll.fr");
+      addNotification("Lien copié dans le presse-papiers !");
+    }
   };
 
   const handleLeaveServer = () => {
@@ -70,43 +94,58 @@ const WaitingRoom = ({ setGameIsStarted }) => {
   }, [socket]);
 
   return (
-    <div className="waiting-room">
-      <div className="waiting-room-content">
-        <h2>Veuillez patienter</h2>
-        <p>En attente du lancement de la partie par l'hôte...</p>
-        <ul>
-          {Object.keys(players).length > 0 ? (
-            Object.values(players).map((player) => (
-              <li key={player.id + player.username}>{player.username}</li>
-            )) // Assurez-vous que chaque player a un id unique
-          ) : (
-            <li>Aucun joueur connecté.</li>
-          )}
-        </ul>
+    <>
+      <Header />
+      <div className="waiting-room">
+        <div className="waiting-room-content">
+          <div className="waiting-room-infos">
+            <h2 className="cherry-font">{serverName}</h2>
+            <p>Hôte : {author}</p>
+            <p>
+              {Object.keys(players)?.length || "0"}/{maxPlayers} joueur(s)
+            </p>
+          </div>
 
-        <div className="waiting-room-content__buttons">
-          {String(author) === String(user.username) &&
-          Number(Object.keys(players).length) >= 2 &&
-          Number(Object.keys(players).length) <= Number(maxPlayers) ? (
+          <ul className="waiting-room-players">
+            {Object.keys(players).length > 0 ? (
+              Object.values(players).map((player) => (
+                <li key={player.id + player.username}>{player.username}</li>
+              )) // Assurez-vous que chaque player a un id unique
+            ) : (
+              <li>Aucun joueur connecté.</li>
+            )}
+          </ul>
+          <p>
+            En attente du lancement de la partie par {author || "l'hôte"}...
+          </p>
+
+          <div className="waiting-room-content__buttons">
+            {String(author) === String(user.username) &&
+            Number(Object.keys(players).length) >= 2 &&
+            Number(Object.keys(players).length) <= Number(maxPlayers) ? (
+              <button
+                className="primary-button bg-green"
+                onClick={() => handleSubmit()}
+              >
+                Démarrer la partie
+              </button>
+            ) : null}
             <button
-              className="primary-button bg-green"
-              onClick={() => handleSubmit()}
+              className="primary-button bg-red"
+              onClick={() => {
+                handleLeaveServer();
+              }}
             >
-              Démarrer la partie
+              Quitter la partie
             </button>
-          ) : null}
-          <button
-            className="primary-button bg-red"
-            onClick={() => {
-              handleLeaveServer();
-            }}
-          >
-            Quitter la partie
+          </div>
+          <p className="id-server">ID du serveur : {serverId}</p>
+          <button className="share-button" onClick={() => handleShare()}>
+            <img src="../images/share.svg" alt="Partager"></img>
           </button>
         </div>
-        <p className="id-server">ID du serveur : {serverId}</p>
       </div>
-    </div>
+    </>
   );
 };
 

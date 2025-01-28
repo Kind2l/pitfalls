@@ -204,7 +204,6 @@ class GameModel {
 
   reset() {
     // Mélange du deck
-    console.log("reset");
     if (this.custom) {
       console.log("reset custom");
       this.deck = generateCards(this.custom);

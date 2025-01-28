@@ -1,0 +1,56 @@
+@use "@Styles/utils/variables.scss" as Vars;
+.register {
+  padding: 2rem 0;
+  form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+
+    .form-input {
+      position: relative;
+      width: 95%;
+      margin: auto;
+      input {
+        all: unset;
+        position: relative;
+        text-align: center;
+        width: 95%;
+        padding: 0.5rem;
+        color: Vars.$black;
+
+        &::placeholder {
+          color: Vars.$grey;
+        }
+
+        &:focus {
+          &::placeholder {
+            color: Vars.$black;
+          }
+        }
+
+        &:active,
+        &:focus,
+        &:focus-visible,
+        &:hover {
+          background-color: Vars.$grey_transparent;
+          border-radius: 15px;
+        }
+      }
+
+      .password-eye {
+        display: block;
+        position: absolute;
+        top: 50%;
+        right: 0.5rem;
+        transform: translateY(-50%);
+        border: none;
+        background: none;
+        img {
+          height: 1.5rem;
+          width: 1.5rem;
+        }
+        filter: opacity(0.5);
+      }
+    }
+  }
+}

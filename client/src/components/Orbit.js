@@ -1,3 +1,4 @@
+import "@Styles/Board/Orbit.scss";
 import React from "react";
 
 const Orbit = ({ players }) => {

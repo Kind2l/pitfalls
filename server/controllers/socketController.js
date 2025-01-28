@@ -674,10 +674,12 @@ exports.disconnect = (req, callback) => {
   }
 
   // Vérifie si l'utilisateur est sur un serveur
-  console.log("disconnect: Est-ce-que l'utilisateur est dans un serveur ?");
+  console.log(
+    `disconnect: L'utilisateur ${
+      user.current_server ? "est dans un serveur" : "n'est pas dans un serveur"
+    }`
+  );
   if (user.current_server) {
-    console.log("disconnect: L'utilisateur est bien dans un serveur");
-
     let serverId = user.current_server;
     req.server_id = serverId;
     // Retire l'utilisateur du serveur
@@ -691,11 +693,11 @@ exports.disconnect = (req, callback) => {
 
     console.log(
       `disconnect: Nombre de joueurs dans le serveur ${serverId}: `,
-      Object.keys(servers[serverId].players).length
+      Object.keys(servers[serverId]?.players).length
     );
 
     console.log("disconnect: Vérification que le serveur est vide");
-    if (Object.keys(servers[serverId].players).length === 0) {
+    if (Object.keys(servers[serverId]?.players).length === 0) {
       let filteredServers = getFilteredServers();
       io.emit("subscription:server-list", { servers: filteredServers });
       console.log(
@@ -704,7 +706,7 @@ exports.disconnect = (req, callback) => {
       delete servers[serverId];
       console.log("disconnect: Suppression du serveur réussie");
     } else if (
-      Object.keys(servers[serverId].players).length === 1 &&
+      Object.keys(servers[serverId]?.players).length === 1 &&
       servers[serverId].start === true &&
       servers[serverId].gameOver === false
     ) {

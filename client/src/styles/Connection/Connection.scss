@@ -1,0 +1,53 @@
+@use "@Styles/utils/variables.scss" as Vars;
+.connection {
+  padding: 2rem 0.3rem;
+
+  .connection-selector {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+
+    input {
+      display: none;
+
+      &:checked + label {
+        box-shadow: none;
+        color: Vars.$black;
+        font-weight: 700;
+
+        &::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          box-shadow: 0px -1px 15px -5px Vars.$black_transparent;
+          z-index: -1;
+          border-radius: 27px 27px 0px 0px;
+        }
+      }
+    }
+
+    label {
+      flex: 1 1;
+      text-align: center;
+      position: relative;
+      padding: 1rem 0;
+      background-color: Vars.$white;
+      border-radius: 27px 27px 0px 0px;
+      box-shadow: inset 0px -1px 15px -5px Vars.$black_transparent;
+      color: Vars.$grey;
+      font-size: 1.2rem;
+      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out,
+        box-shadow 0.2s ease-in-out, padding 0.2s ease-in-out,
+        border-radius 0.2s ease-in-out;
+    }
+  }
+
+  .connection-content {
+    background-color: Vars.$white;
+    box-shadow: 0px -1px 15px -5px Vars.$black_transparent;
+    border-radius: 0 0 27px 27px;
+  }
+}

@@ -3,7 +3,6 @@ import { io } from "socket.io-client";
 
 // Création d'un contexte pour la gestion de la connexion via Socket.io
 const SocketContext = createContext();
-
 // Connexion au serveur Socket.io avec une option pour désactiver la reconnexion automatique
 const socketIo = io("https://pitfalls.onrender.com", {
   reconnection: false,

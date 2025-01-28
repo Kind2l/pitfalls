@@ -1,5 +1,7 @@
 import { useAuth } from "@Auth/SocketContext";
+import { useSound } from "@Auth/SoundContext";
 import BackButton from "@Components/BackButton";
+import Header from "@Components/Header";
 import "@Styles/CreateServer.scss";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -49,6 +51,7 @@ const CreateServer = () => {
 
   const { socket, user } = useAuth();
   const navigate = useNavigate();
+  const { playEffect } = useSound();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -167,262 +170,257 @@ const CreateServer = () => {
   };
 
   return (
-    <div className="create-server">
-      <div className="create-server-content">
-        <form onSubmit={handleSubmit}>
+    <>
+      <Header />
+      <main className="create-server">
+        <div className="create-server-container">
           <h2>Créer une partie</h2>
-          <section>
+          <div className="create-server-title">
             <input
               type="text"
-              placeholder="Nom du serveur"
+              placeholder="Nom de la partie"
               id="server-name"
               value={serverName}
               onChange={(e) => setServerName(e.target.value)}
-              minLength={4}
+              minLength={2}
               maxLength={30}
               required
             />
-          </section>
-
-          <section className="server-type-selection">
-            <h3 className="server-type-selection__title">Type de serveur</h3>
-            <div className="server-type-selection__content">
-              <div>
-                <input
-                  id="standard-server"
-                  type="radio"
-                  name="server-type"
-                  value="standard"
-                  checked={!isCustomServer}
-                  onChange={() => setIsCustomServer(false)}
-                />
-                <label
-                  htmlFor="standard-server"
-                  className="primary-button bg-green"
-                >
-                  Standard
-                </label>
-              </div>
-              <div>
-                <input
-                  id="custom-server"
-                  type="radio"
-                  name="server-type"
-                  value="custom"
-                  checked={isCustomServer}
-                  onChange={() => setIsCustomServer(true)}
-                />
-                <label
-                  htmlFor="custom-server"
-                  className="primary-button bg-orange"
-                >
-                  Personnalisé
-                </label>
-              </div>
-            </div>
-          </section>
-
-          {isCustomServer && (
-            <div>
-              <h3>Définissez le nombre de cartes</h3>
-
-              {/* Cartes d'attaque */}
-              <div className="card-group attack">
-                <h4>Cartes d'attaque</h4>
-                <div className="card-counts">
-                  {[
-                    "feurouge",
-                    "limitedevitesse",
-                    "pannedessence",
-                    "crevaison",
-                    "accident",
-                  ].map((key) => (
-                    <div key={key} className="card-counts__element">
-                      <div className="card-counts__title">
-                        {cardCounts[key].name}
-                      </div>
-                      <div className="card-counts__buttons">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setCardCounts((prevCounts) => ({
-                              ...prevCounts,
-                              [key]: {
-                                ...prevCounts[key],
-                                count: Math.max(
-                                  prevCounts[key].count - 1,
-                                  prevCounts[key].minCount
-                                ),
-                              },
-                            }))
-                          }
-                        >
-                          -
-                        </button>
-                        <span>{cardCounts[key].count}</span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setCardCounts((prevCounts) => ({
-                              ...prevCounts,
-                              [key]: {
-                                ...prevCounts[key],
-                                count: Math.min(
-                                  prevCounts[key].count + 1,
-                                  prevCounts[key].maxCount
-                                ),
-                              },
-                            }))
-                          }
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Cartes de parade */}
-              <div className="card-group parade">
-                <h4>Cartes de parade</h4>
-                <div className="card-counts">
-                  {[
-                    "feuvert",
-                    "findelimitedevitesse",
-                    "essence",
-                    "rouedesecours",
-                    "reparation",
-                  ].map((key) => (
-                    <div key={key} className="card-counts__element">
-                      <div className="card-counts__title">
-                        {cardCounts[key].name}
-                      </div>
-                      <div className="card-counts__buttons">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setCardCounts((prevCounts) => ({
-                              ...prevCounts,
-                              [key]: {
-                                ...prevCounts[key],
-                                count: Math.max(
-                                  prevCounts[key].count - 1,
-                                  prevCounts[key].minCount
-                                ),
-                              },
-                            }))
-                          }
-                        >
-                          -
-                        </button>
-                        <span>{cardCounts[key].count}</span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setCardCounts((prevCounts) => ({
-                              ...prevCounts,
-                              [key]: {
-                                ...prevCounts[key],
-                                count: Math.min(
-                                  prevCounts[key].count + 1,
-                                  prevCounts[key].maxCount
-                                ),
-                              },
-                            }))
-                          }
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Cartes de distance */}
-              <div className="card-group borne">
-                <h4>Cartes de distance</h4>
-                <div className="card-counts">
-                  {["25", "50", "75", "100", "200"].map((key) => (
-                    <div key={key} className="card-counts__element">
-                      <div className="card-counts__title">
-                        {cardCounts[key].name}
-                      </div>
-                      <div className="card-counts__buttons">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setCardCounts((prevCounts) => ({
-                              ...prevCounts,
-                              [key]: {
-                                ...prevCounts[key],
-                                count: Math.max(
-                                  prevCounts[key].count - 1,
-                                  prevCounts[key].minCount
-                                ),
-                              },
-                            }))
-                          }
-                        >
-                          -
-                        </button>
-                        <span>{cardCounts[key].count}</span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setCardCounts((prevCounts) => ({
-                              ...prevCounts,
-                              [key]: {
-                                ...prevCounts[key],
-                                count: Math.min(
-                                  prevCounts[key].count + 1,
-                                  prevCounts[key].maxCount
-                                ),
-                              },
-                            }))
-                          }
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div>
-            <h3>Nombre de joueurs</h3>
-            <div className="player-selection">
-              {[2, 3, 4].map((playerCount) => (
-                <div key={playerCount + "key"}>
-                  <input
-                    id={playerCount + "players"}
-                    type="radio"
-                    name="max-players"
-                    value={playerCount}
-                    checked={maxPlayers === playerCount}
-                    onChange={handlePlayerCountChange}
-                  />
-                  <label htmlFor={playerCount + "players"} key={playerCount}>
-                    {playerCount}
-                  </label>
-                </div>
-              ))}
-            </div>
           </div>
+          <h3>Type de partie</h3>
+          <div className="server-type-selection">
+            <input
+              id="standard-server"
+              type="radio"
+              name="server-type"
+              value="standard"
+              checked={!isCustomServer}
+              onChange={() => setIsCustomServer(false)}
+            />
+            <label htmlFor="standard-server">Classique</label>
 
-          {errorMessage && <p className="error">{errorMessage}</p>}
+            <input
+              id="custom-server"
+              type="radio"
+              name="server-type"
+              value="custom"
+              checked={isCustomServer}
+              onChange={() => setIsCustomServer(true)}
+            />
+            <label htmlFor="custom-server">Personnalisée</label>
+          </div>
+          <form onSubmit={handleSubmit} className="create-server-content">
+            {isCustomServer && (
+              <div className="create-server-custom">
+                <h3>Définissez le nombre de cartes</h3>
 
-          <button className="primary-button bg-blue" type="submit">
-            Créer Serveur
-          </button>
-        </form>
-        <BackButton />
-      </div>
-    </div>
+                {/* Cartes d'attaque */}
+                <div className="card-group attack">
+                  <h4>Cartes d'attaque</h4>
+                  <div className="card-counts">
+                    {[
+                      "feurouge",
+                      "limitedevitesse",
+                      "pannedessence",
+                      "crevaison",
+                      "accident",
+                    ].map((key) => (
+                      <div key={key} className="card-counts__element">
+                        <div className="card-counts__title">
+                          {cardCounts[key].name}
+                        </div>
+                        <div className="card-counts__buttons">
+                          <button
+                            type="button"
+                            className=" color-red"
+                            onClick={() =>
+                              setCardCounts((prevCounts) => ({
+                                ...prevCounts,
+                                [key]: {
+                                  ...prevCounts[key],
+                                  count: Math.max(
+                                    prevCounts[key].count - 1,
+                                    prevCounts[key].minCount
+                                  ),
+                                },
+                              }))
+                            }
+                          >
+                            -
+                          </button>
+                          <span>{cardCounts[key].count}</span>
+                          <button
+                            type="button"
+                            className=" color-green"
+                            onClick={() =>
+                              setCardCounts((prevCounts) => ({
+                                ...prevCounts,
+                                [key]: {
+                                  ...prevCounts[key],
+                                  count: Math.min(
+                                    prevCounts[key].count + 1,
+                                    prevCounts[key].maxCount
+                                  ),
+                                },
+                              }))
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cartes de parade */}
+                <div className="card-group parade">
+                  <h4>Cartes de parade</h4>
+                  <div className="card-counts">
+                    {[
+                      "feuvert",
+                      "findelimitedevitesse",
+                      "essence",
+                      "rouedesecours",
+                      "reparation",
+                    ].map((key) => (
+                      <div key={key} className="card-counts__element">
+                        <h2>{cardCounts[key].name}</h2>
+                        <div className="card-counts__buttons">
+                          <button
+                            type="button"
+                            className=" color-red"
+                            onClick={() =>
+                              setCardCounts((prevCounts) => ({
+                                ...prevCounts,
+                                [key]: {
+                                  ...prevCounts[key],
+                                  count: Math.max(
+                                    prevCounts[key].count - 1,
+                                    prevCounts[key].minCount
+                                  ),
+                                },
+                              }))
+                            }
+                          >
+                            -
+                          </button>
+                          <span>{cardCounts[key].count}</span>
+                          <button
+                            type="button"
+                            className=" color-green"
+                            onClick={() =>
+                              setCardCounts((prevCounts) => ({
+                                ...prevCounts,
+                                [key]: {
+                                  ...prevCounts[key],
+                                  count: Math.min(
+                                    prevCounts[key].count + 1,
+                                    prevCounts[key].maxCount
+                                  ),
+                                },
+                              }))
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cartes de distance */}
+                <div className="card-group borne">
+                  <h4>Cartes de distance</h4>
+                  <div className="card-counts">
+                    {["25", "50", "75", "100", "200"].map((key) => (
+                      <div key={key} className="card-counts__element">
+                        <div className="card-counts__title">
+                          {cardCounts[key].name}
+                        </div>
+                        <div className="card-counts__buttons">
+                          <button
+                            type="button"
+                            className=" color-red"
+                            onClick={() =>
+                              setCardCounts((prevCounts) => ({
+                                ...prevCounts,
+                                [key]: {
+                                  ...prevCounts[key],
+                                  count: Math.max(
+                                    prevCounts[key].count - 1,
+                                    prevCounts[key].minCount
+                                  ),
+                                },
+                              }))
+                            }
+                          >
+                            -
+                          </button>
+                          <span>{cardCounts[key].count}</span>
+                          <button
+                            type="button"
+                            className=" color-green"
+                            onClick={() =>
+                              setCardCounts((prevCounts) => ({
+                                ...prevCounts,
+                                [key]: {
+                                  ...prevCounts[key],
+                                  count: Math.min(
+                                    prevCounts[key].count + 1,
+                                    prevCounts[key].maxCount
+                                  ),
+                                },
+                              }))
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div>
+              <h3>Nombre de joueurs</h3>
+              <div className="player-selection">
+                {[2, 3, 4].map((playerCount) => (
+                  <div key={playerCount + "key"}>
+                    <input
+                      id={playerCount + "players"}
+                      type="radio"
+                      name="max-players"
+                      value={playerCount}
+                      checked={maxPlayers === playerCount}
+                      onChange={handlePlayerCountChange}
+                    />
+                    <label htmlFor={playerCount + "players"} key={playerCount}>
+                      {playerCount}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {errorMessage && <p className="error">{errorMessage}</p>}
+            <div className="buttons">
+              <BackButton />
+              <button
+                className="primary-button bg-blue"
+                type="submit"
+                onClick={() => playEffect("open")}
+              >
+                Créer la partie
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </>
   );
 };
 

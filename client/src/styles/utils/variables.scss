@@ -4,11 +4,13 @@ $red: #d62828;
 $green: #3cbd47;
 $orange: #f77f00;
 $black: #191919;
+$black_transparent: rgba(0, 0, 0, 0.2);
 $white: #ffffff;
-$grey: #b4b4b4;
+$grey: #c9c9c9;
+$grey_transparent: rgba(216, 216, 216, 0.2);
 $background: #f9f9f9;
 $dark_white: rgb(252, 252, 252);
 
 @mixin main-padding {
-  padding: 2rem 5%;
+  padding: 0.5rem;
 }

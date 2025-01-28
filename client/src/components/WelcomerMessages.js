@@ -1,4 +1,4 @@
-import { useAuth } from "../auth/SocketContext";
+import { useAuth } from "@Auth/SocketContext";
 
 function WelcomerMessages() {
   const { user } = useAuth();
@@ -7,24 +7,24 @@ function WelcomerMessages() {
   const phrases = {
     night: [
       `Les vrais joueurs sont encore là, pas vrai ${user.username} ?`,
-      `Tard dans la nuit, mais toujours prêt, ${user.username} ?`,
-      `Une session nocturne pour briller, ${user.username} !`,
+      `Prêt à enchainer les Kilomètres de nuit, ${user.username} ?`,
+      `Une session nocturne ${user.username} ?`,
       `C'est à cette heure que les légendes se forment, ${user.username} !`,
-      `Pas de repos pour les champions comme vous, ${user.username} !`,
+      `Pas de repos pour les champions ${user.username} !`,
     ],
     day: [
-      `Un bon moment pour jouer, qu'en dites-vous ${user.username} ?`,
+      `Bonne journée ${user.username} !`,
       `Du soleil et des victoires, ${user.username} !`,
-      `C'est une belle journée pour une partie, ${user.username} !`,
-      `Des parties et des sourires, bonne chance ${user.username} !`,
-      `On commence la journée en force, ${user.username} !`,
+      `Encore une nouvelle victoire ${user.username} ?`,
+      `Bonne chance ${user.username} !`,
+      `Une petite partie ${user.username} ?`,
     ],
     evening: [
       `Prêt à faire des merveilles ce soir, ${user.username} ?`,
-      `Le soir, c'est l'heure des pros, vous en êtes ${user.username} !`,
-      `Relax et focus pour la partie du soir, ${user.username} !`,
+      `Le soir, c'est l'heure des pros ${user.username} !`,
+      `Une petite partie ${user.username} ?`,
       `La soirée ne fait que commencer, ${user.username} !`,
-      `Finissez la journée en beauté, bonne chance ${user.username} !`,
+      `Finissez la journée en beauté ${user.username} !`,
     ],
   };
 

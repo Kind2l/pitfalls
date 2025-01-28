@@ -917,9 +917,11 @@ const handleParadeCard = (request, callback, card, playerUsername, player) => {
     data: { actionState: true, player: playerUsername, card },
   });
 
-  if (servers[request.server_id].length === 0) {
+  console.log("deck", Object.keys(servers[request.server_id].deck).length);
+  if (Object.keys(servers[request.server_id].deck).length === 0) {
     return this.endGame(request);
   }
+
   return request.io.to(request.server_id).emit("game:next-round", {
     servers: servers[request.server_id],
     data: {
@@ -1013,7 +1015,8 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
       data: { actionState: true, player: playerUsername, card },
     });
 
-    if (servers[request.server_id].length === 0) {
+    console.log("deck", Object.keys(servers[request.server_id].deck).length);
+    if (Object.keys(servers[request.server_id].deck).length === 0) {
       return this.endGame(request);
     }
 
@@ -1069,7 +1072,8 @@ const handleBonusCard = (request, callback, card, playerUsername, player) => {
     data: { actionState: true, player: playerUsername, card },
   });
 
-  if (servers[request.server_id].length === 0) {
+  console.log("deck", Object.keys(servers[request.server_id].deck).length);
+  if (Object.keys(servers[request.server_id].deck).length === 0) {
     return this.endGame(request);
   }
 
@@ -1096,7 +1100,8 @@ exports.removeCard = (request, callback) => {
   servers[request.server_id].drawCard(playerUsername);
   servers[request.server_id].nextPlayer();
 
-  if (servers[request.server_id].length === 0) {
+  console.log("deck", Object.keys(servers[request.server_id].deck).length);
+  if (Object.keys(servers[request.server_id].deck).length === 0) {
     return this.endGame(request);
   }
 
