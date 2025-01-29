@@ -5,7 +5,7 @@ class PlayerModel {
     this.hand = [];
     this.bonus = {
       pilote: false,
-      asduvolant: false,
+      infatiguable: false,
       cartedepolice: false,
       citerne: false,
     };
@@ -23,7 +23,7 @@ class PlayerModel {
     this.hand = [];
     this.bonus = {
       pilote: false,
-      asduvolant: false,
+      infatiguable: false,
       cartedepolice: false,
       citerne: false,
     };
@@ -50,14 +50,14 @@ class PlayerModel {
       case "pilote":
         this.bonus.pilote = true;
         break;
-      case "asduvolant":
-        this.bonus.asduvolant = true;
+      case "infatiguable":
+        this.bonus.infatiguable = true;
         break;
       case "cartedepolice":
         this.bonus.cartedepolice = true;
         break;
-      case "citerne":
-        this.bonus.citerne = true;
+      case "deviation":
+        this.bonus.deviation = true;
         break;
     }
   }
@@ -92,7 +92,7 @@ class PlayerModel {
     }
 
     if (slug === "embouteillage") {
-      if (this.bonus.citerne === true) {
+      if (this.bonus.deviation === true) {
         return;
       }
       this.states.embouteillage = true;
@@ -106,7 +106,7 @@ class PlayerModel {
     }
 
     if (slug === "repos") {
-      if (this.bonus.asduvolant === true) {
+      if (this.bonus.infatiguable === true) {
         return;
       }
       this.states.repos = true;
@@ -155,7 +155,7 @@ class PlayerModel {
     }
 
     if (slug === "finderepos") {
-      if (this.bonus.asduvolant === true) {
+      if (this.bonus.infatiguable === true) {
         return;
       }
       if (this.states.repos === false) {

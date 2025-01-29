@@ -727,10 +727,10 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
 
     const bonusProtectionMap = {
       feurouge: attackedPlayer.bonus.cartedepolice,
-      accident: attackedPlayer.bonus.increvable,
-      repos: attackedPlayer.bonus.asduvolant,
-      embouteillage: attackedPlayer.bonus.citerne,
       zonedecontrole: attackedPlayer.bonus.cartedepolice,
+      accident: attackedPlayer.bonus.pilote,
+      repos: attackedPlayer.bonus.infatiguable,
+      embouteillage: attackedPlayer.bonus.deviation,
     };
 
     const isProtectedByBonus = bonusProtectionMap[card.tag];
@@ -787,9 +787,9 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
 
     const bonusProtectionMap = {
       feurouge: plr.bonus.cartedepolice,
-      accident: plr.bonus.increvable,
-      repos: plr.bonus.asduvolant,
-      embouteillage: plr.bonus.citerne,
+      accident: plr.bonus.pilote,
+      repos: plr.bonus.infatiguable,
+      embouteillage: plr.bonus.deviation,
       zonedecontrole: plr.bonus.cartedepolice,
     };
 
@@ -864,12 +864,12 @@ const handleParadeCard = (request, callback, card, playerUsername, player) => {
       message: `Vous êtes déjà immunisé (Carte de police)`,
     },
     findembouteillage: {
-      condition: player.bonus.citerne,
-      message: `Vous êtes déjà immunisé (Citerne)`,
+      condition: player.bonus.deviation,
+      message: `Vous êtes déjà immunisé (Déviation)`,
     },
     finderepos: {
-      condition: player.bonus.asduvolant,
-      message: `Vous êtes déjà immunisé (As du volant)`,
+      condition: player.bonus.infatiguable,
+      message: `Vous êtes déjà immunisé (Infatiguable)`,
     },
     reparation: {
       condition: player.bonus.reparation,
@@ -1042,8 +1042,8 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
  */
 const handleBonusCard = (request, callback, card, playerUsername, player) => {
   switch (card.tag) {
-    case "asduvolant":
-      player.bonus.asduvolant = true;
+    case "infatiguable":
+      player.bonus.infatiguable = true;
       player.states.repos = false;
       break;
     case "cartedepolice":
@@ -1051,12 +1051,12 @@ const handleBonusCard = (request, callback, card, playerUsername, player) => {
       player.states.feurouge = false;
       player.states.zonedecontrole = false;
       break;
-    case "citerne":
-      player.bonus.citerne = true;
+    case "deviation":
+      player.bonus.deviation = true;
       player.states.embouteillage = false;
       break;
-    case "increvable":
-      player.bonus.increvable = true;
+    case "pilote":
+      player.bonus.pilote = true;
       player.states.accident = false;
       break;
     default:

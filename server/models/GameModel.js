@@ -105,15 +105,15 @@ function generateCards(custom) {
     },
     {
       id: "",
-      name: "Increvable",
-      tag: "increvable",
+      name: "Pilote",
+      tag: "pilote",
       type: "bonus",
       status: false,
     },
     {
       id: "",
-      name: "As du volant",
-      tag: "asduvolant",
+      name: "Infatiguable",
+      tag: "infatiguable",
       type: "bonus",
       status: false,
     },
@@ -122,9 +122,9 @@ function generateCards(custom) {
   // Valeurs par défaut pour chaque type de carte
   const defaultCounts = {
     cartedepolice: 1,
-    citerne: 1,
-    increvable: 1,
-    asduvolant: 1,
+    deviation: 1,
+    pilote: 1,
+    infatiguable: 1,
     feurouge: 5,
     zonedecontrole: 4,
     embouteillage: 3,
