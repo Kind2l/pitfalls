@@ -1,12 +1,12 @@
-import logo from "@Images/logo.svg";
 import "@Styles/Header.scss";
 import React from "react";
+import ImageLoader from "./ImageLoader";
 
 function Header() {
   return (
     <header>
       <div className="logo">
-        <img src={logo} alt="logo de pitfalls"></img>
+        <ImageLoader name="img_logo" alt="logo de pitfalls" />
       </div>
     </header>
   );

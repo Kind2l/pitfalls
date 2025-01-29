@@ -4,6 +4,7 @@ import Header from "@Components/Header";
 import "@Styles/components/WaitingRoom.scss";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import ImageLoader from "./ImageLoader";
 
 const WaitingRoom = ({ setGameIsStarted }) => {
   const { socket, user } = useAuth();
@@ -102,7 +103,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
             <h2 className="cherry-font">{serverName}</h2>
             <p>Hôte : {author}</p>
             <p>
-              {Object.keys(players)?.length || "0"}/{maxPlayers} joueur(s)
+              {Object.keys(players)?.length || "0"}/{maxPlayers} joueurs
             </p>
           </div>
 
@@ -141,7 +142,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
           </div>
           <p className="id-server">ID du serveur : {serverId}</p>
           <button className="share-button" onClick={() => handleShare()}>
-            <img src="../images/share.svg" alt="Partager"></img>
+            <ImageLoader name="img_share" alt="bouton de partage" />
           </button>
         </div>
       </div>

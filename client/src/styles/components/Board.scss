@@ -417,7 +417,8 @@
         font-weight: 800;
       }
       img {
-        height: 5rem;
+        animation: bounce 1.5s ease-in-out infinite;
+        height: 20vh;
       }
     }
     &__image--title {
@@ -489,7 +490,7 @@
       animation: bounce 1.5s ease-in-out infinite;
       margin-bottom: 1rem;
       img {
-        width: 4rem;
+        width: 15vh;
       }
     }
 
@@ -657,7 +658,7 @@
   &__image {
     text-align: center;
     img {
-      height: 5rem;
+      height: 10vh;
     }
     margin-bottom: 1.5rem;
     font-size: 3rem;

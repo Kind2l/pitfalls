@@ -1,4 +1,6 @@
 import { useAuth } from "@Auth/SocketContext";
+import { useSound } from "@Auth/SoundContext";
+import ImageLoader from "@Components/ImageLoader.js";
 import Orbit from "@Components/Orbit.js";
 import "@Styles/components/Board.scss";
 import React, { useEffect, useState } from "react";
@@ -7,6 +9,7 @@ import { useParams } from "react-router-dom";
 const Board = () => {
   const { socket, user } = useAuth();
   const { serverId } = useParams();
+  const { playMusic, playEffect } = useSound();
 
   const [hand, setHand] = useState([]);
   const [playerEnvironment, setPlayerEnvironment] = useState(null);
@@ -31,6 +34,8 @@ const Board = () => {
   const [gameIsOver, setGameIsOver] = useState(false);
   const [podium, setPodium] = useState(null);
 
+  //
+
   // Component to display the number of cards in the deck
   function CardStack({ numberOfCards }) {
     return (
@@ -49,6 +54,10 @@ const Board = () => {
       </div>
     );
   }
+
+  useEffect(() => {
+    playMusic("bgparty");
+  }, []);
 
   // Fetch initial game data
   useEffect(() => {
@@ -212,9 +221,9 @@ const Board = () => {
   function PlayerHeaderStates(states) {
     const labels = {
       feurouge: "Feu rouge",
-      limitedevitesse: "Limite de vitesse",
+      zonedecontrole: "Zone de contrôle",
       accident: "Accident",
-      crevaison: "Crevaison",
+      repos: "Repos",
       pannedessence: "Panne d'essence",
     };
 
@@ -223,7 +232,7 @@ const Board = () => {
         {Object.entries(states).map(([key, value]) =>
           value ? (
             <span key={key} className="state-item">
-              <img src={`../images/icons/${key}.svg`} alt={labels[key]} />
+              <ImageLoader name={`icon_${key}`} alt={labels[key]} />
             </span>
           ) : null
         )}
@@ -234,10 +243,10 @@ const Board = () => {
   // Component to display player bonuses
   function PlayerHeaderBonus(bonus) {
     const labels = {
-      asduvolant: "As du volant",
-      citerne: "Citerne",
-      increvable: "Increvable",
-      vehiculeprioritaire: "Véhicule prioritaire",
+      pilote: "Pilote",
+      deviation: "Déviation",
+      infatigable: "Infatigable",
+      cartedepolice: "Carte de police",
     };
 
     return (
@@ -245,7 +254,7 @@ const Board = () => {
         {Object.entries(bonus).map(([key, value]) =>
           value ? (
             <span key={key} className="bonus-item">
-              <img src={`../images/icons/${key}.svg`} alt={labels[key]} />
+              <ImageLoader name={`icon_${key}`} alt={labels[key]} />
             </span>
           ) : null
         )}
@@ -409,6 +418,7 @@ const Board = () => {
 
     return (
       <div className="game-over-modal">
+        <ImageLoader name="img_trophy" alt="Image d'un trophé" />
         <div className="game-over-modal__title">
           {podium[0] === playerEnvironment.username
             ? "Vous avez gagné la partie !"
@@ -491,7 +501,7 @@ const Board = () => {
                       {type === "borne" ? (
                         <div className={tag}>{tag}</div>
                       ) : (
-                        <img src={`../images/cards/${tag}.svg`} alt={name} />
+                        <ImageLoader name={`card_${tag}`} alt={name} />
                       )}
                     </div>
                     <div className="card-bottom">{name}</div>
@@ -520,10 +530,11 @@ const Board = () => {
               </>
             ) : (
               <>
-                <img
-                  src={`../images/cards/${selectedCard?.tag}.svg`}
+                <ImageLoader
+                  name={`card_${selectedCard?.tag}`}
                   alt={selectedCard?.name}
                 />
+
                 <div className="action-modal__image--title">
                   {selectedCard?.name}
                 </div>
@@ -554,8 +565,8 @@ const Board = () => {
         </div>
         <div className="attack-modal__image">
           {showAttackPopup && (
-            <img
-              src={`../images/cards/${selectedCard?.tag}.svg`}
+            <ImageLoader
+              name={`card_${selectedCard?.tag}`}
               alt={selectedCard?.name}
             />
           )}
@@ -625,14 +636,26 @@ const Board = () => {
         <div className={`player-attack-notification__title`}>Attaque</div>
         <div className={`player-attack-notification__content`}>
           <div className="player-attack-notification__image">
-            <img
-              src={`../images/cars/big_car${attackNotification?.attackedPlayer.position}-${attackNotification?.card.tag}.svg`}
+            {/* <ImageLoader
+              name={`cars_${attackNotification?.attackedPlayer.position}-${attackNotification?.card.tag}`}
+              alt={`${attackNotification?.player.username} attaque ${attackNotification?.attackedPlayer.username} avec ${attackNotification?.card.name}`}
+            /> */}
+            <ImageLoader
+              name={`card_${attackNotification?.card.tag}`}
               alt={`${attackNotification?.player.username} attaque ${attackNotification?.attackedPlayer.username} avec ${attackNotification?.card.name}`}
             />
           </div>
           <div className="player-attack-notification__message">
             <span>{attackNotification?.player.username}</span> attaque{" "}
             <span>{attackNotification?.attackedPlayer.username}</span>
+            {attackNotification?.card.tag === "accident" && playEffect("crash")}
+            {attackNotification?.card.tag === "zonedecontrole" &&
+              playEffect("police")}
+            {attackNotification?.card.tag === "zonedecontrole" &&
+              playEffect("police")}
+            {attackNotification?.card.tag === "embouteillage" &&
+              playEffect("horn")}
+            {attackNotification?.card.tag === "repos" && playEffect("yawn")}
           </div>
           <div className="player-attack-notification__action">
             {attackNotification?.card.name}
@@ -653,12 +676,12 @@ const Board = () => {
               <>{actionNotification?.card.value}</>
             ) : actionNotification?.type === "remove" ? (
               <>
-                <img src={`../images/cards/poubelle.svg`} alt="Une poubelle" />
+                <ImageLoader name="img_trash" alt="Poubelle" />
               </>
             ) : (
               <>
-                <img
-                  src={`../images/cards/${actionNotification?.card.tag}.svg`}
+                <ImageLoader
+                  name={`card_${actionNotification?.card.tag}`}
                   alt={actionNotification?.card.name}
                 />
               </>
@@ -667,32 +690,40 @@ const Board = () => {
           <div className="player-action-modal__message">
             {actionNotification?.type === "borne" && (
               <>
+                {playEffect("drives")}
                 <span>{actionNotification?.player}</span> avance de{" "}
                 <span>{actionNotification?.card.value} kms</span>.
               </>
             )}
             {actionNotification?.type === "parade" &&
-              actionNotification?.card.tag === "findelimitedevitesse" && (
+              actionNotification?.card.tag === "findezonedecontrole" && (
                 <>
-                  Fin de <span>limitation de vitesse</span> pour{" "}
+                  {playEffect("special")}
+                  Fin de <span>zone de radar</span> pour{" "}
                   <span>{actionNotification?.player}</span>.
                 </>
               )}
             {actionNotification?.type === "parade" &&
-              actionNotification?.card.tag !== "findelimitedevitesse" && (
+              actionNotification?.card.tag !== "findezonedecontrole" && (
                 <>
-                  <span>{actionNotification?.player}</span> peut reprendre la
-                  route !{" "}
+                  {playEffect("start")}
+                  <span>{actionNotification?.player}</span> reprend la route !
                 </>
               )}
             {actionNotification?.type === "bonus" && (
               <>
+                {actionNotification?.card.tag === "pilote"
+                  ? playEffect("pilote")
+                  : actionNotification?.card.tag === "cartedepolice"
+                  ? playEffect("talkie")
+                  : playEffect("bonus")}
                 <span>{actionNotification?.player}</span> active son bonus{" "}
                 <span>{actionNotification?.card.name} !</span>
               </>
             )}
             {actionNotification?.type === "remove" && (
               <>
+                {playEffect("trash")}
                 <span>{actionNotification?.player}</span> défausse une carte.
               </>
             )}

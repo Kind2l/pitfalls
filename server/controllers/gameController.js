@@ -726,18 +726,18 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
     }
 
     const bonusProtectionMap = {
-      feurouge: attackedPlayer.bonus.vehiculeprioritaire,
-      crevaison: attackedPlayer.bonus.increvable,
-      accident: attackedPlayer.bonus.asduvolant,
-      pannedessence: attackedPlayer.bonus.citerne,
-      limitedevitesse: attackedPlayer.bonus.vehiculeprioritaire,
+      feurouge: attackedPlayer.bonus.cartedepolice,
+      accident: attackedPlayer.bonus.increvable,
+      repos: attackedPlayer.bonus.asduvolant,
+      embouteillage: attackedPlayer.bonus.citerne,
+      zonedecontrole: attackedPlayer.bonus.cartedepolice,
     };
 
     const isProtectedByBonus = bonusProtectionMap[card.tag];
     const hasBlockingState =
-      card.tag === "limitedevitesse"
-        ? attackedPlayer.states.limitedevitesse
-        : ["accident", "crevaison", "feurouge", "pannedessence"].some(
+      card.tag === "zonedecontrole"
+        ? attackedPlayer.states.zonedecontrole
+        : ["repos", "accident", "feurouge", "embouteillage"].some(
             (state) => attackedPlayer.states[state]
           );
 
@@ -786,18 +786,18 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
     }
 
     const bonusProtectionMap = {
-      feurouge: plr.bonus.vehiculeprioritaire,
-      crevaison: plr.bonus.increvable,
-      accident: plr.bonus.asduvolant,
-      pannedessence: plr.bonus.citerne,
-      limitedevitesse: plr.bonus.vehiculeprioritaire,
+      feurouge: plr.bonus.cartedepolice,
+      accident: plr.bonus.increvable,
+      repos: plr.bonus.asduvolant,
+      embouteillage: plr.bonus.citerne,
+      zonedecontrole: plr.bonus.cartedepolice,
     };
 
     const isProtectedByBonus = bonusProtectionMap[card.tag];
     const hasBlockingState =
-      card.tag === "limitedevitesse"
-        ? plr.states.limitedevitesse
-        : ["accident", "crevaison", "feurouge", "pannedessence"].some(
+      card.tag === "zonedecontrole"
+        ? plr.states.zonedecontrole
+        : ["repos", "accident", "feurouge", "embouteillage"].some(
             (state) => plr.states[state]
           );
 
@@ -840,10 +840,10 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
 const handleParadeCard = (request, callback, card, playerUsername, player) => {
   const requiredMalusState = {
     feuvert: player.states.feurouge,
-    findelimitedevitesse: player.states.limitedevitesse,
-    essence: player.states.pannedessence,
+    findezonedecontrole: player.states.zonedecontrole,
+    findembouteillage: player.states.embouteillage,
+    finderepos: player.states.repos,
     reparation: player.states.accident,
-    rouedesecours: player.states.crevaison,
   };
 
   if (!requiredMalusState[card.tag]) {
@@ -856,24 +856,24 @@ const handleParadeCard = (request, callback, card, playerUsername, player) => {
 
   const blockingConditions = {
     feuvert: {
-      condition: player.bonus.vehiculeprioritaire,
-      message: `Vous êtes déjà immunisé (Véhicule prioritaire)`,
+      condition: player.bonus.cartedepolice,
+      message: `Vous êtes déjà immunisé (Carte de police)`,
     },
-    findelimitedevitesse: {
-      condition: player.bonus.vehiculeprioritaire,
-      message: `Vous êtes déjà immunisé (Véhicule prioritaire)`,
+    findezonedecontrole: {
+      condition: player.bonus.cartedepolice,
+      message: `Vous êtes déjà immunisé (Carte de police)`,
     },
-    essence: {
+    findembouteillage: {
       condition: player.bonus.citerne,
       message: `Vous êtes déjà immunisé (Citerne)`,
     },
-    reparation: {
+    finderepos: {
       condition: player.bonus.asduvolant,
       message: `Vous êtes déjà immunisé (As du volant)`,
     },
-    rouedesecours: {
-      condition: player.bonus.increvable,
-      message: `Vous êtes déjà immunisé (Increvable)`,
+    reparation: {
+      condition: player.bonus.reparation,
+      message: `Vous êtes déjà immunisé (Pilote)`,
     },
   };
 
@@ -891,17 +891,17 @@ const handleParadeCard = (request, callback, card, playerUsername, player) => {
     case "feuvert":
       player.states.feurouge = false;
       break;
-    case "findelimitedevitesse":
-      player.states.limitedevitesse = false;
+    case "findezonedecontrole":
+      player.states.zonedecontrole = false;
       break;
-    case "essence":
-      player.states.pannedessence = false;
+    case "findembouteillage":
+      player.states.embouteillage = false;
+      break;
+    case "finderepos":
+      player.states.repos = false;
       break;
     case "reparation":
       player.states.accident = false;
-      break;
-    case "rouedesecours":
-      player.states.crevaison = false;
       break;
     default:
       break;
@@ -947,22 +947,22 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
 
   if (
     player.states.feurouge ||
+    player.states.repos ||
     player.states.accident ||
-    player.states.crevaison ||
-    player.states.pannedessence
+    player.states.embouteillage
   ) {
     let message = "Vous ne pouvez plus rouler";
     if (player.states.feurouge) {
       message = "Vous êtes à l'arrêt (Feu rouge)";
     }
+    if (player.states.repos) {
+      message = "Vous êtes à l'arrêt (Repos)";
+    }
     if (player.states.accident) {
       message = "Vous êtes à l'arrêt (Accident)";
     }
-    if (player.states.crevaison) {
-      message = "Vous êtes à l'arrêt (Crevaison)";
-    }
-    if (player.states.pannedessence) {
-      message = "Vous êtes à l'arrêt (Panne d'essence)";
+    if (player.states.embouteillage) {
+      message = "Vous êtes à l'arrêt (Embouteillage)";
     }
     return callback({
       success: true,
@@ -971,7 +971,7 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
     });
   }
 
-  if (player.states.limitedevitesse && card.value > 50) {
+  if (player.states.zonedecontrole && card.value > 50) {
     return callback({
       success: true,
       message: `Vous êtes limité à 50 Kms`,
@@ -1044,20 +1044,20 @@ const handleBonusCard = (request, callback, card, playerUsername, player) => {
   switch (card.tag) {
     case "asduvolant":
       player.bonus.asduvolant = true;
-      player.states.accident = false;
+      player.states.repos = false;
       break;
-    case "vehiculeprioritaire":
-      player.bonus.vehiculeprioritaire = true;
+    case "cartedepolice":
+      player.bonus.cartedepolice = true;
       player.states.feurouge = false;
-      player.states.limitedevitesse = false;
+      player.states.zonedecontrole = false;
       break;
     case "citerne":
       player.bonus.citerne = true;
-      player.states.pannedessence = false;
+      player.states.embouteillage = false;
       break;
     case "increvable":
       player.bonus.increvable = true;
-      player.states.crevaison = false;
+      player.states.accident = false;
       break;
     default:
       break;

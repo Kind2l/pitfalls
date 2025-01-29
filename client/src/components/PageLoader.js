@@ -1,3 +1,4 @@
+import ImageLoader from "@Components/ImageLoader";
 import "@Styles/components/PageLoader.scss";
 import React from "react";
 
@@ -5,7 +6,7 @@ const PageLoader = ({ isLoading }) => {
   return isLoading ? (
     <div className="page-loader">
       <div className="spinner">
-        <img src="./images/icons/loading-wheel.svg" alt="Image de chargement" />
+        <ImageLoader name="img_wheel" alt="Roue de chargement" />
       </div>
       <p>Chargement en cours...</p>
     </div>

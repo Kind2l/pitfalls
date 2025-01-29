@@ -4,6 +4,7 @@ import { useAuth } from "@Auth/SocketContext";
 import { useSound } from "@Auth/SoundContext";
 import "@Styles/Connection/Register.scss";
 import React, { useState } from "react";
+import ImageLoader from "./ImageLoader";
 
 const Register = ({ setChoice }) => {
   const { socket } = useAuth();
@@ -174,10 +175,14 @@ const Register = ({ setChoice }) => {
           />
           {password && (
             <button className="password-eye" onClick={handlePasswordView}>
-              <img
-                src={`./images/${showPassword ? "open-eye" : "close-eye"}.svg`}
-                alt="Afficher ou non le mot de passe"
-              />
+              {showPassword ? (
+                <ImageLoader
+                  name="img_openEye"
+                  alt="Afficher le mot de passe"
+                />
+              ) : (
+                <ImageLoader name="img_closeEye" alt="Cacher le mot de passe" />
+              )}
             </button>
           )}
         </div>

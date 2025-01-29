@@ -4,36 +4,36 @@ class PlayerModel {
     this.username = username;
     this.hand = [];
     this.bonus = {
-      increvable: false,
+      pilote: false,
       asduvolant: false,
-      vehiculeprioritaire: false,
+      cartedepolice: false,
       citerne: false,
     };
     this.score = 0;
     this.states = {
       feurouge: true,
-      limitedevitesse: false,
+      zonedecontrole: false,
+      repos: false,
       accident: false,
-      crevaison: false,
-      pannedessence: false,
+      embouteillage: false,
     };
   }
 
   reset() {
     this.hand = [];
     this.bonus = {
-      increvable: false,
+      pilote: false,
       asduvolant: false,
-      vehiculeprioritaire: false,
+      cartedepolice: false,
       citerne: false,
     };
     this.score = 0;
     this.states = {
       feurouge: true,
-      limitedevitesse: false,
+      zonedecontrole: false,
+      repos: false,
       accident: false,
-      crevaison: false,
-      pannedessence: false,
+      embouteillage: false,
     };
   }
 
@@ -47,14 +47,14 @@ class PlayerModel {
 
   addBonus(slug) {
     switch (slug) {
-      case "increvable":
-        this.bonus.increvable = true;
+      case "pilote":
+        this.bonus.pilote = true;
         break;
       case "asduvolant":
         this.bonus.asduvolant = true;
         break;
-      case "vehiculeprioritaire":
-        this.bonus.vehiculeprioritaire = true;
+      case "cartedepolice":
+        this.bonus.cartedepolice = true;
         break;
       case "citerne":
         this.bonus.citerne = true;
@@ -63,11 +63,11 @@ class PlayerModel {
   }
 
   addAttack(slug) {
-    if (slug != "limitedevitesse") {
+    if (slug != "zonedecontrole") {
       if (
+        this.states.repos === true ||
+        this.states.embouteillage === true ||
         this.states.accident === true ||
-        this.states.pannedessence === true ||
-        this.states.crevaison === true ||
         this.states.feurouge === true
       ) {
         return;
@@ -75,47 +75,47 @@ class PlayerModel {
     }
 
     if (slug === "feurouge") {
-      if (this.bonus.vehiculeprioritaire === true) {
+      if (this.bonus.cartedepolice === true) {
         return;
       }
       this.states.feurouge = true;
     }
 
-    if (slug === "limitedevitesse") {
-      if (this.bonus.vehiculeprioritaire === true) {
+    if (slug === "zonedecontrole") {
+      if (this.bonus.cartedepolice === true) {
         return;
       }
-      if (this.states.limitedevitesse === true) {
+      if (this.states.zonedecontrole === true) {
         return;
       }
-      this.states.limitedevitesse = true;
+      this.states.zonedecontrole = true;
     }
 
-    if (slug === "pannedessence") {
+    if (slug === "embouteillage") {
       if (this.bonus.citerne === true) {
         return;
       }
-      this.states.pannedessence = true;
-    }
-
-    if (slug === "crevaison") {
-      if (this.bonus.increvable === true) {
-        return;
-      }
-      this.states.crevaison = true;
+      this.states.embouteillage = true;
     }
 
     if (slug === "accident") {
-      if (this.bonus.asduvolant === true) {
+      if (this.bonus.pilote === true) {
         return;
       }
       this.states.accident = true;
+    }
+
+    if (slug === "repos") {
+      if (this.bonus.asduvolant === true) {
+        return;
+      }
+      this.states.repos = true;
     }
   }
 
   addParade(slug) {
     if (slug === "feuvert") {
-      if (this.bonus.vehiculeprioritaire === true) {
+      if (this.bonus.cartedepolice === true) {
         return;
       }
       if (this.states.feurouge === false) {
@@ -124,44 +124,44 @@ class PlayerModel {
       this.states.feurouge = false;
     }
 
-    if (slug === "findelimitedevitesse") {
-      if (this.bonus.vehiculeprioritaire === true) {
+    if (slug === "findezonedecontrole") {
+      if (this.bonus.cartedepolice === true) {
         return;
       }
-      if (this.states.limitedevitesse === false) {
+      if (this.states.zonedecontrole === false) {
         return;
       }
-      this.states.limitedevitesse = false;
+      this.states.zonedecontrole = false;
     }
 
-    if (slug === "essence") {
+    if (slug === "findembouteillage") {
       if (this.bonus.citerne === true) {
         return;
       }
-      if (this.states.pannedessence === false) {
+      if (this.states.embouteillage === false) {
         return;
       }
-      this.states.pannedessence = false;
-    }
-
-    if (slug === "rouedesecours") {
-      if (this.bonus.increvable === true) {
-        return;
-      }
-      if (this.states.crevaison === false) {
-        return;
-      }
-      this.states.crevaison = false;
+      this.states.embouteillage = false;
     }
 
     if (slug === "reparation") {
-      if (this.bonus.asduvolant === true) {
+      if (this.bonus.pilote === true) {
         return;
       }
       if (this.states.accident === false) {
         return;
       }
       this.states.accident = false;
+    }
+
+    if (slug === "finderepos") {
+      if (this.bonus.asduvolant === true) {
+        return;
+      }
+      if (this.states.repos === false) {
+        return;
+      }
+      this.states.repos = false;
     }
   }
 

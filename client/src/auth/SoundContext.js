@@ -1,9 +1,23 @@
 import { Howl } from "howler";
 import React, { createContext, useContext, useState } from "react";
+import effectAccident from "../audio/accident.mp3";
 import background1 from "../audio/background1.mp3";
 import background2 from "../audio/background2.mp3";
+import background3 from "../audio/background3.mp3";
+import effectBonus from "../audio/bonus.wav";
+import effectCard from "../audio/card.mp3";
 import effectClose from "../audio/close.mp3";
+import effectDrives from "../audio/drives.wav";
+import effectGaz from "../audio/gaz.mp3";
+import effectHorn from "../audio/horn.mp3";
 import effectOpen from "../audio/open.mp3";
+import effectPilote from "../audio/pilote.wav";
+import effectPolice from "../audio/police.wav";
+import effectSpecial from "../audio/special.mp3";
+import effectStart from "../audio/start.mp3";
+import effectTalkie from "../audio/talkie.mp3";
+import effectTrash from "../audio/trash.mp3";
+import effectYawn from "../audio/yawn.mp3";
 
 // Créer le contexte
 const SoundContext = createContext();
@@ -12,11 +26,25 @@ const SoundContext = createContext();
 const MusicList = {
   bghome: background1,
   bgparty: background2,
+  bgintense: background3,
 };
 
 const EffectsList = {
-  open: effectOpen,
+  bonus: effectBonus,
+  card: effectCard,
   close: effectClose,
+  drives: effectDrives,
+  gaz: effectGaz,
+  horn: effectHorn,
+  open: effectOpen,
+  pilote: effectPilote,
+  police: effectPolice,
+  special: effectSpecial,
+  start: effectStart,
+  talkie: effectTalkie,
+  trash: effectTrash,
+  yawn: effectYawn,
+  accident: effectAccident,
 };
 
 // Fournisseur du contexte
