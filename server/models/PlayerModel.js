@@ -13,7 +13,7 @@ class PlayerModel {
     this.states = {
       feurouge: true,
       zonedecontrole: false,
-      repos: false,
+      fatigue: false,
       accident: false,
       embouteillage: false,
     };
@@ -31,7 +31,7 @@ class PlayerModel {
     this.states = {
       feurouge: true,
       zonedecontrole: false,
-      repos: false,
+      fatigue: false,
       accident: false,
       embouteillage: false,
     };
@@ -65,7 +65,7 @@ class PlayerModel {
   addAttack(slug) {
     if (slug != "zonedecontrole") {
       if (
-        this.states.repos === true ||
+        this.states.fatigue === true ||
         this.states.embouteillage === true ||
         this.states.accident === true ||
         this.states.feurouge === true
@@ -105,11 +105,11 @@ class PlayerModel {
       this.states.accident = true;
     }
 
-    if (slug === "repos") {
+    if (slug === "fatigue") {
       if (this.bonus.infatiguable === true) {
         return;
       }
-      this.states.repos = true;
+      this.states.fatigue = true;
     }
   }
 
@@ -154,14 +154,14 @@ class PlayerModel {
       this.states.accident = false;
     }
 
-    if (slug === "finderepos") {
+    if (slug === "repose") {
       if (this.bonus.infatiguable === true) {
         return;
       }
-      if (this.states.repos === false) {
+      if (this.states.fatigue === false) {
         return;
       }
-      this.states.repos = false;
+      this.states.fatigue = false;
     }
   }
 

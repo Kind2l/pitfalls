@@ -729,7 +729,7 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
       feurouge: attackedPlayer.bonus.cartedepolice,
       zonedecontrole: attackedPlayer.bonus.cartedepolice,
       accident: attackedPlayer.bonus.pilote,
-      repos: attackedPlayer.bonus.infatiguable,
+      fatigue: attackedPlayer.bonus.infatiguable,
       embouteillage: attackedPlayer.bonus.deviation,
     };
 
@@ -737,7 +737,7 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
     const hasBlockingState =
       card.tag === "zonedecontrole"
         ? attackedPlayer.states.zonedecontrole
-        : ["repos", "accident", "feurouge", "embouteillage"].some(
+        : ["fatigue", "accident", "feurouge", "embouteillage"].some(
             (state) => attackedPlayer.states[state]
           );
 
@@ -788,7 +788,7 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
     const bonusProtectionMap = {
       feurouge: plr.bonus.cartedepolice,
       accident: plr.bonus.pilote,
-      repos: plr.bonus.infatiguable,
+      fatigue: plr.bonus.infatiguable,
       embouteillage: plr.bonus.deviation,
       zonedecontrole: plr.bonus.cartedepolice,
     };
@@ -797,7 +797,7 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
     const hasBlockingState =
       card.tag === "zonedecontrole"
         ? plr.states.zonedecontrole
-        : ["repos", "accident", "feurouge", "embouteillage"].some(
+        : ["fatigue", "accident", "feurouge", "embouteillage"].some(
             (state) => plr.states[state]
           );
 
@@ -842,7 +842,7 @@ const handleParadeCard = (request, callback, card, playerUsername, player) => {
     feuvert: player.states.feurouge,
     findezonedecontrole: player.states.zonedecontrole,
     findembouteillage: player.states.embouteillage,
-    finderepos: player.states.repos,
+    repose: player.states.fatigue,
     reparation: player.states.accident,
   };
 
@@ -867,7 +867,7 @@ const handleParadeCard = (request, callback, card, playerUsername, player) => {
       condition: player.bonus.deviation,
       message: `Vous êtes déjà immunisé (Déviation)`,
     },
-    finderepos: {
+    repose: {
       condition: player.bonus.infatiguable,
       message: `Vous êtes déjà immunisé (Infatiguable)`,
     },
@@ -897,8 +897,8 @@ const handleParadeCard = (request, callback, card, playerUsername, player) => {
     case "findembouteillage":
       player.states.embouteillage = false;
       break;
-    case "finderepos":
-      player.states.repos = false;
+    case "repose":
+      player.states.fatigue = false;
       break;
     case "reparation":
       player.states.accident = false;
@@ -917,7 +917,6 @@ const handleParadeCard = (request, callback, card, playerUsername, player) => {
     data: { actionState: true, player: playerUsername, card },
   });
 
-  console.log("deck", Object.keys(servers[request.server_id].deck).length);
   if (Object.keys(servers[request.server_id].deck).length === 0) {
     return this.endGame(request);
   }
@@ -947,7 +946,7 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
 
   if (
     player.states.feurouge ||
-    player.states.repos ||
+    player.states.fatigue ||
     player.states.accident ||
     player.states.embouteillage
   ) {
@@ -955,8 +954,8 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
     if (player.states.feurouge) {
       message = "Vous êtes à l'arrêt (Feu rouge)";
     }
-    if (player.states.repos) {
-      message = "Vous êtes à l'arrêt (Repos)";
+    if (player.states.fatigue) {
+      message = "Vous êtes à l'arrêt (Fatigue)";
     }
     if (player.states.accident) {
       message = "Vous êtes à l'arrêt (Accident)";
@@ -1044,7 +1043,7 @@ const handleBonusCard = (request, callback, card, playerUsername, player) => {
   switch (card.tag) {
     case "infatiguable":
       player.bonus.infatiguable = true;
-      player.states.repos = false;
+      player.states.fatigue = false;
       break;
     case "cartedepolice":
       player.bonus.cartedepolice = true;
