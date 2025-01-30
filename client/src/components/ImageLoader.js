@@ -15,10 +15,10 @@ import iconAccident from "@Images/icons/accident.svg";
 import iconCartePolice from "@Images/icons/cartedepolice.svg";
 import iconDeviation from "@Images/icons/deviation.svg";
 import iconEmbouteillage from "@Images/icons/embouteillage.svg";
+import iconFatigue from "@Images/icons/fatigue.svg";
 import iconFeuRouge from "@Images/icons/feurouge.svg";
-import iconInfatigable from "@Images/icons/infatigable.svg";
+import iconInfatiguable from "@Images/icons/infatiguable.svg";
 import iconPilote from "@Images/icons/pilote.svg";
-import iconRepos from "@Images/icons/repos.svg";
 import iconZoneDeControle from "@Images/icons/zonedecontrole.svg";
 
 // Importation des images du dossier images/cards/
@@ -26,15 +26,15 @@ import cardAccident from "@Images/cards/accident.svg";
 import cardCartePolice from "@Images/cards/cartedepolice.svg";
 import cardDeviation from "@Images/cards/deviation.svg";
 import cardEmbouteillage from "@Images/cards/embouteillage.svg";
+import cardFatigue from "@Images/cards/fatigue.svg";
 import cardFeuRouge from "@Images/cards/feurouge.svg";
 import cardFeuVert from "@Images/cards/feuvert.svg";
 import cardFinEmbouteillage from "@Images/cards/findembouteillage.svg";
-import cardFinRepos from "@Images/cards/finderepos.svg";
 import cardFinZoneDeControle from "@Images/cards/findezonedecontrole.svg";
-import cardInfatigable from "@Images/cards/infatigable.svg";
+import cardInfatiguable from "@Images/cards/infatiguable.svg";
 import cardPilote from "@Images/cards/pilote.svg";
 import cardReparation from "@Images/cards/reparation.svg";
-import cardRepos from "@Images/cards/repos.svg";
+import cardRepose from "@Images/cards/repose.svg";
 import cardZoneDeControle from "@Images/cards/zonedecontrole.svg";
 import trophy from "@Images/trophy.svg";
 
@@ -55,10 +55,10 @@ const images = {
   icon_cartedepolice: iconCartePolice,
   icon_deviation: iconDeviation,
   icon_embouteillage: iconEmbouteillage,
-  icon_infatigable: iconInfatigable,
   icon_pilote: iconPilote,
-  icon_repos: iconRepos,
+  icon_fatigue: iconFatigue,
   icon_zonedecontrole: iconZoneDeControle,
+  icon_infatiguable: iconInfatiguable,
 
   card_accident: cardAccident,
   card_cartedepolice: cardCartePolice,
@@ -67,12 +67,12 @@ const images = {
   card_feurouge: cardFeuRouge,
   card_feuvert: cardFeuVert,
   card_findembouteillage: cardFinEmbouteillage,
-  card_finderepos: cardFinRepos,
+  card_repose: cardRepose,
   card_findezonedecontrole: cardFinZoneDeControle,
-  card_infatigable: cardInfatigable,
+  card_infatiguable: cardInfatiguable,
   card_pilote: cardPilote,
   card_reparation: cardReparation,
-  card_repos: cardRepos,
+  card_fatigue: cardFatigue,
   card_zonedecontrole: cardZoneDeControle,
 };
 
@@ -82,8 +82,6 @@ const images = {
  * @param {string} name - Nom de l'image (ex: "img_logo", "icon_feurouge", "card_accident").
  * @param {string} [alt="Image"] - Texte alternatif pour l'image.
  * @param {string} [className=""] - Classes CSS supplémentaires.
- * @param {number} [width=50] - Largeur de l'image.
- * @param {number} [height=50] - Hauteur de l'image.
  * @returns {JSX.Element} - Élément JSX contenant l'image ou un message d'erreur.
  */
 const ImageLoader = ({ name, alt = "Image", className = "" }) => {
@@ -91,7 +89,7 @@ const ImageLoader = ({ name, alt = "Image", className = "" }) => {
 
   if (!imageSrc) {
     console.error(`Image not found: ${name}`);
-    return <p style={{ color: "red" }}>⚠ Image introuvable : {name}</p>;
+    return <p style={{ color: "red" }}>{name}</p>;
   }
 
   return <img src={imageSrc} alt={alt} className={className} />;

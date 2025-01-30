@@ -2,14 +2,20 @@ import { useAuth } from "@Auth/SocketContext";
 import { useSound } from "@Auth/SoundContext";
 import ImageLoader from "@Components/ImageLoader.js";
 import Orbit from "@Components/Orbit.js";
-import "@Styles/components/Board.scss";
+import "@Styles/Board/Board.scss";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import ActionModal from "./Game/ActionModal";
+import AttackModal from "./Game/AttackModal";
+import NotificationPopup from "./Game/NotificationPopup";
+import PlayerActionModal from "./Game/PlayerActionModal";
+import PlayerAttackNotification from "./Game/PlayerAttackNotification";
+import PlayerHand from "./Game/PlayerHand";
 
 const Board = () => {
   const { socket, user } = useAuth();
   const { serverId } = useParams();
-  const { playMusic, playEffect } = useSound();
+  const { playMusic } = useSound();
 
   const [hand, setHand] = useState([]);
   const [playerEnvironment, setPlayerEnvironment] = useState(null);
@@ -223,7 +229,7 @@ const Board = () => {
       feurouge: "Feu rouge",
       zonedecontrole: "Zone de contrôle",
       accident: "Accident",
-      repos: "Repos",
+      fatigue: "Fatigué",
       pannedessence: "Panne d'essence",
     };
 
@@ -478,258 +484,49 @@ const Board = () => {
         <CardStack numberOfCards={deckCount} />
         {players && <Orbit players={players} />}
       </section>
-      <section className="player-area">
-        <div className="player-area__hand">
-          {hand.length > 0 ? (
-            <>
-              {hand.map((card, index) => {
-                const { name, tag, id, type } = card;
+      <PlayerHand
+        hand={hand}
+        isMyTurn={isMyTurn}
+        handleClickCard={handleClickCard}
+      />
 
-                return (
-                  <button
-                    key={id}
-                    data-id={id}
-                    data-type={type}
-                    className="card"
-                    disabled={!isMyTurn}
-                    onClick={() => {
-                      handleClickCard(card);
-                    }}
-                  >
-                    <div className="card-top">{name}</div>
-                    <div className="card-image">
-                      {type === "borne" ? (
-                        <div className={tag}>{tag}</div>
-                      ) : (
-                        <ImageLoader name={`card_${tag}`} alt={name} />
-                      )}
-                    </div>
-                    <div className="card-bottom">{name}</div>
-                  </button>
-                );
-              })}
-            </>
-          ) : (
-            <p>Aucune carte dans la main</p>
-          )}
-        </div>
-      </section>
+      <ActionModal
+        showActionPopup={showActionPopup}
+        selectedCard={selectedCard}
+        handleUseCard={handleUseCard}
+        handleRemoveCard={handleRemoveCard}
+        setSelectedCard={setSelectedCard}
+      />
 
-      <div className={`action-modal ${showActionPopup ? "show" : ""}`}>
-        <div className="action-modal__title">
-          <h3>Choisissez une action</h3>
-        </div>
-        <div className="action-modal__image">
-          {showActionPopup &&
-            (selectedCard?.type === "borne" ? (
-              <>
-                <div className="borne">{selectedCard?.value}</div>
-                <div className="action-modal__image--title">
-                  {`Ajouter ${selectedCard?.value} kms`}
-                </div>
-              </>
-            ) : (
-              <>
-                <ImageLoader
-                  name={`card_${selectedCard?.tag}`}
-                  alt={selectedCard?.name}
-                />
+      <AttackModal
+        showAttackPopup={showAttackPopup}
+        selectedCard={selectedCard}
+        attackablePlayers={attackablePlayers}
+        setAttackedPlayer={setAttackedPlayer}
+        setSelectedCard={setSelectedCard}
+        setAttackablePlayers={setAttackablePlayers}
+        setShowAttackPopup={setShowAttackPopup}
+        setNotification={setNotification}
+        setShowActionPopup={setShowActionPopup}
+        gameIsOver={gameIsOver}
+      />
 
-                <div className="action-modal__image--title">
-                  {selectedCard?.name}
-                </div>
-              </>
-            ))}
-        </div>
+      <NotificationPopup
+        notification={notification}
+        notificationIsVisible={notificationIsVisible}
+      />
 
-        <div className="action-modal__buttons">
-          <button className="primary-button bg-green" onClick={handleUseCard}>
-            Utiliser
-          </button>
-          <button className="primary-button bg-red" onClick={handleRemoveCard}>
-            Jeter
-          </button>
-          <button
-            className="primary-button bg-black"
-            onClick={() => setSelectedCard(null)}
-          >
-            Annuler
-          </button>
-        </div>
-      </div>
-
-      <div className={`attack-modal ${showAttackPopup ? "show" : ""}`}>
-        <span></span>
-        <div className="attack-modal__title color-red">
-          <h3>Qui voulez-vous attaquer ?</h3>
-        </div>
-        <div className="attack-modal__image">
-          {showAttackPopup && (
-            <ImageLoader
-              name={`card_${selectedCard?.tag}`}
-              alt={selectedCard?.name}
-            />
-          )}
-        </div>
-        <div className="attack-modal__players">
-          {showAttackPopup &&
-            attackablePlayers?.map((player, key) => (
-              <button
-                className={`primary-button ${
-                  Number(player.position) === 1
-                    ? "bg-blue"
-                    : Number(player.position) === 2
-                    ? "bg-red"
-                    : Number(player.position) === 3
-                    ? "bg-green"
-                    : Number(player.position) === 4
-                    ? "bg-orange"
-                    : ""
-                }`}
-                key={key}
-                onClick={() => {
-                  if (!gameIsOver) {
-                    setAttackedPlayer(player.id);
-                  }
-                }}
-              >
-                {player.username}
-              </button>
-            ))}
-        </div>
-        <div className="action-modal__buttons">
-          <button
-            className="primary-button bg-black"
-            onClick={() => {
-              if (!gameIsOver) {
-                setSelectedCard(null);
-                setAttackedPlayer(null);
-                setAttackablePlayers(null);
-                setShowAttackPopup(false);
-                setNotification(null);
-                setShowActionPopup(false);
-              }
-            }}
-          >
-            Annuler
-          </button>
-        </div>
-      </div>
-
-      <div
-        className={`notification-popup ${notificationIsVisible && "show"}  ${
-          notification?.type && notification.type
-        }`}
-      >
-        {notification?.content && (
-          <span className="notification-popup__content">
-            {notification.content}
-          </span>
-        )}
-      </div>
-
-      <div
-        className={`player-attack-notification ${
-          attackNotificationIsVisible && "show"
-        }`}
-      >
-        <div className={`player-attack-notification__title`}>Attaque</div>
-        <div className={`player-attack-notification__content`}>
-          <div className="player-attack-notification__image">
-            {/* <ImageLoader
-              name={`cars_${attackNotification?.attackedPlayer.position}-${attackNotification?.card.tag}`}
-              alt={`${attackNotification?.player.username} attaque ${attackNotification?.attackedPlayer.username} avec ${attackNotification?.card.name}`}
-            /> */}
-            <ImageLoader
-              name={`card_${attackNotification?.card.tag}`}
-              alt={`${attackNotification?.player.username} attaque ${attackNotification?.attackedPlayer.username} avec ${attackNotification?.card.name}`}
-            />
-          </div>
-          <div className="player-attack-notification__message">
-            <span>{attackNotification?.player.username}</span> attaque{" "}
-            <span>{attackNotification?.attackedPlayer.username}</span>
-            {attackNotification?.card.tag === "accident" && playEffect("crash")}
-            {attackNotification?.card.tag === "zonedecontrole" &&
-              playEffect("police")}
-            {attackNotification?.card.tag === "zonedecontrole" &&
-              playEffect("police")}
-            {attackNotification?.card.tag === "embouteillage" &&
-              playEffect("horn")}
-            {attackNotification?.card.tag === "repos" && playEffect("yawn")}
-          </div>
-          <div className="player-attack-notification__action">
-            {attackNotification?.card.name}
-          </div>
-        </div>
-      </div>
+      <PlayerAttackNotification
+        attackNotification={attackNotification}
+        attackNotificationIsVisible={attackNotificationIsVisible}
+      />
 
       {gameIsOver && <GameOverModal podium={podium} />}
 
-      <div
-        className={`player-action-modal ${
-          actionNotificationIsVisible && "show"
-        } ${actionNotification?.type}`}
-      >
-        <div className={`player-action-modal__content`}>
-          <div className="player-action-modal__image">
-            {actionNotification?.type === "borne" ? (
-              <>{actionNotification?.card.value}</>
-            ) : actionNotification?.type === "remove" ? (
-              <>
-                <ImageLoader name="img_trash" alt="Poubelle" />
-              </>
-            ) : (
-              <>
-                <ImageLoader
-                  name={`card_${actionNotification?.card.tag}`}
-                  alt={actionNotification?.card.name}
-                />
-              </>
-            )}
-          </div>
-          <div className="player-action-modal__message">
-            {actionNotification?.type === "borne" && (
-              <>
-                {playEffect("drives")}
-                <span>{actionNotification?.player}</span> avance de{" "}
-                <span>{actionNotification?.card.value} kms</span>.
-              </>
-            )}
-            {actionNotification?.type === "parade" &&
-              actionNotification?.card.tag === "findezonedecontrole" && (
-                <>
-                  {playEffect("special")}
-                  Fin de <span>zone de radar</span> pour{" "}
-                  <span>{actionNotification?.player}</span>.
-                </>
-              )}
-            {actionNotification?.type === "parade" &&
-              actionNotification?.card.tag !== "findezonedecontrole" && (
-                <>
-                  {playEffect("start")}
-                  <span>{actionNotification?.player}</span> reprend la route !
-                </>
-              )}
-            {actionNotification?.type === "bonus" && (
-              <>
-                {actionNotification?.card.tag === "pilote"
-                  ? playEffect("pilote")
-                  : actionNotification?.card.tag === "cartedepolice"
-                  ? playEffect("talkie")
-                  : playEffect("bonus")}
-                <span>{actionNotification?.player}</span> active son bonus{" "}
-                <span>{actionNotification?.card.name} !</span>
-              </>
-            )}
-            {actionNotification?.type === "remove" && (
-              <>
-                {playEffect("trash")}
-                <span>{actionNotification?.player}</span> défausse une carte.
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+      <PlayerActionModal
+        actionNotification={actionNotification}
+        actionNotificationIsVisible={actionNotificationIsVisible}
+      />
     </div>
   );
 };

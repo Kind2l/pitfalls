@@ -19,13 +19,13 @@ const CreateServer = () => {
       maxCount: 12,
       name: "Zone de contrôle",
     },
-    pannedessence: {
+    embouteillage: {
       count: 3,
       minCount: 3,
       maxCount: 9,
-      name: "Panne d'essence",
+      name: "Embouteillage",
     },
-    repos: { count: 3, minCount: 3, maxCount: 9, name: "repos" },
+    fatigue: { count: 3, minCount: 3, maxCount: 9, name: "fatigue" },
     accident: { count: 3, minCount: 3, maxCount: 9, name: "Accident" },
     feuvert: { count: 14, minCount: 14, maxCount: 42, name: "Feu vert" },
     findezonedecontrole: {
@@ -35,11 +35,11 @@ const CreateServer = () => {
       name: "Fin de zone de contrôle",
     },
     essence: { count: 6, minCount: 6, maxCount: 18, name: "Essence" },
-    finderepos: {
+    repose: {
       count: 6,
       minCount: 6,
       maxCount: 18,
-      name: "Fin de repos",
+      name: "En forme",
     },
     reparation: { count: 6, minCount: 6, maxCount: 18, name: "Réparation" },
     25: { count: 10, minCount: 10, maxCount: 30, name: "25 Kms" },
@@ -112,12 +112,12 @@ const CreateServer = () => {
           feurouge: cardCounts?.feurouge?.count || 5,
           zonedecontrole: cardCounts?.zonedecontrole?.count || 4,
           pannedessence: cardCounts?.pannedessence?.count || 3,
-          repos: cardCounts?.repos?.count || 3,
+          fatigue: cardCounts?.fatigue?.count || 3,
           accident: cardCounts?.accident?.count || 3,
           feuvert: cardCounts?.feuvert?.count || 14,
           findezonedecontrole: cardCounts?.findezonedecontrole?.count || 6,
           essence: cardCounts?.essence?.count || 6,
-          finderepos: cardCounts?.finderepos?.count || 6,
+          repose: cardCounts?.repose?.count || 6,
           reparation: cardCounts?.reparation?.count || 6,
           25: cardCounts?.[25]?.count || 10,
           50: cardCounts?.[50]?.count || 10,
@@ -222,7 +222,7 @@ const CreateServer = () => {
                       "feurouge",
                       "zonedecontrole",
                       "pannedessence",
-                      "repos",
+                      "fatigue",
                       "accident",
                     ].map((key) => (
                       <div key={key} className="card-counts__element">
@@ -281,7 +281,7 @@ const CreateServer = () => {
                       "feuvert",
                       "findezonedecontrole",
                       "essence",
-                      "finderepos",
+                      "repose",
                       "reparation",
                     ].map((key) => (
                       <div key={key} className="card-counts__element">
