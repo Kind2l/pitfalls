@@ -305,12 +305,14 @@
         &[data-type="borne"] {
           color: Vars.$sky;
           box-sizing: border-box;
-          border: solid 5px;
-          border-radius: 15px;
-          border-color: Vars.$sky;
+          border-radius: 5px;
           .card-top,
           .card-bottom {
             font-weight: 600;
+          }
+          .card-image div {
+            font-size: 2rem;
+            font-weight: 800;
           }
 
           &::after {
@@ -320,7 +322,7 @@
             left: 12.35%;
             height: 75%;
             width: 75%;
-            border: solid 1px;
+            border: solid 2px;
             border-radius: 10px;
             border-color: Vars.$sky;
           }
@@ -592,6 +594,7 @@
     pointer-events: none;
     overflow: hidden;
     color: #003049;
+    text-align: center;
 
     &.error {
       color: Vars.$red;
