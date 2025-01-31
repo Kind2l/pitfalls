@@ -691,11 +691,6 @@ exports.disconnect = (req, callback) => {
       "disconnect: Utilisateur supprimé via removeUserFromServerByUsername"
     );
 
-    console.log(
-      `disconnect: Nombre de joueurs dans le serveur ${serverId}: `,
-      Object.keys(servers[serverId]?.players).length
-    );
-
     console.log("disconnect: Vérification que le serveur est vide");
     if (Object.keys(servers[serverId]?.players).length === 0) {
       let filteredServers = getFilteredServers();

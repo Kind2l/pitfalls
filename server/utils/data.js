@@ -336,7 +336,6 @@ const checkIfPlayerIsCurrentPlayer = (username) => {
   if (!server) {
     return false;
   }
-  console.log("positii");
   console.log(server.players[username].position);
 
   return server.currentPlayer === server.players[username].position;
