@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 // Création d'un contexte pour la gestion de la connexion via Socket.io
 const SocketContext = createContext();
 // https://pitfalls.onrender.com
-const socketIo = io("https://pitfalls.onrender.com", {
+const socketIo = io("http://localhost:3001", {
   reconnection: true,
 });
 
@@ -69,7 +69,7 @@ export const SocketProvider = ({ children }) => {
     localStorage.removeItem("token");
 
     // Informe le serveur de la déconnexion
-    socket.emit("user:logout", { username }, (response) => {
+    socket.emit("user:logout", { user }, (response) => {
       if (!response.success) {
         console.error(response.message || "Erreur lors de la déconnexion.");
       }

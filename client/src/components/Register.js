@@ -24,7 +24,7 @@ const Register = ({ setChoice }) => {
   const usernameRegex =
     /^(?!.*[-_]$)(?![-_])[a-zA-Z0-9àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ\-_.]{4,20}$/;
   const passwordRegex = /^[a-zA-Z0-9$/!?:#+]{6,24}$/;
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const emailRegex = /^[a-z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   // Validation functions
   const validateUsername = (username) => {
@@ -132,9 +132,7 @@ const Register = ({ setChoice }) => {
             setError(response.message);
           } else {
             addNotification("Inscription réussie.");
-            setTimeout(() => {
-              setChoice(true);
-            }, 2000);
+            setChoice(true);
           }
         }
       );
