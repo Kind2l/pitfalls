@@ -1,7 +1,7 @@
-import { useLoader } from "@Auth/LoaderContext";
-import { useNotification } from "@Auth/NotificationContext.js";
-import { useAuth } from "@Auth/SocketContext";
-import { useSound } from "@Auth/SoundContext";
+import { useLoader } from "@Context/LoaderContext";
+import { useNotification } from "@Context/NotificationContext.js";
+import { useAuth } from "@Context/SocketContext";
+import { useSound } from "@Context/SoundContext";
 import "@Styles/Connection/Register.scss";
 import React, { useState } from "react";
 import ImageLoader from "./ImageLoader";

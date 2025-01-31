@@ -1,4 +1,4 @@
-import { useAuth } from "@Auth/SocketContext";
+import { useAuth } from "@Context/SocketContext";
 
 function WelcomerMessages() {
   const { user } = useAuth();

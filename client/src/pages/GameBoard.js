@@ -1,6 +1,6 @@
-import { useAuth } from "@Auth/SocketContext";
 import Board from "@Components/Board";
 import WaitingRoom from "@Components/WaitingRoom";
+import { useAuth } from "@Context/SocketContext";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 

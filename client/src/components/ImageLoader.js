@@ -1,12 +1,21 @@
 import React from "react";
 
 // Importation des images du dossier images/
+import arrival from "@Images/arrival.svg";
 import closeEye from "@Images/close-eye.svg";
 import logoMin from "@Images/logo-min.svg";
+import logoWelcomer from "@Images/logo-welcomer.svg";
 import logo from "@Images/logo.svg";
+import menu from "@Images/menu.svg";
+import message from "@Images/message.svg";
+import musicOff from "@Images/music-off.svg";
+import musicOn from "@Images/music-on.svg";
 import openEye from "@Images/open-eye.svg";
 import planet from "@Images/planet.svg";
+import planet2 from "@Images/planet2.svg";
 import share from "@Images/share.svg";
+import soundOff from "@Images/sound-off.svg";
+import soundOn from "@Images/sound-on.svg";
 import trash from "@Images/trash.svg";
 import wheel from "@Images/wheel.svg";
 
@@ -20,6 +29,12 @@ import iconFeuRouge from "@Images/icons/feurouge.svg";
 import iconInfatiguable from "@Images/icons/infatiguable.svg";
 import iconPilote from "@Images/icons/pilote.svg";
 import iconZoneDeControle from "@Images/icons/zonedecontrole.svg";
+
+// Importation des images du dossier images/cars/
+import carsLittleCarBlue from "@Images/cars/blue-little-car.svg";
+import carsLittleCarGreen from "@Images/cars/green-little-car.svg";
+import carsLittleCarOrange from "@Images/cars/orange-little-car.svg";
+import carsLittleCarRed from "@Images/cars/red-little-car.svg";
 
 // Importation des images du dossier images/cards/
 import cardAccident from "@Images/cards/accident.svg";
@@ -41,14 +56,28 @@ import trophy from "@Images/trophy.svg";
 // Objet contenant toutes les images
 const images = {
   img_logo: logo,
-  img_logo_min: logoMin,
+  img_logoMin: logoMin,
+  img_logoWelcomer: logoWelcomer,
   img_wheel: wheel,
   img_share: share,
   img_planet: planet,
+  img_planet2: planet2,
+  img_arrival: arrival,
   img_closeEye: closeEye,
   img_openEye: openEye,
   img_trash: trash,
   img_trophy: trophy,
+  img_soundOn: soundOn,
+  img_soundOff: soundOff,
+  img_musicOn: musicOn,
+  img_musicOff: musicOff,
+  img_message: message,
+  img_menu: menu,
+
+  cars_little_1: carsLittleCarBlue,
+  cars_little_2: carsLittleCarRed,
+  cars_little_3: carsLittleCarGreen,
+  cars_little_4: carsLittleCarOrange,
 
   icon_feurouge: iconFeuRouge,
   icon_accident: iconAccident,
@@ -87,7 +116,7 @@ const images = {
 const ImageLoader = ({ name, alt = "Image", className = "" }) => {
   const imageSrc = images[name];
 
-  if (!imageSrc) {
+  if (!imageSrc || imageSrc === "card_undefined") {
     console.error(`Image not found: ${name}`);
     return <p style={{ color: "red" }}>{name}</p>;
   }

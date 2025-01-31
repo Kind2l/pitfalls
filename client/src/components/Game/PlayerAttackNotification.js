@@ -1,5 +1,5 @@
-import { useSound } from "@Auth/SoundContext";
 import ImageLoader from "@Components/ImageLoader";
+import { useSound } from "@Context/SoundContext";
 
 import { useEffect } from "react";
 
@@ -14,7 +14,8 @@ const PlayerAttackNotification = ({
 
     // Jouer le son correspondant à la carte
     const soundEffects = {
-      accident: "crash",
+      accident: "accident",
+      feurouge: "brake",
       zonedecontrole: "police",
       embouteillage: "horn",
       fatigue: "yawn",
@@ -22,7 +23,7 @@ const PlayerAttackNotification = ({
 
     const effect = soundEffects[attackNotification?.card.tag];
     if (effect) playEffect(effect);
-  }, [attackNotification, playEffect]); // Exécute l'effet seulement quand attackNotification change
+  }, [attackNotification, playEffect]);
 
   if (!attackNotification) return null;
 

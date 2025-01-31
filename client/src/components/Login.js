@@ -1,10 +1,10 @@
-import { useNotification } from "@Auth/NotificationContext.js";
-import { useAuth } from "@Auth/SocketContext";
-import { useSound } from "@Auth/SoundContext";
+import { useLoader } from "@Context/LoaderContext";
+import { useNotification } from "@Context/NotificationContext.js";
+import { useAuth } from "@Context/SocketContext";
+import { useSound } from "@Context/SoundContext";
 import "@Styles/Connection/Login.scss";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLoader } from "../auth/LoaderContext";
 import ImageLoader from "./ImageLoader";
 
 const Login = () => {

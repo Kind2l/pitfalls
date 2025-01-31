@@ -1,6 +1,6 @@
-import { useNotification } from "@Auth/NotificationContext.js";
-import { useAuth } from "@Auth/SocketContext";
 import Header from "@Components/Header";
+import { useNotification } from "@Context/NotificationContext.js";
+import { useAuth } from "@Context/SocketContext";
 import "@Styles/components/WaitingRoom.scss";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";

@@ -211,19 +211,26 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
 
+        &__element {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+
         &__title {
           text-align: center;
           color: Vars.$black;
+          font-size: 0.9rem;
+          word-break: break-all;
+          padding: 0.5rem;
         }
 
         &__buttons {
-          width: 50%;
-          margin: auto;
+          width: 80%;
+          margin: 0 auto;
           display: flex;
           justify-content: space-around;
           align-items: center;
-          gap: 0.2rem;
-          padding: 1rem 0;
 
           button {
             padding: 0;

@@ -4,8 +4,17 @@
   position: relative;
   height: 100vh;
   overflow: hidden;
+
+  background: rgb(2, 0, 36);
+  background: linear-gradient(
+    180deg,
+    rgba(2, 0, 36, 0) 0%,
+    rgba(168, 222, 255, 1) 70%,
+    rgba(80, 201, 255, 1) 100%
+  );
   .game-header {
     position: relative;
+    z-index: 2;
 
     .player-header {
       position: absolute;
@@ -211,6 +220,20 @@
           width: 100%;
           font-size: 0.7rem;
           font-weight: 500;
+          text-shadow: Vars.$white 2px 0px 0px,
+            Vars.$white 1.75517px 0.958851px 0px,
+            Vars.$white 1.0806px 1.68294px 0px,
+            Vars.$white 0.141474px 1.99499px 0px,
+            Vars.$white -0.832294px 1.81859px 0px,
+            Vars.$white -1.60229px 1.19694px 0px,
+            Vars.$white -1.97998px 0.28224px 0px,
+            Vars.$white -1.87291px -0.701566px 0px,
+            Vars.$white -1.30729px -1.5136px 0px,
+            Vars.$white -0.421592px -1.95506px 0px,
+            Vars.$white 0.567324px -1.91785px 0px,
+            Vars.$white 1.41734px -1.41108px 0px,
+            Vars.$white 1.92034px -0.558831px 0px;
+          z-index: 2;
         }
 
         &-top {
@@ -226,7 +249,7 @@
         // Image de la carte
         &-image {
           margin: auto;
-          font-size: 3.5rem;
+          font-size: 2.4rem;
           font-weight: 700;
           z-index: 2;
 
@@ -238,11 +261,6 @@
         // Cartes selon le type
         &[data-type="attaque"] {
           color: Vars.$red;
-          font-weight: 600;
-          text-shadow: 2px 2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff,
-            -2px -2px 0 #ffffff, 2px 0px 0 #ffffff, 0px 2px 0 #ffffff,
-            -2px 0px 0 #ffffff, 0px -2px 0 #ffffff;
-
           &::before {
             left: 50%;
             bottom: 0;
@@ -254,53 +272,86 @@
         }
 
         &[data-type="parade"] {
-          color: Vars.$green;
-          // text-shadow: 2px 2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff,
-          //   -2px -2px 0 #ffffff, 2px 0px 0 #ffffff, 0px 2px 0 #ffffff,
-          //   -2px 0px 0 #ffffff, 0px -2px 0 #ffffff;
+          color: Vars.$white;
+          .card-top,
+          .card-bottom {
+            text-shadow: none;
+            font-weight: 600;
+          }
 
           &::before {
-            left: 0;
+            position: absolute;
+            content: "";
+            left: -20%;
             top: 0%;
             height: 30%;
             width: 150%;
-            transform: translateY(-50%) rotate(20deg);
+            transform: translateY(-45%) rotate(-20deg);
+            background-color: Vars.$green;
+          }
+
+          &::after {
+            content: "";
+            position: absolute;
+            right: -20%;
+            bottom: 0%;
+            height: 30%;
+            width: 150%;
+            transform: translateY(45%) rotate(-20deg);
             background-color: Vars.$green;
           }
         }
 
         &[data-type="borne"] {
           color: Vars.$sky;
-          font-weight: 600;
-          text-shadow: 2px 2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff,
-            -2px -2px 0 #ffffff, 2px 0px 0 #ffffff, 0px 2px 0 #ffffff,
-            -2px 0px 0 #ffffff, 0px -2px 0 #ffffff;
+          box-sizing: border-box;
+          border: solid 5px;
+          border-radius: 15px;
+          border-color: Vars.$sky;
+          .card-top,
+          .card-bottom {
+            font-weight: 600;
+          }
 
-          &::before {
-            top: 5%;
-            left: 5%;
-            height: 90%;
-            width: 90%;
-            border: solid 2px;
-            border-radius: 5%;
+          &::after {
+            content: "";
+            position: absolute;
+            top: 12.35%;
+            left: 12.35%;
+            height: 75%;
+            width: 75%;
+            border: solid 1px;
+            border-radius: 10px;
             border-color: Vars.$sky;
           }
         }
 
         &[data-type="bonus"] {
           color: Vars.$orange;
-          font-weight: 600;
-          text-shadow: 2px 2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff,
-            -2px -2px 0 #ffffff, 2px 0px 0 #ffffff, 0px 2px 0 #ffffff,
-            -2px 0px 0 #ffffff, 0px -2px 0 #ffffff;
-
+          .card-top,
+          .card-bottom {
+            font-weight: 600;
+          }
           &::before {
-            top: 5%;
-            left: 5%;
-            height: 90%;
-            width: 100%;
-            border: solid 2px;
+            position: absolute;
+            content: "";
+            top: 10%;
+            left: 10%;
+            border-radius: 10px;
+            height: 80%;
+            width: 80%;
+            border: solid 1px;
             border-color: Vars.$orange;
+          }
+          &::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 0;
+            transform: skew(-40deg, 0deg);
+            height: 100%;
+            width: 100%;
+            background-color: Vars.$orange;
           }
         }
 
@@ -388,10 +439,11 @@
     background-color: Vars.$white;
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
-    opacity: 0; /* État initial caché */
-    transition: opacity 0.2s ease; /* Transition pour l'opacité */
+    opacity: 0;
+    transition: opacity 0.2s ease;
     pointer-events: none;
     overflow: hidden;
+    z-index: 3;
 
     &::after {
       content: "";
@@ -401,7 +453,7 @@
       height: 50%;
       width: 10%;
       background-color: Vars.$blue;
-      transform: rotate(-35deg) translate(150%, -50%);
+      transform: rotate(-45deg) translate(150%, -50%);
     }
 
     &__image {
@@ -561,6 +613,10 @@
   }
 }
 
+.game-area {
+  position: relative;
+}
+
 @keyframes bounce {
   0%,
   20%,
@@ -578,6 +634,8 @@
 }
 
 .game-over-modal {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -590,12 +648,21 @@
   border-radius: 15px;
   transition: opacity 0.2s ease;
   overflow: hidden;
+  z-index: 3;
+
+  img {
+    height: 10rem;
+  }
 }
 
 .game-over-modal__title {
   font-weight: 600;
-  font-size: 2rem;
+  font-size: 2.5rem;
   text-align: center;
+  font-family: "Cherry Bomb One", serif;
+  font-style: normal;
+  letter-spacing: 0.1rem;
+  line-height: 2rem;
 }
 
 .game-over-modal__podium {
@@ -604,19 +671,24 @@
   gap: 1rem;
   margin: 1.5rem 0;
   text-align: center;
-  font-size: 18px;
-  font-family: "Cherry Bomb One", serif;
-  font-style: normal;
+  &-player {
+    &:nth-child(1) {
+      .game-over-modal__podium-player-name {
+        color: Vars.$orange;
+        font-size: 2.5rem;
+      }
+    }
+  }
 }
 
 .game-over-modal__podium-player-rank {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 1.2rem;
+  font-weight: 900;
 }
 
 .game-over-modal__podium-player-name {
-  font-size: 2rem;
-  font-family: "Cherry Bomb One", serif;
+  font-size: 1.5rem;
+  font-weight: 600;
   font-style: normal;
 }
 

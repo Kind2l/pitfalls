@@ -1,4 +1,4 @@
-import { useSound } from "@Auth/SoundContext";
+import { useSound } from "@Context/SoundContext";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 

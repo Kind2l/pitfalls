@@ -1,5 +1,5 @@
-import { useAuth } from "@Auth/SocketContext";
-import { useSound } from "@Auth/SoundContext";
+import { useAuth } from "@Context/SocketContext";
+import { useSound } from "@Context/SoundContext";
 
 import Header from "@Components/Header";
 import Login from "@Components/Login";

@@ -1,7 +1,7 @@
-import { useAuth } from "@Auth/SocketContext";
-import { useSound } from "@Auth/SoundContext";
 import BackButton from "@Components/BackButton";
 import Header from "@Components/Header";
+import { useAuth } from "@Context/SocketContext";
+import { useSound } from "@Context/SoundContext";
 import "@Styles/CreateServer.scss";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -34,7 +34,12 @@ const CreateServer = () => {
       maxCount: 18,
       name: "Fin de zone de contrôle",
     },
-    essence: { count: 6, minCount: 6, maxCount: 18, name: "Essence" },
+    findembouteillage: {
+      count: 6,
+      minCount: 6,
+      maxCount: 18,
+      name: "Fin d'embouteillage",
+    },
     repose: {
       count: 6,
       minCount: 6,
@@ -90,7 +95,8 @@ const CreateServer = () => {
   };
 
   const isServerNameValid = (name) => {
-    const serverNameRegex = /^[a-zA-Z0-9][a-zA-Z0-9\s\-'!?_]{1,28}[a-zA-Z0-9]$/;
+    const serverNameRegex =
+      /^[A-Za-zÀ-ÖØ-öø-ÿ\-_/:!?\"'][A-Za-zÀ-ÖØ-öø-ÿ0-9\-_/:!?\"' ]*[A-Za-zÀ-ÖØ-öø-ÿ\-_/:!?\"']$/;
     return serverNameRegex.test(name);
   };
 
@@ -132,7 +138,7 @@ const CreateServer = () => {
       "server:create",
       {
         user,
-        serverName: String(serverName),
+        serverName: String(serverName).trim(),
         maxPlayers: Number(maxPlayers),
         cardCounts: cardData,
       },
@@ -218,12 +224,13 @@ const CreateServer = () => {
                 <div className="card-group attack">
                   <h4>Cartes d'attaque</h4>
                   <div className="card-counts">
+                    {console.log(cardCounts)}
                     {[
-                      "feurouge",
-                      "zonedecontrole",
-                      "pannedessence",
                       "fatigue",
                       "accident",
+                      "embouteillage",
+                      "zonedecontrole",
+                      "feurouge",
                     ].map((key) => (
                       <div key={key} className="card-counts__element">
                         <div className="card-counts__title">
@@ -280,12 +287,14 @@ const CreateServer = () => {
                     {[
                       "feuvert",
                       "findezonedecontrole",
-                      "essence",
+                      "findembouteillage",
                       "repose",
                       "reparation",
                     ].map((key) => (
                       <div key={key} className="card-counts__element">
-                        <h2>{cardCounts[key].name}</h2>
+                        <div className="card-counts__title">
+                          {cardCounts[key].name}
+                        </div>
                         <div className="card-counts__buttons">
                           <button
                             type="button"

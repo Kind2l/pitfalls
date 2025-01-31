@@ -1,0 +1,79 @@
+@use "@Styles/utils/variables.scss" as Vars;
+
+.board-header {
+  position: relative;
+  background-color: Vars.$white;
+  box-shadow: 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 27px 27px;
+  padding: 0.5rem;
+  text-align: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+
+  .message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2.5rem;
+    width: 2.5rem;
+    background: none;
+    border: none;
+    margin: auto;
+    img {
+      height: 100%;
+    }
+  }
+
+  .logo {
+    height: 3rem;
+    width: 3rem;
+    text-align: center;
+    margin: auto;
+    img {
+      height: 100%;
+    }
+  }
+  .menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2.5rem;
+    width: 2.5rem;
+    background: none;
+    border: none;
+    margin: auto;
+    img {
+      height: 100%;
+    }
+  }
+
+  .short-menu {
+    position: absolute;
+    top: 120%;
+    right: -5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: right 0.2s ease-in;
+
+    &.show {
+      right: 1rem;
+    }
+
+    button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: Vars.$white;
+      border: none;
+      border-radius: 50%;
+      box-shadow: 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
+      height: 3rem;
+      width: 3rem;
+      z-index: 9999;
+    }
+    img {
+      height: 80%;
+    }
+  }
+}

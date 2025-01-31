@@ -19,7 +19,9 @@ const { findUserByUsername } = require("../utils/data");
  * @param {function} callback - La fonction de rappel à exécuter après la création du serveur.
  */
 const validateServerName = (serverName) => {
-  const regex = /^[a-zA-Z0-9][a-zA-Z0-9\s\-'!?_]{1,28}[a-zA-Z0-9]$/;
+  const regex =
+    /^[A-Za-zÀ-ÖØ-öø-ÿ\-_/:!?\"'][A-Za-zÀ-ÖØ-öø-ÿ0-9\-_/:!?\"' ]*[A-Za-zÀ-ÖØ-öø-ÿ\-_/:!?\"']$/;
+
   return regex.test(serverName);
 };
 
@@ -43,6 +45,7 @@ exports.createServer = (request, callback) => {
   try {
     // Validation des paramètres
     if (!request.serverName || typeof request.serverName !== "string") {
+      request.serverName.trim();
       console.error("createServer: Nom du serveur invalide ou absent.");
       return callback({
         success: false,

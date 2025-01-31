@@ -1,20 +1,26 @@
+import ImageLoader from "@Components/ImageLoader";
 import "@Styles/Board/Orbit.scss";
 import React from "react";
 
-const Orbit = ({ players }) => {
+const Orbit = ({ players, maxScore = 1000 }) => {
   if (!players) {
-    return <div>No players data available</div>;
+    return <div>Aucune donnée disponible pour l'orbite</div>;
   }
 
   const playerKeys = Object.keys(players);
 
   return (
     <div className="orbit">
-      <div className="planet"></div>
+      <div className="planet">
+        <ImageLoader name="img_planet2" alt="Planète" />
+      </div>
+      <div className="arrival">
+        <ImageLoader name="img_arrival" alt="Hotel d'arrivée" />
+      </div>
       {playerKeys.map((key, index) => {
         const player = players[key];
         const score = player.score;
-        const rotation = 50 + (score / 1000) * 85; // Convertir le score en angle de rotation
+        const rotation = -30 + (score / maxScore) * 60;
         return (
           <div
             key={player.id}
@@ -26,10 +32,7 @@ const Orbit = ({ players }) => {
             <div className={`car player${player.position}`}>
               <div className="car__name">{player.username}</div>
               <div className="car__image">
-                <img
-                  src={`../images/cars/car${player.position}.svg`}
-                  alt="Voiture des joueurs"
-                />
+                <ImageLoader name={`cars_little_${player.position}`} />
               </div>
             </div>
           </div>

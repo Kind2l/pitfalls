@@ -1,0 +1,38 @@
+@use "@Styles/utils/variables.scss" as Vars;
+
+.page-welcomer {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+
+  .welcomer-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+
+    img {
+      max-width: 30rem;
+      max-height: 30rem;
+      width: 90%;
+    }
+    button {
+      animation: pulse 1s infinite ease-in-out alternate;
+    }
+    @keyframes pulse {
+      from {
+        transform: scale(1);
+      }
+      to {
+        transform: scale(1.1);
+      }
+    }
+  }
+}

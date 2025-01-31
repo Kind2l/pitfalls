@@ -1,6 +1,6 @@
-import { useSound } from "@Auth/SoundContext";
 import BackButton from "@Components/BackButton";
 import Header from "@Components/Header";
+import { useSound } from "@Context/SoundContext";
 import "@Styles/Settings.scss";
 import React, { useState } from "react";
 

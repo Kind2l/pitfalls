@@ -1,7 +1,7 @@
-import { useAuth } from "@Auth/SocketContext";
-import { useSound } from "@Auth/SoundContext";
 import Header from "@Components/Header";
 import WelcomerMessages from "@Components/WelcomerMessages";
+import { useAuth } from "@Context/SocketContext";
+import { useSound } from "@Context/SoundContext";
 import "@Styles/Home/Home.scss";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";

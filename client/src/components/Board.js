@@ -1,16 +1,18 @@
-import { useAuth } from "@Auth/SocketContext";
-import { useSound } from "@Auth/SoundContext";
+import ActionModal from "@Components/Game/ActionModal";
+import AttackModal from "@Components/Game/AttackModal";
+import BoardHeader from "@Components/Game/BoardHeader";
+import NotificationPopup from "@Components/Game/NotificationPopup";
+import PlayerActionModal from "@Components/Game/PlayerActionModal";
+import PlayerAttackNotification from "@Components/Game/PlayerAttackNotification";
+import PlayerHand from "@Components/Game/PlayerHand";
 import ImageLoader from "@Components/ImageLoader.js";
 import Orbit from "@Components/Orbit.js";
+import { useAuth } from "@Context/SocketContext";
+import { useSound } from "@Context/SoundContext";
 import "@Styles/Board/Board.scss";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ActionModal from "./Game/ActionModal";
-import AttackModal from "./Game/AttackModal";
-import NotificationPopup from "./Game/NotificationPopup";
-import PlayerActionModal from "./Game/PlayerActionModal";
-import PlayerAttackNotification from "./Game/PlayerAttackNotification";
-import PlayerHand from "./Game/PlayerHand";
+import CloudPane from "./Game/CloudPane";
 
 const Board = () => {
   const { socket, user } = useAuth();
@@ -454,6 +456,8 @@ const Board = () => {
 
   return (
     <div className="game-board">
+      <BoardHeader />
+
       <header className="game-header">
         {players &&
           Object.values(players).map((player, index) => {
@@ -481,8 +485,9 @@ const Board = () => {
           })}
       </header>
       <section className="game-area">
-        <CardStack numberOfCards={deckCount} />
+        {/* <CardStack numberOfCards={deckCount} /> */}
         {players && <Orbit players={players} />}
+        <CloudPane />
       </section>
       <PlayerHand
         hand={hand}
