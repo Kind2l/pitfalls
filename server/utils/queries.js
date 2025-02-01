@@ -62,13 +62,15 @@ const insertUserInDatabase = async (username, email, hashedPassword) => {
  */
 const updateUserTokenInDatabase = async (username, token) => {
   try {
-    await db.query("UPDATE users SET token = ? WHERE username = ?", [
-      token,
-      username,
-    ]);
+    const result = await db.query(
+      "UPDATE users SET token = ? WHERE username = ?",
+      [token, username]
+    );
+
+    return result.affectedRows > 0 ? true : false;
   } catch (err) {
     console.error("Erreur dans updateUserTokenInDatabase:", err);
-    throw err;
+    return false;
   }
 };
 
