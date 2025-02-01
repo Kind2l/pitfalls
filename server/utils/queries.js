@@ -37,15 +37,14 @@ const findUserByEmailInDatabase = async (email) => {
 /**
  * Insère un nouvel utilisateur dans la base de données.
  * @param {string} username - Nom d'utilisateur.
- * @param {string} email - Email de l'utilisateur.
  * @param {string} hashedPassword - Hash du mot de passe de l'utilisateur.
  * @returns {Promise<number>} Promesse résolue avec l'ID de l'utilisateur inséré.
  */
-const insertUserInDatabase = async (username, email, hashedPassword) => {
+const insertUserInDatabase = async (username, hashedPassword) => {
   try {
     const [results] = await db.query(
-      "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-      [username, email, hashedPassword]
+      "INSERT INTO users (username, password) VALUES (?,  ?)",
+      [username, hashedPassword]
     );
     return Number(results.insertId);
   } catch (err) {

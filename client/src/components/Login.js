@@ -21,8 +21,8 @@ const Login = () => {
   const { playEffect } = useSound();
 
   const usernameRegex =
-    /^(?!.*[-_]$)(?![-_])[a-zA-Z0-9àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ\-_.]{4,20}$/;
-  const passwordRegex = /^[a-zA-Z0-9$/!?:#+]{6,24}$/;
+    /^(?!\s)(?!.*\s$)[a-zA-Z0-9àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ\-_.]{4,20}$/;
+  const dangerousCharsRegex = /[<>{}()[\]"';]/;
 
   // Validation functions
   const validateUsername = (username) => {
@@ -32,6 +32,9 @@ const Login = () => {
     if (username.length > 20) {
       return "Le nom d'utilisateur doit contenir 20 caractères maximum.";
     }
+    if (!dangerousCharsRegex.test(username)) {
+      return `Caractères interdits <>{}()\[]"'`;
+    }
     if (!usernameRegex.test(username)) {
       return "Caractères spéciaux autorisés pour le nom d'utilisateur: - _";
     }
@@ -39,23 +42,15 @@ const Login = () => {
   };
 
   const validatePassword = (password) => {
-    if (password.length < 6) {
+    if (password.length < 4) {
       return "Le mot de passe doit contenir 6 caractères minimum.";
     }
     if (password.length > 24) {
       return "Le mot de passe doit contenir  24 caractères maximum.";
     }
-    if (!/[a-z]/.test(password)) {
-      return "Le mot de passe doit contenir au moins une minuscule.";
-    }
-    if (!/[A-Z]/.test(password)) {
-      return "Le mot de passe doit contenir au moins une majuscule.";
-    }
-    if (!/\d/.test(password)) {
-      return "Le mot de passe doit contenir au moins un chiffre.";
-    }
-    if (!passwordRegex.test(password)) {
-      return "Caractères spéciaux autorisés pour le mot de passe :  $ / ! ? : # +";
+
+    if (!dangerousCharsRegex.test(password)) {
+      return `Caractères interdits <>{}()\[]"'`;
     }
     return "";
   };
@@ -129,7 +124,7 @@ const Login = () => {
               placeholder="Mot de passe"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              minLength={6}
+              minLength={4}
               maxLength={24}
             />
             {password && (

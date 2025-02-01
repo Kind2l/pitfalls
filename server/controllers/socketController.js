@@ -10,7 +10,6 @@ const {
 } = require("../utils/data");
 const {
   findUserByUsernameInDatabase,
-  findUserByEmailInDatabase,
   findUserByIdInDatabase,
   insertUserInDatabase,
   updateUserTokenInDatabase,
@@ -20,57 +19,35 @@ const { servers, findUserBySocketId } = require("../utils/data.js");
 
 // Regex patterns to check for dangerous characters and validate inputs
 const dangerousCharsRegex = /[<>{}()[\]"';]/;
-const usernameRegex = /^[a-zA-Z0-9_-]{4,13}$/;
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const usernameRegex =
+  /^(?!\s)(?!.*\s$)[a-zA-Z0-9àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ\-_.]{4,24}$/;
 
 // Validation functions
 const validateUsername = (username) => {
   if (username.length < 4) {
     return "Le nom d'utilisateur doit faire au minimum 4 caractères";
   }
-  if (username.length > 13) {
-    return "Le nom d'utilisateur doit faire 13 caractères maximum";
-  }
-  if (!usernameRegex.test(username)) {
-    return "Le nom d'utilisateur peut contenir les caractères spéciaux: - _";
+  if (username.length > 20) {
+    return "Le nom d'utilisateur doit faire 20 caractères maximum";
   }
   if (dangerousCharsRegex.test(username)) {
     return "Caractères interdits";
   }
-  return false;
-};
-
-const validateEmail = (email) => {
-  if (!emailRegex.test(email)) {
-    return "Email invalide";
-  }
-  if (dangerousCharsRegex.test(email)) {
-    return "Caractères interdits";
+  if (!usernameRegex.test(username)) {
+    return "Le nom d'utilisateur peut contenir les caractères spéciaux: -._";
   }
   return false;
 };
 
 const validatePassword = (password) => {
-  if (password.length < 8) {
-    return "Le mot de passe trop court doit faire au minimum 8 caractères";
+  if (password.length < 4) {
+    return "Le mot de passe trop court doit faire au minimum 4 caractères";
   }
-  if (password.length > 20) {
-    return "Le mot de passe trop court doit faire 20 caractères maximum";
-  }
-  if (!/[a-z]/.test(password)) {
-    return "Le mot de passe doit contenir au moins une minuscule";
-  }
-  if (!/[A-Z]/.test(password)) {
-    return "Le mot de passe doit contenir au moins une majuscule";
-  }
-  if (!/\d/.test(password)) {
-    return "Le mot de passe doit contenir au moins un chiffre";
-  }
-  if (/[^a-zA-Z0-9$/\!?:#+]/.test(password)) {
-    return "Le mot de passe peut contenir les caractères spéciaux: $ / ! ? : # +";
+  if (password.length > 24) {
+    return "Le mot de passe trop court doit faire 24 caractères maximum";
   }
   if (dangerousCharsRegex.test(password)) {
-    return "Caractères interdits";
+    return `Caractères interdits <>{}()[\]"'`;
   }
   return false;
 };
@@ -234,7 +211,7 @@ exports.login = async (req, callback) => {
 /**
  * Inscrit un nouvel utilisateur dans la base de données.
  *
- * @param {Object} req - Les données de la requête contenant username, email, et password.
+ * @param {Object} req - Les données de la requête contenant username et password.
  * @param {Function} callback - Fonction de rappel pour retourner le résultat.
  */
 exports.register = async (req, callback) => {
@@ -242,13 +219,12 @@ exports.register = async (req, callback) => {
     "register: Entrée dans la fonction avec les données suivantes :",
     req
   );
-  const { username, email, password } = req;
+  const { username, password } = req;
 
   // Vérification des données reçues
-  if (!username || !email || !password) {
+  if (!username || !password) {
     console.log("register: Données manquantes -", {
       username,
-      email,
       password,
     });
     return callback({
@@ -259,7 +235,6 @@ exports.register = async (req, callback) => {
 
   // Validation des données
   const usernameError = validateUsername(username);
-  const emailError = validateEmail(email);
   const passwordError = validatePassword(password);
 
   if (usernameError) {
@@ -267,14 +242,6 @@ exports.register = async (req, callback) => {
     return callback({
       success: false,
       message: usernameError,
-    });
-  }
-
-  if (emailError) {
-    console.log("register: Erreur de validation de l'email :", emailError);
-    return callback({
-      success: false,
-      message: emailError,
     });
   }
 
@@ -302,23 +269,13 @@ exports.register = async (req, callback) => {
       });
     }
 
-    // Vérifier si l'email existe déjà
-    const existingEmail = await findUserByEmailInDatabase(email);
-    if (existingEmail.length > 0) {
-      console.log(`register: Email déjà utilisé - ${email}`);
-      return callback({
-        success: false,
-        message: "Email non valide",
-      });
-    }
-
     console.log("register: Hachage du mot de passe");
     // Hacher le mot de passe
     const hashedPassword = await bcrypt.hash(password, 5);
 
     console.log("register: Insertion de l'utilisateur dans la base de données");
     // Insérer l'utilisateur dans la base de données
-    const user = await insertUserInDatabase(username, email, hashedPassword);
+    const user = await insertUserInDatabase(username, hashedPassword);
     if (!user) {
       console.log(`register: Erreur lors de l'insertion en base (${username})`);
       return callback({
@@ -329,7 +286,7 @@ exports.register = async (req, callback) => {
 
     console.log("register: Récupération de l'utilisateur inséré");
     // Trouver l'utilisateur
-    const insertedUser = await findUserByEmailInDatabase(email);
+    const insertedUser = await findUserByUsernameInDatabase(username);
     if (!insertedUser || insertedUser.length === 0) {
       console.log(
         `register: Utilisateur non trouvé après insertion (${username})`
@@ -344,7 +301,7 @@ exports.register = async (req, callback) => {
     // Créer un token JWT
     const userId = insertedUser[0].id;
     const token = jwt.sign({ id: userId, username }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "24h",
     });
 
     console.log(`register: Enregistrement réussi pour ${username}`);
@@ -352,7 +309,7 @@ exports.register = async (req, callback) => {
     return callback({
       success: true,
       message: `Enregistrement réussi pour ${username}`,
-      data: { id: userId, username, email, token },
+      data: { id: userId, username, token },
     });
   } catch (error) {
     console.error(
@@ -366,12 +323,6 @@ exports.register = async (req, callback) => {
   }
 };
 
-/**
- * Vérifie le token pour connecter directement l'utilisateur.
- *
- * @param {Object} req - Les données de la requête contenant le token.
- * @param {Function} callback - Fonction de rappel pour retourner le résultat.
- */
 /**
  * Vérifie le token pour connecter directement l'utilisateur.
  *

@@ -12,7 +12,6 @@ const Register = ({ setChoice }) => {
   const { addNotification } = useNotification();
 
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordRepeat, setPasswordRepeat] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,17 +21,23 @@ const Register = ({ setChoice }) => {
 
   // Regex patterns
   const usernameRegex =
-    /^(?!.*[-_]$)(?![-_])[a-zA-Z0-9àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ\-_.]{4,20}$/;
-  const passwordRegex = /^[a-zA-Z0-9$/!?:#+]{6,24}$/;
-  const emailRegex = /^[a-z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    /^(?!\s)(?!.*\s$)[a-zA-Z0-9àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ\-_.]{4,20}$/;
+  const dangerousCharsRegex = /[<>{}()[\]"';]/;
 
   // Validation functions
   const validateUsername = (username) => {
+    if (!username) {
+      return "Aucun nom d'utilisateur";
+    }
+
     if (username.length < 4) {
       return "Le nom d'utilisateur doit contenir 4 caractères minimum.";
     }
     if (username.length > 20) {
-      return "Le nom d'utilisateur doit contenir 12 caractères maximum.";
+      return "Le nom d'utilisateur doit contenir 20 caractères maximum.";
+    }
+    if (!dangerousCharsRegex.test(username)) {
+      return `Caractères interdits <>{}()\[]"'`;
     }
     if (!usernameRegex.test(username)) {
       return "Caractères spéciaux autorisés pour le nom d'utilisateur: - _";
@@ -40,33 +45,19 @@ const Register = ({ setChoice }) => {
     return false;
   };
 
-  const validateEmail = (email) => {
-    if (!emailRegex.test(email)) {
-      return "Email invalide.";
-    }
-    return "";
-  };
-
   const validatePassword = (password) => {
-    if (password.length < 6) {
-      return "Le mot de passe doit contenir 6 caractères minimum.";
+    if (!password) {
+      return "Aucun mot de passe.";
+    }
+    if (password.length < 4) {
+      return "Le mot de passe doit contenir 4 caractères minimum.";
     }
     if (password.length > 24) {
       return "Le mot de passe doit contenir  24 caractères maximum.";
     }
-    if (!/[a-z]/.test(password)) {
-      return "Le mot de passe doit contenir au moins une minuscule.";
-    }
-    if (!/[A-Z]/.test(password)) {
-      return "Le mot de passe doit contenir au moins une majuscule.";
-    }
-    if (!/\d/.test(password)) {
-      return "Le mot de passe doit contenir au moins un chiffre.";
-    }
-    console.log(passwordRegex.test(password));
 
-    if (!passwordRegex.test(password)) {
-      return "Caractères spéciaux autorisés pour le mot de passe :  $ / ! ? : # +";
+    if (!dangerousCharsRegex.test(password)) {
+      return `Caractères interdits <>{}()\[]"'`;
     }
     return false;
   };
@@ -83,22 +74,13 @@ const Register = ({ setChoice }) => {
     const trimmedUsername = username.trim();
     const trimmedPassword = password.trim();
     const trimmedPasswordRepeat = passwordRepeat.trim();
-    const trimmedEmail = email.trim();
-
     const usernameError = validateUsername(trimmedUsername);
     const passwordError = validatePassword(trimmedPassword);
     const passwordRepeatError = validatePassword(trimmedPasswordRepeat);
-    const emailError = validateEmail(trimmedEmail);
-
     if (usernameError) {
       setError(usernameError);
       addNotification(usernameError);
 
-      return;
-    }
-
-    if (emailError) {
-      setError(emailError);
       return;
     }
 
@@ -124,7 +106,6 @@ const Register = ({ setChoice }) => {
         {
           username: trimmedUsername,
           password: trimmedPassword,
-          email: trimmedEmail,
         },
         (response) => {
           hideLoader();
@@ -156,19 +137,11 @@ const Register = ({ setChoice }) => {
         </div>
         <div className="form-input">
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="form-input">
-          <input
             type={showPassword ? "text" : "password"}
             placeholder="Mot de passe"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            minLength={6}
+            minLength={4}
             maxLength={24}
           />
           {password && (
@@ -190,7 +163,7 @@ const Register = ({ setChoice }) => {
             placeholder="Confirmation du mot de passe"
             value={passwordRepeat}
             onChange={(e) => setPasswordRepeat(e.target.value)}
-            minLength={6}
+            minLength={4}
             maxLength={24}
           />
         </div>
