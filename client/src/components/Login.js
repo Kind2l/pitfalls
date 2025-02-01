@@ -20,21 +20,22 @@ const Login = () => {
   const [error, setError] = useState("");
   const { playEffect } = useSound();
 
-  const usernameRegex =
-    /^(?!\s)(?!.*\s$)[a-zA-Z0-9àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ\-_.]{4,20}$/;
-  const dangerousCharsRegex = /[<>{}()[\]"';]/;
+  const usernameRegex = /^[a-zA-ZÀ-ÿ-_]{4,20}$/;
+  const passwordRegex = /^[a-zA-ZÀ-ÿ!@#$%^&*-_=+,.?]{4,20}$/;
 
   // Validation functions
   const validateUsername = (username) => {
+    if (!username) {
+      return "Aucun nom d'utilisateur";
+    }
+
     if (username.length < 4) {
       return "Le nom d'utilisateur doit contenir 4 caractères minimum.";
     }
     if (username.length > 20) {
       return "Le nom d'utilisateur doit contenir 20 caractères maximum.";
     }
-    if (!dangerousCharsRegex.test(username)) {
-      return `Caractères interdits <>{}()\[]"'`;
-    }
+
     if (!usernameRegex.test(username)) {
       return "Caractères spéciaux autorisés pour le nom d'utilisateur: - _";
     }
@@ -42,17 +43,19 @@ const Login = () => {
   };
 
   const validatePassword = (password) => {
+    if (!password) {
+      return "Aucun mot de passe.";
+    }
     if (password.length < 4) {
-      return "Le mot de passe doit contenir 6 caractères minimum.";
+      return "Le mot de passe doit contenir 4 caractères minimum.";
     }
-    if (password.length > 24) {
-      return "Le mot de passe doit contenir  24 caractères maximum.";
+    if (password.length > 20) {
+      return "Le mot de passe doit contenir  20 caractères maximum.";
     }
-
-    if (!dangerousCharsRegex.test(password)) {
-      return `Caractères interdits <>{}()\[]"'`;
+    if (!passwordRegex.test(password)) {
+      return `Caractères spéciaux autorisés pour le mot de passe !@#$%^&*-_=+,.?`;
     }
-    return "";
+    return false;
   };
 
   const handlePasswordView = (e) => {
@@ -64,28 +67,29 @@ const Login = () => {
     e.preventDefault();
     setError("");
 
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
-    const usernameError = validateUsername(trimmedUsername);
-    const passwordError = validatePassword(trimmedPassword);
-
-    if (usernameError) {
-      setError(usernameError);
-      return;
-    }
-
-    if (passwordError) {
-      setError(passwordError);
-      return;
-    }
-
     if (username && password) {
+      if (typeof username !== "string" || typeof username !== "string") {
+        setError("Les champs doivent êtres des chaînes de caractères");
+        return;
+      }
+      username.trim();
+      password.trim();
+
+      if (validatePassword(password)) {
+        setError(validatePassword(password));
+        return;
+      }
+      if (validateUsername(username)) {
+        setError(validateUsername(password));
+        return;
+      }
+
       showLoader();
       socket.emit(
         "user:login",
         {
-          username: trimmedUsername,
-          password: trimmedPassword,
+          username,
+          password,
         },
         (response) => {
           hideLoader();

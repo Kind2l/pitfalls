@@ -18,36 +18,43 @@ const { endGame, removeUserFromServerByUsername } = require("./gameController");
 const { servers, findUserBySocketId } = require("../utils/data.js");
 
 // Regex patterns to check for dangerous characters and validate inputs
-const dangerousCharsRegex = /[<>{}()[\]"';]/;
-const usernameRegex =
-  /^(?!\s)(?!.*\s$)[a-zA-Z0-9àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ\-_.]{4,24}$/;
+const usernameRegex = /^[a-zA-ZÀ-ÿ-_]{4,20}$/;
+const passwordRegex = /^[a-zA-ZÀ-ÿ!@#$%^&*-_=+,.?]{4,20}$/;
 
-// Validation functions
+// Validation des entrées utilisateur
 const validateUsername = (username) => {
+  if (!username) {
+    return "Aucun nom d'utilisateur";
+  }
+
   if (username.length < 4) {
-    return "Le nom d'utilisateur doit faire au minimum 4 caractères";
+    return "Le nom d'utilisateur doit contenir 4 caractères minimum.";
   }
   if (username.length > 20) {
-    return "Le nom d'utilisateur doit faire 20 caractères maximum";
+    return "Le nom d'utilisateur doit contenir 20 caractères maximum.";
   }
-  if (dangerousCharsRegex.test(username)) {
-    return "Caractères interdits";
-  }
+  username.trim();
+
   if (!usernameRegex.test(username)) {
-    return "Le nom d'utilisateur peut contenir les caractères spéciaux: -._";
+    return "Caractères spéciaux autorisés pour le nom d'utilisateur: - _";
   }
   return false;
 };
 
 const validatePassword = (password) => {
+  if (!password) {
+    return "Aucun mot de passe.";
+  }
   if (password.length < 4) {
-    return "Le mot de passe trop court doit faire au minimum 4 caractères";
+    return "Le mot de passe doit contenir 4 caractères minimum.";
   }
-  if (password.length > 24) {
-    return "Le mot de passe trop court doit faire 24 caractères maximum";
+  if (password.length > 20) {
+    return "Le mot de passe doit contenir  20 caractères maximum.";
   }
-  if (dangerousCharsRegex.test(password)) {
-    return `Caractères interdits <>{}()[\]"'`;
+  password.trim();
+
+  if (!passwordRegex.test(password)) {
+    return `Caractères spéciaux autorisés pour le mot de passe !@#$%^&*-_=+,.?`;
   }
   return false;
 };
@@ -55,9 +62,6 @@ const validatePassword = (password) => {
 const validateToken = (token) => {
   if (!token || typeof token !== "string") {
     return "Token manquant ou invalide";
-  }
-  if (dangerousCharsRegex.test(token)) {
-    return "Token interdit";
   }
   return false;
 };
@@ -108,6 +112,9 @@ exports.login = async (req, callback) => {
       message: passwordError,
     });
   }
+
+  username.trim();
+  password.trim();
 
   try {
     // Vérifie si l'utilisateur est déjà connecté
@@ -215,18 +222,12 @@ exports.login = async (req, callback) => {
  * @param {Function} callback - Fonction de rappel pour retourner le résultat.
  */
 exports.register = async (req, callback) => {
-  console.log(
-    "register: Entrée dans la fonction avec les données suivantes :",
-    req
-  );
+  console.log("register: Entrée dans la fonction");
   const { username, password } = req;
 
   // Vérification des données reçues
   if (!username || !password) {
-    console.log("register: Données manquantes -", {
-      username,
-      password,
-    });
+    console.log("register: Données manquantes -", { username, password });
     return callback({
       success: false,
       message: "Données non complétées",
@@ -236,6 +237,7 @@ exports.register = async (req, callback) => {
   // Validation des données
   const usernameError = validateUsername(username);
   const passwordError = validatePassword(password);
+  console.log(username);
 
   if (usernameError) {
     console.log("register: Erreur de validation du username :", usernameError);
@@ -255,6 +257,9 @@ exports.register = async (req, callback) => {
       message: passwordError,
     });
   }
+
+  username.trim();
+  password.trim();
 
   try {
     console.log("register: Vérification des utilisateurs existants");

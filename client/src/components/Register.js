@@ -20,9 +20,8 @@ const Register = ({ setChoice }) => {
   const { playEffect } = useSound();
 
   // Regex patterns
-  const usernameRegex =
-    /^(?!\s)(?!.*\s$)[a-zA-Z0-9àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ\-_.]{4,20}$/;
-  const dangerousCharsRegex = /[<>{}()[\]"';]/;
+  const usernameRegex = /^[a-zA-ZÀ-ÿ-_]{4,20}$/;
+  const passwordRegex = /^[a-zA-ZÀ-ÿ!@#$%^&*-_=+,.?]{4,20}$/;
 
   // Validation functions
   const validateUsername = (username) => {
@@ -36,9 +35,7 @@ const Register = ({ setChoice }) => {
     if (username.length > 20) {
       return "Le nom d'utilisateur doit contenir 20 caractères maximum.";
     }
-    if (!dangerousCharsRegex.test(username)) {
-      return `Caractères interdits <>{}()\[]"'`;
-    }
+
     if (!usernameRegex.test(username)) {
       return "Caractères spéciaux autorisés pour le nom d'utilisateur: - _";
     }
@@ -52,12 +49,11 @@ const Register = ({ setChoice }) => {
     if (password.length < 4) {
       return "Le mot de passe doit contenir 4 caractères minimum.";
     }
-    if (password.length > 24) {
-      return "Le mot de passe doit contenir  24 caractères maximum.";
+    if (password.length > 20) {
+      return "Le mot de passe doit contenir  20 caractères maximum.";
     }
-
-    if (!dangerousCharsRegex.test(password)) {
-      return `Caractères interdits <>{}()\[]"'`;
+    if (!passwordRegex.test(password)) {
+      return `Caractères spéciaux autorisés pour le mot de passe !@#$%^&*-_=+,.?`;
     }
     return false;
   };
@@ -71,41 +67,44 @@ const Register = ({ setChoice }) => {
     e.preventDefault();
     setError("");
 
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
-    const trimmedPasswordRepeat = passwordRepeat.trim();
-    const usernameError = validateUsername(trimmedUsername);
-    const passwordError = validatePassword(trimmedPassword);
-    const passwordRepeatError = validatePassword(trimmedPasswordRepeat);
-    if (usernameError) {
-      setError(usernameError);
-      addNotification(usernameError);
-
-      return;
-    }
-
-    if (passwordError) {
-      setError(passwordError);
-      return;
-    }
-
-    if (passwordRepeatError) {
-      setError(passwordRepeatError);
-      return;
-    }
-
-    if (passwordRepeat !== password) {
-      setError("Les mots de passe ne correspondent pas.");
-      return;
-    }
-
     if (username && password && passwordRepeat) {
+      if (
+        typeof username !== "string" ||
+        typeof username !== "string" ||
+        typeof passwordRepeat !== "string"
+      ) {
+        setError("Les champs doivent êtres des chaînes de caractères");
+        return;
+      }
+      username.trim();
+      password.trim();
+      passwordRepeat.trim();
+
+      if (passwordRepeat !== password) {
+        setError("Les mots de passe ne correspondent pas.");
+        return;
+      }
+      if (validateUsername(username)) {
+        console.log("okkkk");
+
+        setError(validateUsername(password));
+        return;
+      }
+      if (validatePassword(password)) {
+        setError(validatePassword(password));
+        return;
+      }
+      if (passwordRepeat !== password) {
+        setError("Les mots de passe sont différents.");
+        return;
+      }
+
       showLoader();
       socket.emit(
         "user:register",
         {
-          username: trimmedUsername,
-          password: trimmedPassword,
+          username: username,
+          password: password,
         },
         (response) => {
           hideLoader();
