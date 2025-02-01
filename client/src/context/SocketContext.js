@@ -4,8 +4,8 @@ import { io } from "socket.io-client";
 // Création d'un contexte pour la gestion de la connexion via Socket.io
 const SocketContext = createContext();
 // https://pitfalls.onrender.com
-const socketIo = io("http://localhost:3001", {
-  reconnection: true,
+const socketIo = io("https://pitfalls.onrender.com", {
+  reconnection: false,
 });
 
 export const SocketProvider = ({ children }) => {

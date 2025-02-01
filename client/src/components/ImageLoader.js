@@ -11,7 +11,6 @@ import message from "@Images/message.svg";
 import musicOff from "@Images/music-off.svg";
 import musicOn from "@Images/music-on.svg";
 import openEye from "@Images/open-eye.svg";
-import planet from "@Images/planet.svg";
 import planet2 from "@Images/planet2.svg";
 import share from "@Images/share.svg";
 import soundOff from "@Images/sound-off.svg";
@@ -60,7 +59,6 @@ const images = {
   img_logoWelcomer: logoWelcomer,
   img_wheel: wheel,
   img_share: share,
-  img_planet: planet,
   img_planet2: planet2,
   img_arrival: arrival,
   img_closeEye: closeEye,
