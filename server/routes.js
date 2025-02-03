@@ -1,5 +1,6 @@
 const {
   login,
+  loginAsGuest,
   logout,
   disconnect,
   register,
@@ -84,6 +85,10 @@ module.exports = (io) => (socket) => {
     };
 
   socket.on("user:login", handleRequest(login, false, "user:login"));
+  socket.on(
+    "user:guest-login",
+    handleRequest(loginAsGuest, false, "user:guest-login")
+  );
   socket.on("user:register", handleRequest(register, false, "user:register"));
   socket.on(
     "user:validate-token",

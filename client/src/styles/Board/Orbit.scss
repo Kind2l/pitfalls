@@ -1,13 +1,13 @@
 @use "@Styles/utils/variables.scss" as Vars;
 
 .orbit {
-  position: fixed;
-  top: 50vh;
+  position: absolute;
+  top: 50%;
   left: 50%;
   transform: translateX(-50%);
-
-  width: 160vw;
-  height: 160vw;
+  background-color: red;
+  max-width: 450px;
+  max-height: 900px;
 
   .planet {
     position: absolute;

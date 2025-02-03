@@ -189,6 +189,7 @@ exports.login = async (req, callback) => {
       id: userRecord.id,
       username,
       socket_id: req.socket.id,
+      isGuest: false,
     });
 
     console.log(
@@ -203,11 +204,82 @@ exports.login = async (req, callback) => {
         id: userRecord.id,
         username,
         token,
+        isGuest: false,
       },
     });
   } catch (err) {
     // Gestion des erreurs
     console.error("login: Erreur lors de la tentative de connexion :", err);
+    return callback({
+      success: false,
+      message: "Erreur interne du serveur",
+    });
+  }
+};
+
+/**
+ * Connecte un utilisateur en mode invité.
+ *
+ * @param {Object} req - Objet contenant les informations de la requête.
+ * @param {Function} callback - Fonction de rappel pour retourner le résultat.
+ *
+ * Cette fonction gère les étapes suivantes :
+ * - Vérification si l'utilisateur existe en mémoire.
+ * - Validation des informations de connexion via la base de données.
+ * - Génération d'un token JWT pour l'utilisateur connecté.
+ * - Ajout de l'utilisateur.
+ *
+ * @returns {void} - Utilise la fonction callback pour renvoyer le résultat.
+ */
+exports.loginAsGuest = async (req, callback) => {
+  console.log("loginAsGuest: Entrée dans la fonction");
+
+  // Génération d'un pseudo aléatoire
+  const currentDate = Date.now();
+  const id = currentDate.toString().slice(-5);
+  const guestUsername = `Guest_${id}`;
+
+  const token = jwt.sign(
+    { id: currentDate, username: guestUsername },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "12h",
+    }
+  );
+
+  try {
+    // Ajout de l'utilisateur invité en mémoire
+    console.log(
+      `loginAsGuest: Ajout de l'utilisateur invité en mémoire - username: ${guestUsername}`
+    );
+    addUser({
+      id: currentDate,
+      username: guestUsername,
+      socket_id: req.socket.id,
+      isGuest: true,
+    });
+
+    console.log(
+      `loginAsGuest: Ajout de l'utilisateur pour l'utilisateur invité - username: ${guestUsername}`
+    );
+
+    // Succès de la connexion
+    return callback({
+      success: true,
+      message: "Connexion en tant qu'invité réussie",
+      data: {
+        id: currentDate,
+        username: guestUsername,
+        token: token,
+        isGuest: true,
+      },
+    });
+  } catch (err) {
+    // Gestion des erreurs
+    console.error(
+      "loginAsGuest: Erreur lors de la tentative de connexion :",
+      err
+    );
     return callback({
       success: false,
       message: "Erreur interne du serveur",
@@ -442,6 +514,7 @@ exports.validateConnectToken = async (req, callback) => {
           id: userRecord[0].id,
           username: userRecord[0].username,
           server_id,
+          isGuest: false,
         },
       });
     } catch (error) {
@@ -500,26 +573,28 @@ exports.validateRequestToken = async (req, callback) => {
         "validateRequestToken: Résultat de findUserByIdInDatabase",
         userRecord
       );
-
-      if (userRecord.length === 0) {
-        console.log("validateRequestToken: Utilisateur non trouvé");
-        return callback({
-          success: false,
-          message: "Utilisateur non trouvé pour la requête",
-        });
+      console.log(req);
+      if (!decoded.username.startsWith("Guest_")) {
+        if (userRecord.length === 0) {
+          console.log("validateRequestToken: Utilisateur non trouvé");
+          return callback({
+            success: false,
+            message: "Utilisateur non trouvé pour la requête",
+          });
+        }
       }
 
       // Réponse de succès avec les données de l'utilisateur
       console.log(
         "validateRequestToken: Validation réussie, utilisateur trouvé",
-        userRecord[0].username
+        userRecord[0]?.username || decoded.username
       );
       return callback({
         success: true,
         message: "Token correct, la requête peut poursuivre",
         data: {
-          id: userRecord[0].id,
-          username: userRecord[0].username,
+          id: userRecord[0]?.id || decoded.id,
+          username: userRecord[0]?.username || decoded.username,
         },
       });
     } catch (error) {

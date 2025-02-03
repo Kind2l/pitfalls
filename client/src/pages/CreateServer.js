@@ -104,7 +104,8 @@ const CreateServer = () => {
   };
 
   const isServerNameValid = (name) => {
-    const serverNameRegex = /^[A-Za-z0-9@#&*?!.,;:()$%^+=_-]{2,35}$/;
+    const serverNameRegex = /^[A-Za-z0-9\s@#&*?!.,;:()$%^+=_-]{2,35}$/;
+
     if (name) {
       return serverNameRegex.test(name);
     } else {

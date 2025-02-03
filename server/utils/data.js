@@ -1,3 +1,5 @@
+const { faker } = require("@faker-js/faker");
+
 let users = {};
 let servers = {};
 
@@ -32,6 +34,7 @@ const addUser = ({ username, id, socket_id }) => {
   };
 
   console.log(`Utilisateur ${username} ajouté avec succès`);
+  console.log(`Liste des utilisateurs :`, users);
   return true;
 };
 
@@ -408,6 +411,70 @@ const setNewOwner = (serverId) => {
   );
   return true;
 };
+
+/**
+ * Génère de faux serveurs dans data
+ */
+
+// function generateRandomString() {
+//   const chars = "abcdefghijklmnopqrstuvwxyz ";
+//   const length = Math.floor(Math.random() * (9 - 4 + 1)) + 4;
+//   let result = "";
+
+//   for (let i = 0; i < length; i++) {
+//     result += chars.charAt(Math.floor(Math.random() * chars.length));
+//   }
+
+//   return result.trim(); // Évite les espaces au début et à la fin
+// }
+
+// const createFakeServer = () => {
+//   const serverId = `fk-${Date.now()}`;
+//   const serverName = generateRandomString();
+//   const maxPlayers = 3; // Exemple : fixe à 4 joueurs pour donner l'impression d'être complet
+
+//   servers[serverId] = {
+//     id: serverId,
+//     name: serverName,
+//     author: faker.internet.username(),
+//     players: {},
+//     maxPlayers: maxPlayers,
+//     currentPlayer: null,
+//     start: true,
+//   };
+
+//   // Ajouter des faux joueurs
+//   for (let i = 1; i <= maxPlayers; i++) {
+//     const username = `Joueur_${Math.floor(Math.random() * 1000)}`;
+//     servers[serverId].players[username] = {
+//       id: i,
+//       username: username,
+//       score: 0,
+//       bonus: [],
+//       states: [],
+//     };
+//   }
+
+//   console.log(`Serveur factice créé : ${serverName} (${serverId})`);
+
+//   // Définir la suppression automatique entre 5 et 13 minutes
+//   const lifetime = Math.floor(Math.random() * (13 - 5 + 1) + 5) * 60 * 1000;
+//   setTimeout(() => {
+//     delete servers[serverId];
+//     console.log(`Serveur factice supprimé : ${serverName}`);
+//   }, lifetime);
+// };
+
+// // Créer un serveur factice toutes les 13 minutes
+// setInterval(() => {
+//   createFakeServer();
+// }, 13 * 60 * 1000);
+
+// // Lancer quelques serveurs au démarrage pour qu'il y en ait dès le début
+// const initialFakeServers = Math.floor(Math.random() * 5) + 1;
+// for (let i = 0; i < initialFakeServers; i++) {
+//   createFakeServer();
+// }
 
 module.exports = {
   users,

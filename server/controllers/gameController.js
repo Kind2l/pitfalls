@@ -19,9 +19,7 @@ const { findUserByUsername } = require("../utils/data");
  * @param {function} callback - La fonction de rappel à exécuter après la création du serveur.
  */
 const validateServerName = (serverName) => {
-  const regex =
-    /^[A-Za-zÀ-ÖØ-öø-ÿ\-_/:!?\"'][A-Za-zÀ-ÖØ-öø-ÿ0-9\-_/:!?\"' ]*[A-Za-zÀ-ÖØ-öø-ÿ\-_/:!?\"']$/;
-
+  const regex = /^[A-Za-z0-9\s@#&*?!.,;:()$%^+=_-]{2,35}$/;
   return regex.test(serverName);
 };
 
@@ -45,11 +43,25 @@ exports.createServer = (request, callback) => {
   try {
     // Validation des paramètres
     if (!request.serverName || typeof request.serverName !== "string") {
-      request.serverName.trim();
       console.error("createServer: Nom du serveur invalide ou absent.");
       return callback({
         success: false,
         message: "Le nom du serveur est requis et doit être une chaîne.",
+      });
+    }
+    request.serverName.trim();
+    if (request?.serverName.length > 35) {
+      console.error("createServer: Nom du serveur invalide ou absent.");
+      return callback({
+        success: false,
+        message: "Nom de serveur trop long (maximum 35 caractères).",
+      });
+    }
+
+    if (request?.serverName.length < 2) {
+      return callback({
+        success: false,
+        message: "Nom de serveur trop court (minimum 2 caractères).",
       });
     }
 

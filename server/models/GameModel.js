@@ -211,10 +211,8 @@ class GameModel {
   reset() {
     // Mélange du deck
     if (this.custom) {
-      console.log("reset custom");
       this.deck = generateCards(this.custom);
     } else {
-      console.log("reset classic");
       this.deck = generateCards();
     }
     this.deck = this.deck.sort(() => Math.random() - 0.5);
@@ -265,7 +263,6 @@ class GameModel {
     let newCurrentPlayer = Number(this.currentPlayer) + 1;
     console.log("nextPlayer: currentPlayer", this.currentPlayer);
     console.log("nextPlayer: newCurrentPlayer", newCurrentPlayer);
-    console.log("nextPlayer: players", this.players);
 
     if (newCurrentPlayer > Object.keys(this.players).length) {
       this.currentPlayer = 1;
