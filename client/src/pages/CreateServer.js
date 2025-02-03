@@ -76,11 +76,6 @@ const CreateServer = () => {
       setErrorMessage("Le nom du serveur est de minimum 2 caractères");
       return;
     }
-    if (!isServerNameValid(serverName)) {
-      setErrorMessage("Caractères spéciaux autorisés : @#&*?!.,;:()$%^+=_-.");
-      return;
-    }
-
     if (maxPlayers < 2 || maxPlayers > 4) {
       setErrorMessage("Le nombre de joueurs doit être compris entre 2 et 4.");
       return;
@@ -101,16 +96,6 @@ const CreateServer = () => {
     }
 
     createServer();
-  };
-
-  const isServerNameValid = (name) => {
-    const serverNameRegex = /^[A-Za-z0-9\s@#&*?!.,;:()$%^+=_-]{2,35}$/;
-
-    if (name) {
-      return serverNameRegex.test(name);
-    } else {
-      return false;
-    }
   };
 
   const createServer = () => {
