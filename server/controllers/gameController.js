@@ -18,10 +18,6 @@ const { findUserByUsername } = require("../utils/data");
  * @param {object} request - La requête contenant les informations du serveur.
  * @param {function} callback - La fonction de rappel à exécuter après la création du serveur.
  */
-const validateServerName = (serverName) => {
-  const regex = /^[A-Za-z0-9\s@#&*?!.,;:()$%^+=_-]{2,35}$/;
-  return regex.test(serverName);
-};
 
 /**
  * Crée un nouveau serveur de jeu.
@@ -62,14 +58,6 @@ exports.createServer = (request, callback) => {
       return callback({
         success: false,
         message: "Nom de serveur trop court (minimum 2 caractères).",
-      });
-    }
-
-    if (!validateServerName(request.serverName)) {
-      console.error("createServer: Validation du nom du serveur échouée.");
-      return callback({
-        success: false,
-        message: "Le nom du serveur est invalide.",
       });
     }
 
