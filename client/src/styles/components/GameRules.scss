@@ -2,13 +2,14 @@
 @import "@Styles/utils/mixins";
 
 .game-rules {
-  padding: 2rem 0;
+  padding: 1rem 0 0;
   width: 100%;
 }
 
 .game-rules h2 {
   margin-bottom: 20px;
   text-align: center;
+  transform: scale(0.8);
 }
 
 .game-rules .show-rules {

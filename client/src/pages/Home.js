@@ -17,7 +17,6 @@ const Home = () => {
   } = useSound();
 
   useEffect(() => {
-    console.log(currentMusicName);
     if (currentMusicName) {
       if (String(currentMusicName) === "bghome") {
         return;

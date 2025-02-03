@@ -85,9 +85,7 @@ const Register = ({ setChoice }) => {
         return;
       }
       if (validateUsername(username)) {
-        console.log("okkkk");
-
-        setError(validateUsername(password));
+        setError(validateUsername(username));
         return;
       }
       if (validatePassword(password)) {

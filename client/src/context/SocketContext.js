@@ -15,6 +15,7 @@ export const SocketProvider = ({ children }) => {
     id: null,
     username: null,
     token: null,
+    isGuest: false,
   });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -54,6 +55,7 @@ export const SocketProvider = ({ children }) => {
     // Stocke le jeton et met à jour l'état utilisateur
     localStorage.setItem("token", data.token);
     setUser(data);
+
     setIsAuthenticated(true);
   };
 
@@ -80,6 +82,7 @@ export const SocketProvider = ({ children }) => {
       id: null,
       username: null,
       token: null,
+      isGuest: false,
     });
     setIsAuthenticated(false);
   };

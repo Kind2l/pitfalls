@@ -1,10 +1,13 @@
 @use "@Styles/utils/variables.scss" as Vars;
 
 .page-welcomer {
-  position: relative;
+  position: absolute;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
   .welcomer-content {
     position: absolute;

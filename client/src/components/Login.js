@@ -80,7 +80,7 @@ const Login = () => {
         return;
       }
       if (validateUsername(username)) {
-        setError(validateUsername(password));
+        setError(validateUsername(username));
         return;
       }
 

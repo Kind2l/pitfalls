@@ -8,6 +8,8 @@ import "@Styles/Connection/Connection.scss";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GameRules from "../components/GameRules";
+import Guest from "../components/Guest";
+import News from "../components/News";
 
 const Connection = () => {
   const [choice, setChoice] = useState(true);
@@ -55,9 +57,11 @@ const Connection = () => {
 
         <div className="connection-content">
           {choice === true ? <Login /> : <Register setChoice={setChoice} />}
+          <Guest />
         </div>
 
         <GameRules />
+        <News />
       </main>
     </>
   );

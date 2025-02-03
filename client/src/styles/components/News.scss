@@ -1,0 +1,57 @@
+@use "@Styles/utils/variables" as Vars;
+@import "@Styles/utils/mixins";
+
+.news {
+  width: 100%;
+}
+
+.news h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  transform: scale(0.8);
+}
+
+.news .show-news {
+  display: block;
+  margin: auto;
+}
+
+.news .news-paragraph {
+  margin-top: 1rem;
+  max-height: 0vh;
+  overflow: hidden;
+  padding: 0rem 1rem;
+  background-color: Vars.$white;
+  border-radius: 27px;
+  color: Vars.$white;
+  transition: max-height ease 0.5s, padding ease 0.5s,
+    background-color step-end 0.5s;
+
+  p,
+  h3 {
+    color: Vars.$white;
+    transition: color ease 0.5s;
+  }
+
+  h3 {
+    // text-decoration-line: underline;
+    text-align: center;
+  }
+
+  h4 {
+    font-size: 1.1rem;
+  }
+
+  &.show {
+    p {
+      color: Vars.$black;
+    }
+    h3 {
+      color: Vars.$blue;
+    }
+    padding: 2rem 1rem;
+    max-height: 200vh;
+    box-shadow: 0px -1px 15px -5px Vars.$black_transparent;
+    transition: padding ease-in-out 0.5s;
+  }
+}

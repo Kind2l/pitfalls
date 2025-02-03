@@ -6,7 +6,6 @@ const ProtectedRoute = () => {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    console.log("Non connecté, accès à la route non autorisé");
     return <Navigate to="/connection" replace />;
   }
   return <Outlet />;

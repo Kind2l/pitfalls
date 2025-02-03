@@ -57,7 +57,6 @@ const WaitingRoom = ({ setGameIsStarted }) => {
           text: `Je t'invite à me rejoindre sur le jeu Pitfalls! Ma partie s'appelle "${serverName}" !`,
           url: "https://pitfalls.kindll.fr",
         });
-        console.log("Partage réussi");
       } catch (error) {
         console.error("Échec du partage", error);
       }

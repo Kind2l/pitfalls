@@ -67,8 +67,17 @@ const CreateServer = () => {
     }
 
     // Validation du nom du serveur
+    if (serverName.length > 35) {
+      setErrorMessage("Le nom du serveur est de maximum 35 caractères");
+      return;
+    }
+
+    if (serverName.length < 2) {
+      setErrorMessage("Le nom du serveur est de minimum 2 caractères");
+      return;
+    }
     if (!isServerNameValid(serverName)) {
-      setErrorMessage("Le nom du serveur est invalide.");
+      setErrorMessage("Caractères spéciaux autorisés : @#&*?!.,;:()$%^+=_-.");
       return;
     }
 
@@ -95,9 +104,12 @@ const CreateServer = () => {
   };
 
   const isServerNameValid = (name) => {
-    const serverNameRegex =
-      /^[A-Za-zÀ-ÖØ-öø-ÿ\-_/:!?\"'][A-Za-zÀ-ÖØ-öø-ÿ0-9\-_/:!?\"' ]*[A-Za-zÀ-ÖØ-öø-ÿ\-_/:!?\"']$/;
-    return serverNameRegex.test(name);
+    const serverNameRegex = /^[A-Za-z0-9@#&*?!.,;:()$%^+=_-]{2,35}$/;
+    if (name) {
+      return serverNameRegex.test(name);
+    } else {
+      return false;
+    }
   };
 
   const createServer = () => {
@@ -154,7 +166,6 @@ const CreateServer = () => {
               "Une erreur est survenue lors de la création du serveur."
           );
         } else {
-          console.log("Serveur créé avec succès :", response?.data?.server_id);
           addPlayerToServer(response?.data?.server_id);
         }
       }
@@ -224,7 +235,6 @@ const CreateServer = () => {
                 <div className="card-group attack">
                   <h4>Cartes d'attaque</h4>
                   <div className="card-counts">
-                    {console.log(cardCounts)}
                     {[
                       "fatigue",
                       "accident",

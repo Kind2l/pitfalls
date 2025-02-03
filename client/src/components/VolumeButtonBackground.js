@@ -1,12 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useSound } from "./SoundContext";
 
 const BackgroundMusicButton = () => {
   const { bgVolume, setBackgroundMusicVolume } = useSound();
-
-  useEffect(() => {
-    console.log(bgVolume);
-  }, []);
 
   const handleVolumeChange = (e) => {
     const newVolume = parseFloat(e.target.value);
