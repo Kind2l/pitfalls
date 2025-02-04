@@ -434,97 +434,112 @@ exports.validateConnectToken = async (req, callback) => {
 
     // Récupération de l'utilisateur depuis la base de données
     console.log("validateConnectToken: Décodage du token réussi", decoded);
-    try {
-      const userRecord = await findUserByIdInDatabase(decoded.id);
-      console.log(
-        "validateConnectToken: Résultat de findUserByIdInDatabase",
-        userRecord
-      );
 
-      if (userRecord.length === 0) {
-        console.log("validateConnectToken: Utilisateur non trouvé");
-        return callback({
-          success: false,
-          message: "Utilisateur non trouvé",
-        });
-      }
+    console.log("req.user", req.user);
 
-      // Vérification de l'existence de l'utilisateur
-      let existingUser = findUserByUsername(userRecord[0].username);
-      console.log(
-        "validateConnectToken: Vérification de l'utilisateur existant",
-        existingUser
-      );
-      let userIsWaiting = false;
-      let server_id = null;
-
-      // Si l'utilisateur est déjà connecté
-      if (existingUser) {
+    if (!decoded.username.startsWith("Guest_")) {
+      try {
+        const userRecord = await findUserByIdInDatabase(decoded.id);
         console.log(
-          "validateConnectToken: Utilisateur existant trouvé",
-          existingUser
+          "validateConnectToken: Résultat de findUserByIdInDatabase",
+          userRecord
         );
-        if (existingUser.removalTimer === false) {
-          console.log(
-            "validateConnectToken: Utilisateur connecté sur un autre navigateur"
-          );
+
+        if (userRecord.length === 0) {
+          console.log("validateConnectToken: Utilisateur non trouvé");
           return callback({
             success: false,
-            message: "Connecté sur un autre navigateur.",
+            message: "Utilisateur non trouvé",
           });
-        } else if (existingUser.removalTimer && existingUser.current_server) {
-          userIsWaiting = true;
-          server_id = existingUser.current_server;
-          console.log(
-            "validateConnectToken: Utilisateur en attente sur un serveur",
-            server_id
-          );
         }
-      }
 
-      // Mise à jour ou ajout de l'utilisateur
-      if (userIsWaiting) {
+        // Vérification de l'existence de l'utilisateur
+        let existingUser = findUserByUsername(userRecord[0].username);
         console.log(
-          "validateConnectToken: Mise à jour de l'utilisateur en attente"
+          "validateConnectToken: Vérification de l'utilisateur existant",
+          existingUser
         );
-        updateUser({
-          username: userRecord[0].username,
-          update: { socket_id: req.socket.id },
+        let userIsWaiting = false;
+        let server_id = null;
+
+        // Si l'utilisateur est déjà connecté
+        if (existingUser) {
+          console.log(
+            "validateConnectToken: Utilisateur existant trouvé",
+            existingUser
+          );
+          if (existingUser.removalTimer === false) {
+            console.log(
+              "validateConnectToken: Utilisateur connecté sur un autre navigateur"
+            );
+            return callback({
+              success: false,
+              message: "Connecté sur un autre navigateur.",
+            });
+          } else if (existingUser.removalTimer && existingUser.current_server) {
+            userIsWaiting = true;
+            server_id = existingUser.current_server;
+            console.log(
+              "validateConnectToken: Utilisateur en attente sur un serveur",
+              server_id
+            );
+          }
+        }
+
+        // Mise à jour ou ajout de l'utilisateur
+        if (userIsWaiting) {
+          console.log(
+            "validateConnectToken: Mise à jour de l'utilisateur en attente"
+          );
+          updateUser({
+            username: userRecord[0].username,
+            update: { socket_id: req.socket.id },
+          });
+          setUserTimer({
+            username: userRecord[0].username,
+            activate: false,
+          });
+        } else {
+          console.log("validateConnectToken: Ajout de l'utilisateur");
+          addUser({
+            id: Number(userRecord[0].id),
+            socket_id: req.socket.id,
+            username: userRecord[0].username,
+          });
+        }
+
+        // Réponse avec les données utilisateur
+        console.log(
+          `validateConnectToken: Connexion du joueur ${userRecord[0].username} - ${req.socket.id}`
+        );
+        callback({
+          success: true,
+          data: {
+            id: userRecord[0].id,
+            username: userRecord[0].username,
+            server_id,
+            isGuest: false,
+          },
         });
-        setUserTimer({
-          username: userRecord[0].username,
-          activate: false,
-        });
-      } else {
-        console.log("validateConnectToken: Ajout de l'utilisateur");
-        addUser({
-          id: Number(userRecord[0].id),
-          socket_id: req.socket.id,
-          username: userRecord[0].username,
+      } catch (error) {
+        console.log(
+          "validateConnectToken: Erreur lors de la validation du token :",
+          error
+        );
+        return callback({
+          success: false,
+          message: "Erreur lors de validation du token",
         });
       }
-
-      // Réponse avec les données utilisateur
-      console.log(
-        `validateConnectToken: Connexion du joueur ${userRecord[0].username} - ${req.socket.id}`
-      );
+    } else {
       callback({
         success: true,
         data: {
-          id: userRecord[0].id,
-          username: userRecord[0].username,
+          id: decoded.id,
+          username: decoded.username,
           server_id,
-          isGuest: false,
+          isGuest: true,
         },
-      });
-    } catch (error) {
-      console.log(
-        "validateConnectToken: Erreur lors de la validation du token :",
-        error
-      );
-      return callback({
-        success: false,
-        message: "Erreur lors de validation du token",
       });
     }
   });
@@ -539,6 +554,7 @@ exports.validateConnectToken = async (req, callback) => {
 exports.validateRequestToken = async (req, callback) => {
   console.log("validateRequestToken: Entrée dans la fonction");
   const { token } = req;
+  console.log("Reqt", req);
 
   // Validation du token
   console.log("validateRequestToken: Validation du token", token);
@@ -586,8 +602,7 @@ exports.validateRequestToken = async (req, callback) => {
 
       // Réponse de succès avec les données de l'utilisateur
       console.log(
-        "validateRequestToken: Validation réussie, utilisateur trouvé",
-        userRecord[0]?.username || decoded.username
+        "validateRequestToken: Validation réussie, utilisateur trouvé"
       );
       return callback({
         success: true,
