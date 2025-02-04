@@ -1,28 +1,51 @@
-const mysql = require("mysql2");
+const { Pool } = require("pg");
 require("dotenv").config();
 
 // Configuration du pool de connexions
-const pool = mysql.createPool({
+const pool = new Pool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+  port: process.env.DB_PORT || 5432,
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 });
 
-// Vérification de la connexion
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error("Erreur lors de la connexion au pool :", err.message);
-  } else {
-    console.log("Connexion au pool réussie !");
-    connection.release(); // Libérer la connexion après vérification
+// Fonction pour créer la table `users` si elle n'existe pas
+const createUsersTable = async () => {
+  const query = `
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      username VARCHAR(50) NOT NULL UNIQUE,
+      password TEXT NOT NULL,
+      created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      token TEXT
+    );
+  `;
+
+  try {
+    const client = await pool.connect();
+    await client.query(query);
+    console.log("Table 'users' vérifiée/créée avec succès.");
+    client.release();
+  } catch (err) {
+    console.error("Erreur lors de la création de la table 'users' :", err);
   }
-});
+};
 
-// Exportation du pool avec des promesses pour une utilisation facile avec async/await
-const db = pool.promise();
+// Vérification de la connexion et création de la table
+pool
+  .connect()
+  .then((client) => {
+    console.log("Connexion au pool réussie !");
+    client.release(); // Libérer immédiatement la connexion
+    return createUsersTable(); // Vérifier/créer la table après connexion
+  })
+  .catch((err) => {
+    console.error("Erreur lors de la connexion au pool :", err.message);
+  });
 
-module.exports = { db };
+// Exportation du pool pour utilisation avec async/await
+module.exports = { db: pool };
