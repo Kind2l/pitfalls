@@ -144,10 +144,10 @@ exports.login = async (req, callback) => {
     console.log(
       `login: Recherche de l'utilisateur dans la base de données - username: ${username}`
     );
-    const userRecords = await findUserByUsernameInDatabase(username);
-    console.log("userRecords", userRecords);
+    const userRecord = await findUserByUsernameInDatabase(username);
+    console.log("userRecords", userRecord);
 
-    if (userRecords?.length === 0) {
+    if (!userRecord) {
       console.log(
         `login: Aucun utilisateur trouvé pour - username: ${username}`
       );
@@ -156,8 +156,6 @@ exports.login = async (req, callback) => {
         message: "Nom d'utilisateur ou mot de passe incorrect",
       });
     }
-
-    const userRecord = userRecords[0];
     console.log(
       `login: Utilisateur trouvé - ID: ${userRecord.id}, username: ${userRecord.username}`
     );
