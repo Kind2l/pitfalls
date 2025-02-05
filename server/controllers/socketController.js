@@ -145,6 +145,7 @@ exports.login = async (req, callback) => {
       `login: Recherche de l'utilisateur dans la base de données - username: ${username}`
     );
     const userRecords = await findUserByUsernameInDatabase(username);
+    console.log("userRecords", userRecords);
 
     if (userRecords?.length === 0) {
       console.log(
@@ -372,7 +373,6 @@ exports.register = async (req, callback) => {
     console.log("register: Récupération de l'utilisateur inséré");
     // Trouver l'utilisateur
     const insertedUser = await findUserByUsernameInDatabase(username);
-    console.log("insertedUser", insertedUser);
     if (!insertedUser || insertedUser.length === 0) {
       console.log(
         `register: Utilisateur non trouvé après insertion (${username})`
@@ -385,7 +385,7 @@ exports.register = async (req, callback) => {
 
     console.log("register: Création du token JWT");
     // Créer un token JWT
-    const userId = insertedUser[0].id;
+    const userId = insertedUser.id;
     const token = jwt.sign({ id: userId, username }, process.env.JWT_SECRET, {
       expiresIn: "24h",
     });
