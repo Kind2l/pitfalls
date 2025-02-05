@@ -372,6 +372,7 @@ exports.register = async (req, callback) => {
     console.log("register: Récupération de l'utilisateur inséré");
     // Trouver l'utilisateur
     const insertedUser = await findUserByUsernameInDatabase(username);
+    console.log("insertedUser", insertedUser);
     if (!insertedUser || insertedUser.length === 0) {
       console.log(
         `register: Utilisateur non trouvé après insertion (${username})`
