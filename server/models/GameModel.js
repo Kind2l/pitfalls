@@ -170,33 +170,7 @@ class GameModel {
     this.id = id;
     this.name = name;
     this.author = author;
-    this.players = new Proxy(
-      {},
-      {
-        set: (target, key, value) => {
-          // Validation : vérifier que la valeur est un joueur valide
-          if (
-            value &&
-            typeof value.id === "number" &&
-            typeof value.username === "string"
-          ) {
-            console.log(`Ajout/mise à jour du joueur : ${key}`);
-            target[key] = value; // Ajout/mise à jour du joueur
-          } else {
-            console.error(
-              `Tentative d'ajout d'une valeur invalide à players :`,
-              value
-            );
-          }
-          return true;
-        },
-        deleteProperty: (target, key) => {
-          console.log(`Suppression du joueur : ${key}`);
-          delete target[key];
-          return true;
-        },
-      }
-    );
+    this.players = {};
     this.maxPlayers = maxPlayers;
     this.deck = [];
     this.discard = [];
@@ -247,11 +221,18 @@ class GameModel {
   }
 
   addPlayer(id, username) {
+    console.log(`GameModel addPlayer: Entrée dans la fonction`);
     let playerCount = Object.keys(this.players).length;
+    console.log(`GameModel addPlayer: Nombre de joueur : ${playerCount}`);
 
     if (Number(playerCount) + 1 <= Number(this.maxPlayers)) {
       let newPlayer = new PlayerModel(id, username);
+      console.log(
+        `GameModel addPlayer: Création d'un nouveau model de joueur`,
+        newPlayer
+      );
       this.players[username] = newPlayer;
+      console.log(`GameModel addPlayer: Ajout du joueur`, newPlayer);
       return true;
     }
     return false;

@@ -1,0 +1,36 @@
+@use "@Styles/utils/variables.scss" as Vars;
+
+.message-overlay {
+  position: fixed;
+  top: 5rem;
+  left: 10%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 1000;
+}
+
+.message-item {
+  background: rgba(255, 255, 255, 0.95);
+  color: Vars.$black;
+  padding: 1rem 0.5rem;
+  border-radius: 15px;
+  font-size: 14px;
+  opacity: 1;
+  animation: fadeOut 3s forwards;
+  span {
+    font-weight: 600;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

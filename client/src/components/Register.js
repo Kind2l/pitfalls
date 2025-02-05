@@ -19,42 +19,50 @@ const Register = ({ setChoice }) => {
   const [error, setError] = useState("");
   const { playEffect } = useSound();
 
-  // Regex patterns
-  const usernameRegex = /^[a-zA-ZÀ-ÿ-_]{4,20}$/;
-  const passwordRegex = /^[a-zA-ZÀ-ÿ!@#$%^&*-_=+,.?]{4,20}$/;
-
   // Validation functions
   const validateUsername = (username) => {
     if (!username) {
-      return "Aucun nom d'utilisateur";
+      return "Aucun nom d'utilisateur fourni.";
     }
 
     if (username.length < 4) {
       return "Le nom d'utilisateur doit contenir 4 caractères minimum.";
     }
+
     if (username.length > 20) {
       return "Le nom d'utilisateur doit contenir 20 caractères maximum.";
     }
 
+    // Regex autorisant lettres, chiffres, accents et caractères spéciaux définis
+    const usernameRegex = /^[a-zA-Z0-9À-ÖØ-öø-ÿ!@#$%^&*\-_=+?]+$/;
+
     if (!usernameRegex.test(username)) {
-      return "Caractères spéciaux autorisés pour le nom d'utilisateur: - _";
+      return "Le nom d'utilisateur contient des caractères non autorisés.";
     }
+
     return false;
   };
 
   const validatePassword = (password) => {
     if (!password) {
-      return "Aucun mot de passe.";
+      return "Aucun mot de passe fourni.";
     }
+
     if (password.length < 4) {
       return "Le mot de passe doit contenir 4 caractères minimum.";
     }
+
     if (password.length > 20) {
-      return "Le mot de passe doit contenir  20 caractères maximum.";
+      return "Le mot de passe doit contenir 20 caractères maximum.";
     }
+
+    // Regex autorisant lettres, chiffres, accents et caractères spéciaux définis
+    const passwordRegex = /^[a-zA-Z0-9À-ÖØ-öø-ÿ!@#$%^&*\-_=+?]+$/;
+
     if (!passwordRegex.test(password)) {
-      return `Caractères spéciaux autorisés pour le mot de passe !@#$%^&*-_=+,.?`;
+      return "Le mot de passe contient des caractères non autorisés.";
     }
+
     return false;
   };
 
@@ -73,7 +81,7 @@ const Register = ({ setChoice }) => {
         typeof username !== "string" ||
         typeof passwordRepeat !== "string"
       ) {
-        setError("Les champs doivent êtres des chaînes de caractères");
+        setError("Les champs doivent êtres des chaînes de caractères.");
         return;
       }
       username.trim();
@@ -93,7 +101,7 @@ const Register = ({ setChoice }) => {
         return;
       }
       if (passwordRepeat !== password) {
-        setError("Les mots de passe sont différents.");
+        setError("Les mots de passe ne correspondent pas.");
         return;
       }
 

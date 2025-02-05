@@ -3,7 +3,7 @@ import React from "react";
 const NotificationPopup = ({ notification, notificationIsVisible }) => {
   return (
     <div
-      className={`notification-popup ${notificationIsVisible ? "show" : ""} ${
+      className={`notification-popup ${notificationIsVisible && "show"} ${
         notification?.type || ""
       }`}
     >

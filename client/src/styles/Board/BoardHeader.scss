@@ -46,34 +46,41 @@
       height: 100%;
     }
   }
-
-  .short-menu {
-    position: absolute;
-    top: 120%;
-    right: -5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    transition: right 0.2s ease-in;
-
-    &.show {
-      right: 1rem;
-    }
-
-    button {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: Vars.$white;
-      border: none;
-      border-radius: 50%;
-      box-shadow: 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
-      height: 3rem;
-      width: 3rem;
-      z-index: 9999;
+}
+.message-input {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  min-height: 4rem;
+  z-index: 1;
+  background-color: Vars.$white;
+  box-shadow: 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
+  border-radius: 27px 27px 0 0;
+  padding: 0.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  input {
+    border-radius: 25px;
+    background-color: Vars.$grey_transparent;
+    border: 0;
+    flex: 1;
+  }
+  button {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 50%;
+    border: none;
+    background-color: Vars.$green;
+    &:focus-visible {
+      outline: none;
     }
     img {
-      height: 80%;
+      height: 100%;
+      width: 100%;
     }
   }
 }

@@ -18,6 +18,7 @@ const {
   initServer,
   playerAction,
   removeCard,
+  message,
 } = require("./controllers/gameController");
 
 const tokenMiddleware = async (req, requestName) => {
@@ -123,6 +124,10 @@ module.exports = (io) => (socket) => {
   socket.on(
     "game:player-remove-card",
     handleRequest(removeCard, true, "game:player-remove-card")
+  );
+  socket.on(
+    "game:player-message",
+    handleRequest(message, true, "game:player-message")
   );
 
   socket.on("disconnect", () => {

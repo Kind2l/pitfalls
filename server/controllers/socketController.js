@@ -18,44 +18,51 @@ const { endGame, removeUserFromServerByUsername } = require("./gameController");
 const { servers, findUserBySocketId } = require("../utils/data.js");
 
 // Regex patterns to check for dangerous characters and validate inputs
-const usernameRegex = /^[a-zA-ZÀ-ÿ-_]{4,20}$/;
-const passwordRegex = /^[a-zA-ZÀ-ÿ!@#$%^&*-_=+,.?]{4,20}$/;
 
 // Validation des entrées utilisateur
 const validateUsername = (username) => {
   if (!username) {
-    return "Aucun nom d'utilisateur";
+    return "Aucun nom d'utilisateur fourni.";
   }
 
   if (username.length < 4) {
     return "Le nom d'utilisateur doit contenir 4 caractères minimum.";
   }
+
   if (username.length > 20) {
     return "Le nom d'utilisateur doit contenir 20 caractères maximum.";
   }
-  username.trim();
+
+  // Regex autorisant lettres, chiffres, accents et caractères spéciaux définis
+  const usernameRegex = /^[a-zA-Z0-9À-ÖØ-öø-ÿ!@#$%^&*\-_=+?]+$/;
 
   if (!usernameRegex.test(username)) {
-    return "Caractères spéciaux autorisés pour le nom d'utilisateur: - _";
+    return "Le nom d'utilisateur contient des caractères non autorisés.";
   }
+
   return false;
 };
 
 const validatePassword = (password) => {
   if (!password) {
-    return "Aucun mot de passe.";
+    return "Aucun mot de passe fourni.";
   }
+
   if (password.length < 4) {
     return "Le mot de passe doit contenir 4 caractères minimum.";
   }
+
   if (password.length > 20) {
-    return "Le mot de passe doit contenir  20 caractères maximum.";
+    return "Le mot de passe doit contenir 20 caractères maximum.";
   }
-  password.trim();
+
+  // Regex autorisant lettres, chiffres, accents et caractères spéciaux définis
+  const passwordRegex = /^[a-zA-Z0-9À-ÖØ-öø-ÿ!@#$%^&*\-_=+?]+$/;
 
   if (!passwordRegex.test(password)) {
-    return `Caractères spéciaux autorisés pour le mot de passe !@#$%^&*-_=+,.?`;
+    return "Le mot de passe contient des caractères non autorisés.";
   }
+
   return false;
 };
 
@@ -171,7 +178,7 @@ exports.login = async (req, callback) => {
     // Génération d'un token JWT
     console.log(`login: Génération du token JWT pour - username: ${username}`);
     const token = jwt.sign(
-      { id: userRecord.id, username },
+      { id: userRecord.id, username, isGuest: false },
       process.env.JWT_SECRET
     );
 
@@ -241,7 +248,7 @@ exports.loginAsGuest = async (req, callback) => {
   const guestUsername = `Guest_${gestNumber}`;
 
   const token = jwt.sign(
-    { id: id, username: guestUsername },
+    { id: id, username: guestUsername, isGuest: true },
     process.env.JWT_SECRET,
     {
       expiresIn: "12h",
@@ -436,26 +443,32 @@ exports.validateConnectToken = async (req, callback) => {
     // Récupération de l'utilisateur depuis la base de données
     console.log("validateConnectToken: Décodage du token réussi", decoded);
     try {
-      const userRecord = await findUserByIdInDatabase(decoded.id);
-      console.log(
-        "validateConnectToken: Résultat de findUserByIdInDatabase",
-        userRecord
-      );
+      if (decoded?.isGuest === false) {
+        console.log("validateConnectToken: L'utilisateur n'est pas un invité");
 
-      if (userRecord.length === 0) {
-        console.log("validateConnectToken: Utilisateur non trouvé");
-        return callback({
-          success: false,
-          message: "Utilisateur non trouvé",
-        });
+        const userRecord = await findUserByIdInDatabase(decoded.id);
+        console.log(
+          "validateConnectToken: Recherche du joueur dans la base de données",
+          userRecord
+        );
+
+        if (userRecord.length === 0) {
+          console.log("validateConnectToken: Utilisateur non trouvé");
+          return callback({
+            success: false,
+            message: "Utilisateur non trouvé",
+          });
+        }
       }
 
       // Vérification de l'existence de l'utilisateur
-      let existingUser = findUserByUsername(userRecord[0].username);
+      const existingUser = findUserByUsername(decoded.username);
+
       console.log(
         "validateConnectToken: Vérification de l'utilisateur existant",
         existingUser
       );
+
       let userIsWaiting = false;
       let server_id = null;
 
@@ -489,33 +502,33 @@ exports.validateConnectToken = async (req, callback) => {
           "validateConnectToken: Mise à jour de l'utilisateur en attente"
         );
         updateUser({
-          username: userRecord[0].username,
+          username: decoded.username,
           update: { socket_id: req.socket.id },
         });
         setUserTimer({
-          username: userRecord[0].username,
+          username: decoded.username,
           activate: false,
         });
       } else {
         console.log("validateConnectToken: Ajout de l'utilisateur");
         addUser({
-          id: Number(userRecord[0].id),
+          id: Number(decoded.id),
           socket_id: req.socket.id,
-          username: userRecord[0].username,
+          username: decoded.username,
         });
       }
 
       // Réponse avec les données utilisateur
       console.log(
-        `validateConnectToken: Connexion du joueur ${userRecord[0].username} - ${req.socket.id}`
+        `validateConnectToken: Connexion du joueur ${decoded.username} - ${req.socket.id}`
       );
       callback({
         success: true,
         data: {
-          id: userRecord[0].id,
-          username: userRecord[0].username,
+          id: decoded.id,
+          username: decoded.username,
           server_id,
-          isGuest: false,
+          isGuest: decoded.isGuest,
         },
       });
     } catch (error) {
@@ -540,6 +553,7 @@ exports.validateConnectToken = async (req, callback) => {
 exports.validateRequestToken = async (req, callback) => {
   console.log("validateRequestToken: Entrée dans la fonction");
   const { token } = req;
+  let existingUser = false;
 
   // Validation du token
   console.log("validateRequestToken: Validation du token", token);
@@ -568,34 +582,38 @@ exports.validateRequestToken = async (req, callback) => {
 
     // Décodage réussi, on récupère l'utilisateur
     console.log("validateRequestToken: Décodage du token réussi", decoded);
+
     try {
-      const userRecord = await findUserByIdInDatabase(decoded.id);
-      console.log(
-        "validateRequestToken: Résultat de findUserByIdInDatabase",
-        userRecord
-      );
-      console.log(req);
-      if (!decoded.username.startsWith("Guest_")) {
+      if (decoded?.isGuest === false) {
+        console.log("validateRequestToken: L'utilisateur n'est pas un invité");
+        const userRecord = await findUserByIdInDatabase(decoded.id);
+        console.log(
+          "validateRequestToken: Résultat de findUserByIdInDatabase",
+          userRecord
+        );
+
         if (userRecord.length === 0) {
           console.log("validateRequestToken: Utilisateur non trouvé");
           return callback({
             success: false,
-            message: "Utilisateur non trouvé pour la requête",
+            message: "Utilisateur non trouvé",
           });
         }
       }
 
+      existingUser = findUserByUsername(decoded.username);
+
       // Réponse de succès avec les données de l'utilisateur
       console.log(
         "validateRequestToken: Validation réussie, utilisateur trouvé",
-        userRecord[0]?.username || decoded.username
+        decoded.username
       );
       return callback({
         success: true,
         message: "Token correct, la requête peut poursuivre",
         data: {
-          id: userRecord[0]?.id || decoded.id,
-          username: userRecord[0]?.username || decoded.username,
+          id: decoded.id,
+          username: decoded.username,
         },
       });
     } catch (error) {

@@ -24,14 +24,14 @@ export const WelcomerPageProvider = ({ children }) => {
     setIsWatched(true);
   };
 
-  if (!isMobile) {
-    return (
-      <div className="desktop-message">
-        <h2>Pitfalls est accessible uniquement sur mobile !</h2>
-        <p>Pour jouer au jeu, accédez au jeu via votre smartphone !</p>
-      </div>
-    );
-  }
+  // if (!isMobile) {
+  //   return (
+  //     <div className="desktop-message">
+  //       <h2>Pitfalls est accessible uniquement sur mobile !</h2>
+  //       <p>Pour jouer au jeu, accédez au jeu via votre smartphone !</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <WelcomerPageContext.Provider value={{ isWatched, watch }}>

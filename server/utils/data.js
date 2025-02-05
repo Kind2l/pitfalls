@@ -14,6 +14,7 @@ let servers = {};
  *
  */
 const addUser = ({ username, id, socket_id }) => {
+  console.log(`data addPlayer: Entrée dans la fonction`);
   // Vérifie si tous les paramètres requis sont fournis et valides
   if (!username || id === undefined || id === null || !socket_id) {
     console.log("Échec de l'ajout de l'utilisateur : paramètres invalides", {

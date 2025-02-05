@@ -147,11 +147,15 @@ const Board = () => {
 
   // Show notification for a short period
   useEffect(() => {
+    setNotificationIsVisible(false);
+    setAttackNotificationIsVisible(false);
+    setActionNotificationIsVisible(false);
+
     if (notification) {
       setNotificationIsVisible(true);
 
       // Hide notification after 3 seconds
-      let timerAppear = setTimeout(() => {
+      let timerNotificationAppear = setTimeout(() => {
         setNotificationIsVisible(false);
       }, 1000);
 
@@ -161,7 +165,7 @@ const Board = () => {
       }, 2000);
 
       return () => {
-        clearTimeout(timerAppear);
+        clearTimeout(timerNotificationAppear);
         clearTimeout(timerData);
       };
     }
@@ -296,6 +300,7 @@ const Board = () => {
       if (selectedCard) {
         if (selectedCard.type === "attaque") {
           if (attackedPlayer) {
+            console.log(attackedPlayer);
             socket.emit(
               "game:player-action",
               {

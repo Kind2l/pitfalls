@@ -1,6 +1,6 @@
 class PlayerModel {
   constructor(id, username) {
-    this.id = id;
+    this.id = Number(id);
     this.username = username;
     this.hand = [];
     this.bonus = {

@@ -11,6 +11,7 @@ import effectClose from "../audio/close.mp3";
 import effectDrives from "../audio/drives.wav";
 import effectGaz from "../audio/gaz.mp3";
 import effectHorn from "../audio/horn.mp3";
+import effectMessage from "../audio/message.mp3";
 import effectOpen from "../audio/open.mp3";
 import effectPilote from "../audio/pilote.wav";
 import effectPolice from "../audio/police.wav";
@@ -47,6 +48,7 @@ const EffectsList = {
   yawn: effectYawn,
   accident: effectAccident,
   brake: effectBrake,
+  message: effectMessage,
 };
 
 // Fournisseur du contexte

@@ -1,5 +1,6 @@
 import ImageLoader from "@Components/ImageLoader";
 import { useSound } from "@Context/SoundContext";
+import "@Styles/Board/ShortMenu.scss";
 import React, { useState } from "react";
 
 const ShortMenu = ({ isOpen }) => {
@@ -33,7 +34,10 @@ const ShortMenu = ({ isOpen }) => {
   return (
     <div className={`short-menu ${isOpen && "show"}`}>
       <button onClick={toggleMusic}>
-        <ImageLoader name="img_musicOn" alt="Musique" />
+        <ImageLoader
+          name={musicVolume > 0 ? "img_musicOn" : "img_musicOff"}
+          alt="Musique"
+        />
       </button>
       <button onClick={toggleEffect}>
         <ImageLoader
