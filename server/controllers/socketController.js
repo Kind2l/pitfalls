@@ -146,7 +146,7 @@ exports.login = async (req, callback) => {
     );
     const userRecords = await findUserByUsernameInDatabase(username);
 
-    if (userRecords.length === 0) {
+    if (userRecords?.length === 0) {
       console.log(
         `login: Aucun utilisateur trouvé pour - username: ${username}`
       );
@@ -346,7 +346,7 @@ exports.register = async (req, callback) => {
 
     // Vérifier si le nom d'utilisateur existe déjà
     const existingUsername = await findUserByUsernameInDatabase(username);
-    if (existingUsername.length > 0) {
+    if (existingUsername?.length > 0) {
       console.log(`register: Nom d'utilisateur déjà pris - ${username}`);
       return callback({
         success: false,
