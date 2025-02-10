@@ -17,7 +17,7 @@
   margin: auto;
 }
 
-.game-rules .rules-paragraph {
+.game-rules .rules-content {
   margin-top: 1rem;
   max-height: 0vh;
   overflow: hidden;
@@ -39,10 +39,6 @@
     text-align: center;
   }
 
-  h4 {
-    font-size: 1.1rem;
-  }
-
   &.show {
     p {
       color: Vars.$black;
@@ -51,8 +47,71 @@
       color: Vars.$blue;
     }
     padding: 2rem 1rem;
-    max-height: 200vh;
+    max-height: 500vh;
     box-shadow: 0px -1px 15px -5px Vars.$black_transparent;
     transition: padding ease-in-out 0.5s;
+  }
+
+  > ul {
+    display: grid;
+    gap: 1rem;
+    > li {
+      h4 {
+        font-weight: 600;
+      }
+      padding: 0.2rem;
+      &:nth-child(odd) {
+        border-radius: 15px;
+        background-color: Vars.$grey_transparent;
+      }
+    }
+  }
+
+  .cards {
+    gap: 0.5rem;
+    color: Vars.$black;
+
+    li {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin: 0.5rem;
+      align-items: center;
+    }
+
+    .card-img img {
+      height: 3rem;
+      margin-right: 1rem;
+    }
+
+    .card-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .card-description {
+      font-size: 0.8rem;
+      line-height: 1.2rem;
+      width: 100%;
+    }
+
+    .card {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      > div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        align-items: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 0.25rem 1rem;
+        border-bottom: 1px solid Vars.$grey_transparent;
+        img {
+          width: 3rem;
+        }
+      }
+    }
   }
 }

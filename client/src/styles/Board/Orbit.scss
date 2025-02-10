@@ -28,7 +28,7 @@
   }
   .arrival {
     position: absolute;
-    top: 50%;
+    top: 48%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(30deg);
     // border-radius: 50%;
@@ -54,7 +54,7 @@
     transition: transform 0.5s ease;
     .car {
       position: absolute;
-      top: -4.3rem;
+      top: -4em;
       left: 50%;
       height: 4rem;
       width: 4rem;
@@ -66,7 +66,6 @@
         left: 50%;
         transform: translateX(-50%);
         width: 100%;
-        height: 100%;
 
         text-align: center;
         img {

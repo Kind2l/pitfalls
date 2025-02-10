@@ -1,3 +1,4 @@
+import ImageLoader from "@Components/ImageLoader";
 import "@Styles/components/GameRules.scss";
 import React, { useState } from "react";
 const GameRules = () => {
@@ -19,9 +20,7 @@ const GameRules = () => {
         Règles du Jeu
       </h2>
 
-      <div
-        className={`rules-paragraph ${expandedSections.showRules && "show"}`}
-      >
+      <div className={`rules-content ${expandedSections.showRules && "show"}`}>
         <h3>Objectif</h3>
         <p>
           L'objectif est d'atteindre la destination de vacances. Mais attention,
@@ -32,14 +31,14 @@ const GameRules = () => {
         </p>
 
         <h3>Déroulement du Jeu</h3>
-
         <p>
-          Chaque joueur reçoit un certain nombre de cartes au début du jeu.
+          Chaque joueur reçoit le même nombre de cartes (entre 3 et 6 selon le
+          type de partie).
           <br /> À chaque tour, les joueurs jouent une carte de leur main, puis
           piochent une nouvelle carte. <br />
           Les joueurs peuvent utiliser des cartes pour avancer, se protéger,
           s'immuniser ou attaquer. <br />
-          Le premier joueur à atteindre ladestination de vacances gagne la
+          Le premier joueur à atteindre la destination de vacances gagne la
           partie.
         </p>
 
@@ -49,7 +48,7 @@ const GameRules = () => {
             <h4 className="color-sky">Cartes de Kilomètres</h4>
             <p>
               Ces cartes vous permettent d'avancer d'un certain nombre de
-              kilomètres.
+              kilomètres. Vous pouvez avancer de 25, 50, 75, 100 ou 200 kms.
             </p>
           </li>
           <li>
@@ -59,13 +58,212 @@ const GameRules = () => {
           <li>
             <h4 className="color-red">Cartes d'attaque</h4>
             <p>Utilisez ces cartes pour ralentir ou arrêter vos adversaires.</p>
+
+            <ul className="cards">
+              <li>
+                <div className="card-img">
+                  <ImageLoader name="card_feurouge" />
+                </div>
+                <div className="card-name">Feu rouge</div>
+                <div className="card-description">
+                  Le joueur ne peut plus avancer avant d'utiliser un Feu vert.
+                  Ne peut pas être appliqué si le joueur possède le bonus "Carte
+                  de police".
+                </div>
+              </li>
+
+              <li>
+                <div className="card-img">
+                  <ImageLoader name="card_accident" />
+                </div>
+                <div className="card-name">Accident</div>
+                <div className="card-description">
+                  Le joueur ne peut plus avancer avant d'utiliser une
+                  Réparation. Ne peut pas être appliqué si le joueur possède le
+                  bonus "Pilote".
+                </div>
+              </li>
+              <li>
+                <div className="card-img">
+                  <ImageLoader name="card_fatigue" />
+                </div>
+                <div className="card-name">Fatigue</div>
+                <div className="card-description">
+                  Le joueur ne peut plus avancer avant d'utiliser En pleine
+                  forme. Ne peut pas être appliqué si le joueur possède le bonus
+                  "Infatiguable".
+                </div>
+              </li>
+              <li>
+                <div className="card-img">
+                  <ImageLoader name="card_embouteillage" />
+                </div>
+                <div className="card-name">Embouteillage</div>
+                <div className="card-description">
+                  Le joueur ne peut plus avancer avant d'utiliser Fin
+                  d'embouteillage. Ne peut pas être appliqué si le joueur
+                  possède le bonus "Déviation".
+                </div>
+              </li>
+            </ul>
           </li>
           <li>
             <h4 className="color-orange">Cartes bonus</h4>
             <p>
               Elles vous permettent d'être immunisé contre certaines attaques.
             </p>
+
+            <ul className="cards">
+              <li>
+                <div className="card-img">
+                  <ImageLoader name="card_cartedepolice" />
+                </div>
+                <div className="card-name">Carte de police</div>
+                <div className="card-description">
+                  Il n'est plus possible pour le joueur d'être attaqué par un
+                  feu rouge ou une zone de contrôle.
+                </div>
+              </li>
+              <li>
+                <div className="card-img">
+                  <ImageLoader name="card_pilote" />
+                </div>
+                <div className="card-name">Pilote</div>
+                <div className="card-description">
+                  Il n'est plus possible pour le joueur d'être attaqué par un
+                  accident.
+                </div>
+              </li>
+              <li>
+                <div className="card-img">
+                  <ImageLoader name="card_infatiguable" />
+                </div>
+                <div className="card-name">Infatiguable</div>
+                <div className="card-description">
+                  Il n'est plus possible pour le joueur d'être attaqué par une
+                  fatigue.
+                </div>
+              </li>
+              <li>
+                <div className="card-img">
+                  <ImageLoader name="card_deviation" />
+                </div>
+                <div className="card-name">Déviation</div>
+                <div className="card-description">
+                  Il n'est plus possible pour le joueur d'être attaqué par un
+                  embouteillage.
+                </div>
+              </li>
+            </ul>
           </li>
+        </ul>
+        <ul className="cards">
+          <li>
+            <div className="card-img">
+              <ImageLoader name="card_feuvert" />
+            </div>
+            <div className="card-name">Feu vert</div>
+            <div className="card-description">
+              Cette carte permet de contrer le Feu rouge. Le joueur peut à
+              nouveau avancer. Elle peut être nécessaire dès le début dans
+              certaines partie pour pouvoir commencer à rouler. Elle n'est plus
+              nécessaire avec le bonus "Carte de police".
+            </div>
+          </li>
+          <li>
+            <div className="card-img">
+              <ImageLoader name="card_findezonedecontrole" />
+            </div>
+            <div className="card-name">Fin de zone de contrôle</div>
+            <div className="card-description">
+              Cette carte permet de contrer la zone de contrôle. Le joueur peut
+              à nouveau avancer à plus de 50 km. Elle n'est plus nécessaire avec
+              le bonus "Carte de police".
+            </div>
+          </li>
+          <li>
+            <div className="card-img">
+              <ImageLoader name="card_reparation" />
+            </div>
+            <div className="card-name">Réparation</div>
+            <div className="card-description">
+              Cette carte permet de contrer un accident. Le joueur peut à
+              nouveau avancer. Elle n'est plus nécessaire avec le bonus
+              "Pilote".
+            </div>
+          </li>
+          <li>
+            <div className="card-img">
+              <ImageLoader name="card_repose" />
+            </div>
+            <div className="card-name">En pleine forme</div>
+            <div className="card-description">
+              Cette carte permet de contrer la fatigue. Le joueur peut à nouveau
+              avancer. Elle n'est plus nécessaire avec le bonus "infatiguable".
+            </div>
+          </li>
+          <div lassName="cards">
+            <div className="card">
+              <div className="card-attaque color-red">Cartes d'attaque</div>
+              <div className="card-parade color-green">Cartes de défense</div>
+              <div className="card-bonus color-orange">Cartes bonus</div>
+            </div>
+            <div className="card">
+              <div className="card-attaque">
+                <ImageLoader name="card_feurouge" />
+              </div>
+              <div className="card-parade">
+                <ImageLoader name="card_feuvert" />
+              </div>
+              <div className="card-bonus">
+                <ImageLoader name="card_cartedepolice" />
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-attaque">
+                <ImageLoader name="card_zonedecontrole" />
+              </div>
+              <div className="card-parade">
+                <ImageLoader name="card_findezonedecontrole" />
+              </div>
+              <div className="card-bonus">
+                <ImageLoader name="card_cartedepolice" />
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-attaque">
+                <ImageLoader name="card_fatigue" />
+              </div>
+              <div className="card-parade">
+                <ImageLoader name="card_repose" />
+              </div>
+              <div className="card-bonus">
+                <ImageLoader name="card_infatiguable" />
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-attaque">
+                <ImageLoader name="card_accident" />
+              </div>
+              <div className="card-parade">
+                <ImageLoader name="card_reparation" />
+              </div>
+              <div className="card-bonus">
+                <ImageLoader name="card_pilote" />
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-attaque">
+                <ImageLoader name="card_embouteillage" />
+              </div>
+              <div className="card-parade">
+                <ImageLoader name="card_findembouteillage" />
+              </div>
+              <div className="card-bonus">
+                <ImageLoader name="card_deviation" />
+              </div>
+            </div>
+          </div>
         </ul>
       </div>
     </div>

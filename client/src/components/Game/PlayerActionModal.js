@@ -42,8 +42,8 @@ const PlayerActionModal = ({
   return (
     <div
       className={`player-action-modal ${
-        actionNotificationIsVisible && "show"
-      } ${actionNotification?.type}`}
+        actionNotificationIsVisible && "show " + actionNotification?.type
+      }`}
     >
       <div className="player-action-modal__content">
         <div className="player-action-modal__image">
@@ -61,8 +61,8 @@ const PlayerActionModal = ({
         <div className="player-action-modal__message">
           {actionNotification?.type === "borne" && (
             <>
-              <span>{actionNotification?.player}</span> avance de{" "}
-              <span>{actionNotification?.card?.value} kms</span>.
+              <span className="cherry-font">{actionNotification?.player}</span>{" "}
+              avance de <span>{actionNotification?.card?.value} kms</span>.
             </>
           )}
           {actionNotification?.type === "parade" &&
@@ -86,7 +86,8 @@ const PlayerActionModal = ({
           )}
           {actionNotification?.type === "remove" && (
             <>
-              <span>{actionNotification?.player}</span> défausse une carte.
+              <span className="cherry-font">{actionNotification?.player}</span>{" "}
+              défausse une carte.
             </>
           )}
         </div>

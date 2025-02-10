@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 const SocketContext = createContext();
 // https://pitfalls.onrender.com
 const socketIo = io("https://pitfalls.onrender.com", {
-  reconnection: false,
+  transports: ["websocket"],
 });
 
 export const SocketProvider = ({ children }) => {

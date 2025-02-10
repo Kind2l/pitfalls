@@ -7,17 +7,20 @@ import PlayerAttackNotification from "@Components/Game/PlayerAttackNotification"
 import PlayerHand from "@Components/Game/PlayerHand";
 import ImageLoader from "@Components/ImageLoader.js";
 import Orbit from "@Components/Orbit.js";
+import { useLoader } from "@Context/LoaderContext";
 import { useAuth } from "@Context/SocketContext";
 import { useSound } from "@Context/SoundContext";
 import "@Styles/Board/Board.scss";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import CardStack from "./Game/CardStack";
 import CloudPane from "./Game/CloudPane";
 
 const Board = () => {
   const { socket, user } = useAuth();
   const { serverId } = useParams();
-  const { playMusic } = useSound();
+  const { playMusic, playEffect } = useSound();
+  const { hideLoader, showLoader } = useLoader();
 
   const [hand, setHand] = useState([]);
   const [playerEnvironment, setPlayerEnvironment] = useState(null);
@@ -42,29 +45,11 @@ const Board = () => {
   const [gameIsOver, setGameIsOver] = useState(false);
   const [podium, setPodium] = useState(null);
 
-  //
-
-  // Component to display the number of cards in the deck
-  function CardStack({ numberOfCards }) {
-    return (
-      <div className="card-stack">
-        <div
-          className={`card-stack__count ${
-            numberOfCards < 11
-              ? "danger"
-              : numberOfCards < 36
-              ? "warning"
-              : "good"
-          } `}
-        >
-          {numberOfCards}
-        </div>
-      </div>
-    );
-  }
-
   useEffect(() => {
     playMusic("bgparty");
+    setTimeout(() => {
+      hideLoader();
+    }, 3000);
   }, []);
 
   // Fetch initial game data
@@ -191,12 +176,10 @@ const Board = () => {
     if (actionNotification) {
       setActionNotificationIsVisible(true);
 
-      // Hide notification after 3 seconds
       let timerAppear = setTimeout(() => {
         setActionNotificationIsVisible(false);
       }, 1500);
 
-      // Clear notification after 4 seconds
       let timerData = setTimeout(() => {
         setActionNotification(null);
       }, 2000);
@@ -276,7 +259,11 @@ const Board = () => {
 
   // Component to display player name
   function PlayerHeaderName(username) {
-    return <span className="player-header__name">{username}</span>;
+    return (
+      <span className="player-header__name">
+        {username === user.username ? "Vous" : username}
+      </span>
+    );
   }
 
   // Component to display player score
@@ -431,7 +418,10 @@ const Board = () => {
 
     return (
       <div className="game-over-modal">
-        <ImageLoader name="img_trophy" alt="Image d'un trophé" />
+        <div className="game-over-modal__trophy">
+          <ImageLoader name="img_trophy" alt="Image d'un trophé" />
+          <span>{podium[0]}</span>
+        </div>
         <div className="game-over-modal__title">
           {podium[0] === playerEnvironment.username
             ? "Vous avez gagné la partie !"
@@ -445,7 +435,7 @@ const Board = () => {
                 {index + 1}
               </div>
               <div className="game-over-modal__podium-player-name">
-                {username}
+                {username === user.username ? "Vous" : username}
               </div>
             </div>
           ))}
@@ -490,7 +480,7 @@ const Board = () => {
           })}
       </header>
       <section className="game-area">
-        {/* <CardStack numberOfCards={deckCount} /> */}
+        <CardStack numberOfCards={deckCount} />
         {players && <Orbit players={players} />}
         <CloudPane />
       </section>

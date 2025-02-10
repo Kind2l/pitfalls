@@ -1,4 +1,5 @@
 import Header from "@Components/Header";
+import { useLoader } from "@Context/LoaderContext.js";
 import { useNotification } from "@Context/NotificationContext.js";
 import { useAuth } from "@Context/SocketContext";
 import "@Styles/components/WaitingRoom.scss";
@@ -15,13 +16,15 @@ const WaitingRoom = ({ setGameIsStarted }) => {
   const [players, setPlayers] = useState([]);
   const [maxPlayers, setMaxPlayers] = useState(0);
   const [author, setAuthor] = useState("null");
-
+  const { hideLoader, showLoader } = useLoader();
   const [serverName, setserverName] = useState("");
   const { addNotification } = useNotification();
 
   useEffect(() => {
+    showLoader();
     // Rechercher le serveur à l'initialisation du composant
     socket.emit("server:find", { user, server_id: serverId }, (response) => {
+      hideLoader();
       if (!response.success) {
         console.error(response);
       } else {

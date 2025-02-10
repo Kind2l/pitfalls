@@ -1,62 +1,62 @@
 import React from "react";
 
 // Importation des images du dossier images/
-import arrival from "@Images/arrival.svg";
-import closeEye from "@Images/close-eye.svg";
-import logoMin from "@Images/logo-min.svg";
-import logoWelcomer from "@Images/logo-welcomer.svg";
-import logo from "@Images/logo.svg";
-import menu from "@Images/menu.svg";
-import message from "@Images/message.svg";
-import musicOff from "@Images/music-off.svg";
-import musicOn from "@Images/music-on.svg";
-import openEye from "@Images/open-eye.svg";
-import planet2 from "@Images/planet2.svg";
-import share from "@Images/share.svg";
-import soundOff from "@Images/sound-off.svg";
-import soundOn from "@Images/sound-on.svg";
-import trash from "@Images/trash.svg";
-import wheel from "@Images/wheel.svg";
+import arrival from "@Images/arrival.png";
+import closeEye from "@Images/close-eye.png";
+import imageWelcomer from "@Images/image-welcomer.png";
+import logoMin from "@Images/logo-min.png";
+import logo from "@Images/logo.png";
+import menu from "@Images/menu.png";
+import message from "@Images/message.png";
+import musicOff from "@Images/music-off.png";
+import musicOn from "@Images/music-on.png";
+import openEye from "@Images/open-eye.png";
+import planet2 from "@Images/planet2.png";
+import share from "@Images/share.png";
+import soundOff from "@Images/sound-off.png";
+import soundOn from "@Images/sound-on.png";
+import trash from "@Images/trash.png";
+import wheel from "@Images/wheel.png";
 
 // Importation des images du dossier images/icons/
-import iconAccident from "@Images/icons/accident.svg";
-import iconCartePolice from "@Images/icons/cartedepolice.svg";
-import iconDeviation from "@Images/icons/deviation.svg";
-import iconEmbouteillage from "@Images/icons/embouteillage.svg";
-import iconFatigue from "@Images/icons/fatigue.svg";
-import iconFeuRouge from "@Images/icons/feurouge.svg";
-import iconInfatiguable from "@Images/icons/infatiguable.svg";
-import iconPilote from "@Images/icons/pilote.svg";
-import iconZoneDeControle from "@Images/icons/zonedecontrole.svg";
+import iconAccident from "@Images/icons/accident.png";
+import iconCartePolice from "@Images/icons/cartedepolice.png";
+import iconDeviation from "@Images/icons/deviation.png";
+import iconEmbouteillage from "@Images/icons/embouteillage.png";
+import iconFatigue from "@Images/icons/fatigue.png";
+import iconFeuRouge from "@Images/icons/feurouge.png";
+import iconInfatiguable from "@Images/icons/infatiguable.png";
+import iconPilote from "@Images/icons/pilote.png";
+import iconZoneDeControle from "@Images/icons/zonedecontrole.png";
 
 // Importation des images du dossier images/cars/
-import carsLittleCarBlue from "@Images/cars/blue-little-car.svg";
-import carsLittleCarGreen from "@Images/cars/green-little-car.svg";
-import carsLittleCarOrange from "@Images/cars/orange-little-car.svg";
-import carsLittleCarRed from "@Images/cars/red-little-car.svg";
+import carsLittleCarBlue from "@Images/cars/blue-little-car.png";
+import carsLittleCarGreen from "@Images/cars/green-little-car.png";
+import carsLittleCarOrange from "@Images/cars/orange-little-car.png";
+import carsLittleCarRed from "@Images/cars/red-little-car.png";
 
 // Importation des images du dossier images/cards/
-import cardAccident from "@Images/cards/accident.svg";
-import cardCartePolice from "@Images/cards/cartedepolice.svg";
-import cardDeviation from "@Images/cards/deviation.svg";
-import cardEmbouteillage from "@Images/cards/embouteillage.svg";
-import cardFatigue from "@Images/cards/fatigue.svg";
-import cardFeuRouge from "@Images/cards/feurouge.svg";
-import cardFeuVert from "@Images/cards/feuvert.svg";
-import cardFinEmbouteillage from "@Images/cards/findembouteillage.svg";
-import cardFinZoneDeControle from "@Images/cards/findezonedecontrole.svg";
-import cardInfatiguable from "@Images/cards/infatiguable.svg";
-import cardPilote from "@Images/cards/pilote.svg";
-import cardReparation from "@Images/cards/reparation.svg";
-import cardRepose from "@Images/cards/repose.svg";
-import cardZoneDeControle from "@Images/cards/zonedecontrole.svg";
-import trophy from "@Images/trophy.svg";
+import cardAccident from "@Images/cards/accident.png";
+import cardCartePolice from "@Images/cards/cartedepolice.png";
+import cardDeviation from "@Images/cards/deviation.png";
+import cardEmbouteillage from "@Images/cards/embouteillage.png";
+import cardFatigue from "@Images/cards/fatigue.png";
+import cardFeuRouge from "@Images/cards/feurouge.png";
+import cardFeuVert from "@Images/cards/feuvert.png";
+import cardFinEmbouteillage from "@Images/cards/findembouteillage.png";
+import cardFinZoneDeControle from "@Images/cards/findezonedecontrole.png";
+import cardInfatiguable from "@Images/cards/infatiguable.png";
+import cardPilote from "@Images/cards/pilote.png";
+import cardReparation from "@Images/cards/reparation.png";
+import cardRepose from "@Images/cards/repose.png";
+import cardZoneDeControle from "@Images/cards/zonedecontrole.png";
+import trophy from "@Images/trophy.png";
 
 // Objet contenant toutes les images
 const images = {
   img_logo: logo,
   img_logoMin: logoMin,
-  img_logoWelcomer: logoWelcomer,
+  img_imageWelcomer: imageWelcomer,
   img_wheel: wheel,
   img_share: share,
   img_planet2: planet2,

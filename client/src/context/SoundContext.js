@@ -18,6 +18,7 @@ import effectPolice from "../audio/police.wav";
 import effectSpecial from "../audio/special.mp3";
 import effectStart from "../audio/start.mp3";
 import effectTalkie from "../audio/talkie.mp3";
+import effectTime from "../audio/time.mp3";
 import effectTrash from "../audio/trash.mp3";
 import effectYawn from "../audio/yawn.mp3";
 
@@ -49,6 +50,7 @@ const EffectsList = {
   accident: effectAccident,
   brake: effectBrake,
   message: effectMessage,
+  time: effectTime,
 };
 
 // Fournisseur du contexte

@@ -20,8 +20,6 @@ const Login = () => {
   const [error, setError] = useState("");
   const { playEffect } = useSound();
 
-  const passwordRegex = /^[a-zA-ZÀ-ÿ!@#$%^&*-_=+,.?]{4,20}$/;
-
   const validateUsername = (username) => {
     if (!username) {
       return "Aucun nom d'utilisateur fourni.";

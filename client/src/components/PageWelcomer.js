@@ -4,17 +4,20 @@ import React from "react";
 
 const PageWelcomer = ({ watch }) => {
   return (
-    <div className="page-welcomer">
+    <div className="page-welcomer" onClick={watch}>
       <div className="welcomer-content">
-        <div className="spinner">
-          <ImageLoader
-            name="img_logoWelcomer"
-            alt="Logo du jeu Pitfalls Road"
-          />
-        </div>
-        <button className="primary-button bg-blue" onClick={watch}>
-          Démarrer le jeu
-        </button>
+        <ImageLoader
+          className="welcomer-logo"
+          name="img_logo"
+          alt="logo de pitfalls"
+        />
+        <ImageLoader
+          className="welcomer-image"
+          name="img_imageWelcomer"
+          alt="Logo du jeu Pitfalls Road"
+        />
+
+        <div className="welcomer-annunce">Appuyez pour démarrer</div>
       </div>
     </div>
   );
