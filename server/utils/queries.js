@@ -7,7 +7,7 @@ const { db } = require("./db");
  */
 const findUserByUsernameInDatabase = async (username) => {
   try {
-    const [rows] = await db.execute("SELECT * FROM users WHERE username = ?", [
+    const { rows } = await db.query("SELECT * FROM users WHERE username = $1", [
       username,
     ]);
     return rows.length ? rows[0] : null;
@@ -24,7 +24,7 @@ const findUserByUsernameInDatabase = async (username) => {
  */
 const findUserByEmailInDatabase = async (email) => {
   try {
-    const [rows] = await db.execute("SELECT * FROM users WHERE email = ?", [
+    const { rows } = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
     return rows.length ? rows[0] : null;
@@ -42,11 +42,11 @@ const findUserByEmailInDatabase = async (email) => {
  */
 const insertUserInDatabase = async (username, hashedPassword) => {
   try {
-    const [result] = await db.execute(
-      "INSERT INTO users (username, password) VALUES (?, ?)",
+    const { rows } = await db.query(
+      "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
       [username, hashedPassword]
     );
-    return result.insertId;
+    return rows[0].id;
   } catch (err) {
     console.error("Erreur dans insertUserInDatabase:", err);
     throw err;
@@ -61,11 +61,11 @@ const insertUserInDatabase = async (username, hashedPassword) => {
  */
 const updateUserTokenInDatabase = async (username, token) => {
   try {
-    const [result] = await db.execute(
-      "UPDATE users SET token = ? WHERE username = ?",
+    const { rowCount } = await db.query(
+      "UPDATE users SET token = $1 WHERE username = $2",
       [token, username]
     );
-    return result.affectedRows > 0;
+    return rowCount > 0;
   } catch (err) {
     console.error("Erreur dans updateUserTokenInDatabase:", err);
     return false;
@@ -79,7 +79,7 @@ const updateUserTokenInDatabase = async (username, token) => {
  */
 const findUserByIdInDatabase = async (userId) => {
   try {
-    const [rows] = await db.execute("SELECT * FROM users WHERE id = ?", [
+    const { rows } = await db.query("SELECT * FROM users WHERE id = $1", [
       userId,
     ]);
     return rows.length ? rows[0] : null;

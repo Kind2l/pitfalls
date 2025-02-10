@@ -6,6 +6,7 @@ const SocketContext = createContext();
 // https://pitfalls.onrender.com
 const socketIo = io("https://pitfalls.onrender.com", {
   // transports: ["websocket"],
+  reconnection: true,
 });
 
 export const SocketProvider = ({ children }) => {
