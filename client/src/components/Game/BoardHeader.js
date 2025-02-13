@@ -67,30 +67,40 @@ const BoardHeader = () => {
       <MessageOverlay messages={messages} />
       <div className="board-header">
         <button className="message" onClick={handleOpenMessage}>
-          <ImageLoader name="message" alt="Message" />
+          {showMessageInput ? (
+            <i className="fa-regular fa-keyboard"></i>
+          ) : (
+            <i className="fa-regular fa-comment-dots"></i>
+          )}
         </button>
         <div className="logo">
-          <ImageLoader name="logo-min" alt="Musique" />
+          <ImageLoader name="logo-min" alt="Logo du jeu Pitfalls Road" />
         </div>
         <button className="menu" onClick={handleOpen}>
-          <ImageLoader name="menu" alt="Menu" />
+          {menuIsOpen ? (
+            <i className="fa-solid fa-caret-down"></i>
+          ) : (
+            <i className="fa-solid fa-bars"></i>
+          )}
         </button>
         <ShortMenu isOpen={menuIsOpen} />
       </div>
 
       {showMessageInput && (
         <form className="message-input" onSubmit={handleSendMessage}>
-          <input
-            ref={inputRef}
-            type="text"
-            maxLength={30}
-            minLength={1}
-            value={message}
-            onChange={handleSetMessage}
-          />
-          <button className="send-message" type="submit">
-            <ImageLoader name="message" alt="Envoyer le message" />
-          </button>
+          <label>
+            <input
+              ref={inputRef}
+              type="text"
+              maxLength={30}
+              minLength={1}
+              value={message}
+              onChange={handleSetMessage}
+            />
+            <button className="send" type="submit">
+              <i className="fa-solid fa-paper-plane"></i>
+            </button>
+          </label>
         </form>
       )}
     </>

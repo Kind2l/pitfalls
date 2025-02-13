@@ -31,7 +31,16 @@
       background-color: none;
       outline: none;
     }
+
+    i {
+      font-size: 1.2rem;
+      color: Vars.$green;
+      &.off {
+        color: Vars.$red;
+      }
+    }
   }
+
   img {
     height: 50%;
   }

@@ -1,5 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { generateUsername } = require("unique-username-generator");
+
 const {
   addUser,
   updateUser,
@@ -17,9 +19,6 @@ const {
 const { endGame, removeUserFromServerByUsername } = require("./gameController");
 const { servers, findUserBySocketId } = require("../utils/data.js");
 
-// Regex patterns to check for dangerous characters and validate inputs
-
-// Validation des entrées utilisateur
 const validateUsername = (username) => {
   if (!username) {
     return "Aucun nom d'utilisateur fourni.";
@@ -33,7 +32,6 @@ const validateUsername = (username) => {
     return "Le nom d'utilisateur doit contenir 20 caractères maximum.";
   }
 
-  // Regex autorisant lettres, chiffres, accents et caractères spéciaux définis
   const usernameRegex = /^[a-zA-Z0-9À-ÖØ-öø-ÿ!@#$%^&*\-_=+?]+$/;
 
   if (!usernameRegex.test(username)) {
@@ -56,7 +54,6 @@ const validatePassword = (password) => {
     return "Le mot de passe doit contenir 20 caractères maximum.";
   }
 
-  // Regex autorisant lettres, chiffres, accents et caractères spéciaux définis
   const passwordRegex = /^[a-zA-Z0-9À-ÖØ-öø-ÿ!@#$%^&*\-_=+?]+$/;
 
   if (!passwordRegex.test(password)) {
@@ -242,9 +239,16 @@ exports.loginAsGuest = async (req, callback) => {
 
   // Génération d'un pseudo aléatoire
   const currentDate = Date.now();
-  const gestNumber = currentDate.toString().slice(-5);
+  const gestNumber = currentDate.toString().slice(-2);
   const id = currentDate.toString().slice(-6);
-  const guestUsername = `Guest_${gestNumber}`;
+  const uniqueUsername = generateUsername("", 7, 11) + gestNumber;
+
+  const guestUsername = uniqueUsername;
+
+  console.log(gestNumber);
+  console.log(id);
+  console.log(uniqueUsername);
+  console.log(guestUsername);
 
   const token = jwt.sign(
     { id: id, username: guestUsername, isGuest: true },
@@ -779,6 +783,10 @@ exports.disconnect = (req, callback) => {
       message: `L'utilisateur ${user.username} n'a pas pu être entièrement déconnecté.`,
     });
   }
+
+  // for (const room of socket.rooms) {
+  //   socket.leave(room);
+  // }
 
   // Retourne un succès si tout s'est bien passé
   console.log(

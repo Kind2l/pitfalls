@@ -319,15 +319,15 @@ exports.joinServer = (request, callback) => {
       });
     }
 
-    // Joindre l'utilisateur au canal Socket.io du serveur
-    if (socket) {
-      socket.join(server_id);
-      console.log(`joinServer: L'utilisateur join le canal Socket.io}`);
-    } else {
-      console.error(
-        "joinServer: Aucun socket fourni. L'utilisateur n'a pas join le canal."
-      );
-    }
+    // // Joindre l'utilisateur au canal Socket.io du serveur
+    // if (socket) {
+    //   socket.join(server_id);
+    //   console.log(`joinServer: L'utilisateur join le canal Socket.io}`);
+    // } else {
+    //   console.error(
+    //     "joinServer: Aucun socket fourni. L'utilisateur n'a pas join le canal."
+    //   );
+    // }
 
     console.log(`joinServer: Tentative d'ajout du joueur au serveur.`);
     this.addPlayer(request, (response) => {
@@ -423,6 +423,25 @@ exports.leaveServer = (req, callback) => {
   req.io
     .to(user.current_server)
     .emit("server:update", servers[user.current_server]);
+
+  if (servers[user.current_server].players) {
+    if (Object.keys(servers[user.current_server].players).length === 0) {
+      delete servers[user.current_server];
+      let filteredServers = getFilteredServers();
+      io.emit("subscription:server-list", { servers: filteredServers });
+    } else if (
+      Object.keys(servers[user.current_server]?.players).length === 1 &&
+      servers[user.current_server].start === true &&
+      servers[user.current_server].gameOver === false
+    ) {
+      this.endGame(req);
+    }
+  }
+
+  io.to(user.current_server).emit(
+    "server:update",
+    servers[user.current_server]
+  );
 
   return callback({
     success: isRemoved,

@@ -13,6 +13,12 @@ require("dotenv").config();
 //   connectionTimeoutMillis: 2000,
 // });
 
+// const pool = new Pool({
+//   connectionString:
+//     "postgresql://pitfallsdb_user:KqS9TAFnv7wP97e2nb8891Eb3NEUE0tJ@dpg-cugkfmogph6c73a3g3ng-a.frankfurt-postgres.render.com/pitfallsdb",
+//   ssl: { rejectUnauthorized: false },
+// });
+
 const pool = new Pool({
   connectionString:
     "postgresql://pitfallsdb_user:KqS9TAFnv7wP97e2nb8891Eb3NEUE0tJ@dpg-cugkfmogph6c73a3g3ng-a.frankfurt-postgres.render.com/pitfallsdb",

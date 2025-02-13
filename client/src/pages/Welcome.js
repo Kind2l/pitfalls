@@ -11,14 +11,10 @@ const Welcome = ({ watch }) => {
           name="logo"
           alt="logo de pitfalls"
         />
-        {/* <ImageLoader
-          className="welcomer-image"
-          name="img_imageWelcomer"
-          alt="Logo du jeu Pitfalls Road"
-        /> */}
 
         <div className="welcomer-annunce">Appuyez pour démarrer</div>
       </div>
+      <div></div>
     </div>
   );
 };

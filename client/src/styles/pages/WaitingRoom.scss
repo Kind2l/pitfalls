@@ -1,0 +1,212 @@
+@use "@Styles/utils/variables.scss" as Vars;
+
+.waiting-room {
+  padding: 2rem 0.3rem;
+
+  @media (max-height: 400px) {
+    transform: scale(0.8) !important;
+    padding-top: 0;
+  }
+
+  .waiting-room-container {
+    position: relative;
+    background-color: white;
+    box-shadow: 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
+    border-radius: 27px 27px;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 0rem;
+
+    &__header {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 1rem;
+
+      h2 {
+        font-family: "Outfit", serif;
+        font-optical-sizing: auto;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 1.2rem;
+        line-height: 1.8rem;
+        color: #003049;
+        text-align: center;
+      }
+
+      button.share {
+        position: absolute;
+        height: 1rem;
+        width: 1rem;
+        right: 2rem;
+        background-color: transparent;
+        border: none;
+
+        i {
+          font-size: 1.5rem;
+          color: Vars.$black;
+        }
+      }
+    }
+
+    &__content {
+      .id-server {
+        font-size: 0.7rem;
+      }
+
+      .infos {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        text-align: center;
+        padding: 0 1rem;
+        span {
+          font-size: 0.8rem;
+        }
+      }
+
+      .players {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0.5rem;
+        max-height: 70vh;
+        overflow: auto;
+        overflow-x: clip;
+        @media (max-height: 400px) {
+          max-height: 20vh;
+        }
+        li {
+          display: flex;
+          justify-content: center;
+          background-color: Vars.$dark_white;
+          padding: 0.5rem 1rem;
+          border-radius: 15px;
+        }
+      }
+
+      .status {
+        text-align: center;
+        font-size: 0.7rem;
+      }
+
+      .buttons {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin: 0 auto;
+
+        button {
+          width: fit-content;
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  .waiting-room-chat {
+    position: relative;
+    background-color: white;
+    box-shadow: 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
+    border-radius: 27px 27px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+
+    h3 {
+      text-align: center;
+    }
+
+    ul {
+      background-color: Vars.$dark_white;
+      min-height: 3rem;
+      border: 15px;
+      padding: 0 1rem;
+      max-height: 6rem;
+      overflow-x: hidden;
+      overflow-y: scroll;
+      margin: 0 0.5rem;
+
+      &::-webkit-scrollbar {
+        height: 3px;
+        width: 5px;
+      }
+      &::-webkit-scrollbar-track {
+        border-radius: 5px;
+      }
+
+      &::-webkit-scrollbar-thumb,
+      &::-webkit-scrollbar-thumb:hover,
+      &::-webkit-scrollbar-thumb:active {
+        background-color: Vars.$sky;
+        border-radius: 10px;
+      }
+
+      &::-webkit-scrollbar-track-piece {
+        background-color: #cfd8da;
+        border-radius: 10px;
+        &:end {
+          margin-bottom: 1.2rem;
+        }
+        &:start {
+          margin-top: 1.2rem;
+        }
+      }
+    }
+    label {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border-radius: 25px;
+      background-color: Vars.$grey_transparent;
+      padding: 0 4rem 0 1rem;
+      margin: 1rem;
+      min-height: 3rem;
+      height: fit-content;
+    }
+
+    input {
+      border: 0;
+      flex: 1;
+      background: none;
+    }
+
+    button.send {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 3rem;
+      width: 3rem;
+      border-radius: 50%;
+      border: none;
+      background-color: Vars.$green;
+      text-align: center;
+
+      &:focus-visible {
+        outline: none;
+      }
+
+      i {
+        font-size: 1.5rem;
+        color: Vars.$white;
+      }
+    }
+  }
+
+  .id {
+    padding-top: 1rem;
+    display: block;
+    text-align: center;
+    font-size: 0.6rem;
+    color: Vars.$grey;
+  }
+}

@@ -23,14 +23,12 @@
     background: none;
     border: none;
     margin: auto;
-
+    i {
+      font-size: 1.8rem;
+    }
     @media (max-height: 400px) {
       height: 1.5rem;
       width: 1.5rem;
-    }
-
-    img {
-      height: 100%;
     }
   }
 
@@ -48,6 +46,7 @@
       height: 100%;
     }
   }
+
   .menu {
     display: flex;
     justify-content: center;
@@ -62,8 +61,8 @@
       height: 1.5rem;
       width: 1.5rem;
     }
-    img {
-      height: 100%;
+    i {
+      font-size: 1.8rem;
     }
   }
 }
@@ -83,24 +82,48 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  input {
+
+  label {
+    position: relative;
+    display: flex;
+    align-items: center;
     border-radius: 25px;
     background-color: Vars.$grey_transparent;
+    padding: 0 4rem 0 1rem;
+    margin: 1rem;
+    min-height: 3rem;
+    height: fit-content;
+    width: 100%;
+  }
+
+  input {
     border: 0;
     flex: 1;
+    background: none;
   }
-  button.send-message {
-    height: 2rem;
-    width: 2rem;
+
+  button.send {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 3rem;
+    width: 3rem;
     border-radius: 50%;
     border: none;
     background-color: Vars.$green;
+    text-align: center;
+
     &:focus-visible {
       outline: none;
     }
-    img {
-      height: 100%;
-      width: 100%;
+
+    i {
+      font-size: 1.5rem;
+      color: Vars.$white;
     }
   }
 }

@@ -9,7 +9,7 @@ const PlayerHand = ({ hand, isMyTurn, handleClickCard }) => {
     bonus: 4,
   };
 
-  const sortedHand = [...hand].sort((a, b) => {
+  const sortedHand = [...hand]?.sort((a, b) => {
     if (cardOrder[a.type] !== cardOrder[b.type]) {
       return cardOrder[a.type] - cardOrder[b.type];
     }
@@ -27,7 +27,6 @@ const PlayerHand = ({ hand, isMyTurn, handleClickCard }) => {
     <section className="player-area">
       <div className="player-area__hand">
         {sortedHand.map((card, index) => {
-          console.log(card);
           const { name, tag, id, type } = card;
           let positionClass = "";
 

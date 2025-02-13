@@ -15,6 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CardStack from "./Game/CardStack";
 import CloudPane from "./Game/CloudPane";
+import CountStart from "./Game/CountStart";
 
 const Board = () => {
   const { socket, user } = useAuth();
@@ -44,12 +45,14 @@ const Board = () => {
   const [attackedPlayer, setAttackedPlayer] = useState(null);
   const [gameIsOver, setGameIsOver] = useState(false);
   const [podium, setPodium] = useState(null);
+  const [showCountStart, setShowCountStart] = useState(null);
 
   useEffect(() => {
     playMusic("bgparty");
-    setTimeout(() => {
+    setTimeout((e) => {
       hideLoader();
-    }, 3000);
+      setShowCountStart(true);
+    }, 1000);
   }, []);
 
   // Fetch initial game data
@@ -121,6 +124,12 @@ const Board = () => {
       setAttackablePlayers(null);
       setAttackedPlayer(null);
     });
+
+    return () => {
+      socket.off("game:next-round");
+      socket.off("game:is-over");
+      socket.off("server:update");
+    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
@@ -287,7 +296,6 @@ const Board = () => {
       if (selectedCard) {
         if (selectedCard.type === "attaque") {
           if (attackedPlayer) {
-            console.log(attackedPlayer);
             socket.emit(
               "game:player-action",
               {
@@ -452,7 +460,6 @@ const Board = () => {
   return (
     <div className="game-board">
       <BoardHeader />
-
       <header className="game-header">
         {players &&
           Object.values(players).map((player, index) => {
@@ -489,7 +496,6 @@ const Board = () => {
         isMyTurn={isMyTurn}
         handleClickCard={handleClickCard}
       />
-
       <ActionModal
         showActionPopup={showActionPopup}
         selectedCard={selectedCard}
@@ -497,7 +503,6 @@ const Board = () => {
         handleRemoveCard={handleRemoveCard}
         setSelectedCard={setSelectedCard}
       />
-
       <AttackModal
         showAttackPopup={showAttackPopup}
         selectedCard={selectedCard}
@@ -510,23 +515,23 @@ const Board = () => {
         setShowActionPopup={setShowActionPopup}
         gameIsOver={gameIsOver}
       />
-
       <NotificationPopup
         notification={notification}
         notificationIsVisible={notificationIsVisible}
       />
-
       <PlayerAttackNotification
         attackNotification={attackNotification}
         attackNotificationIsVisible={attackNotificationIsVisible}
       />
-
       {gameIsOver && <GameOverModal podium={podium} />}
-
       <PlayerActionModal
         actionNotification={actionNotification}
         actionNotificationIsVisible={actionNotificationIsVisible}
       />
+      {/* <div className="count-start">
+        <div className="message cherry-font">C'est parti !</div>
+      </div> */}
+      {showCountStart && <CountStart />}
     </div>
   );
 };

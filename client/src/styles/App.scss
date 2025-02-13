@@ -49,22 +49,22 @@ a {
 
 .color {
   &-sky {
-    color: Vars.$sky;
+    color: Vars.$sky !important;
   }
   &-blue {
-    color: Vars.$blue;
+    color: Vars.$blue !important;
   }
   &-red {
-    color: Vars.$red;
+    color: Vars.$red !important;
   }
   &-green {
-    color: Vars.$green;
+    color: Vars.$green !important;
   }
   &-orange {
-    color: Vars.$orange;
+    color: Vars.$orange !important;
   }
   &-black {
-    color: Vars.$black;
+    color: Vars.$black !important;
   }
 }
 
