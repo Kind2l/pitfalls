@@ -30,6 +30,7 @@ const Board = () => {
   const [position, setPosition] = useState(null);
   const [isMyTurn, setIsMyTurn] = useState(null);
   const [deckCount, setDeckCount] = useState(0);
+  const [stopActions, setStopActions] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);
   const [showActionPopup, setShowActionPopup] = useState(false);
   const [actionNotification, setActionNotification] = useState(null);
@@ -52,6 +53,7 @@ const Board = () => {
     setTimeout((e) => {
       hideLoader();
       setShowCountStart(true);
+      setStopActions(false);
     }, 1000);
   }, []);
 
@@ -73,17 +75,24 @@ const Board = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    console.log("StopAction :", stopActions);
+  }, [stopActions, setStopActions]);
+
   // Fetch game data on next round
   useEffect(() => {
     socket.on("game:next-round", (response) => {
       if (response?.data?.type) {
+        setStopActions(false);
         if (response?.data?.type === "attaque") {
           setAttackNotification(response.data);
         } else {
           setActionNotification(response.data);
         }
       }
+
       socket.emit("server:find", { user, server_id: serverId }, (response) => {
+        setStopActions(false);
         if (response.success) {
           const playerData = response.data.players[user.username];
           setCurrentPlayer(response.data.currentPlayer);
@@ -106,12 +115,14 @@ const Board = () => {
     });
 
     socket.on("game:is-over", (data) => {
+      setStopActions(true);
       setPlayers(data.players);
       setGameIsOver(true);
       setPodium(data.podium);
     });
 
     socket.on("server:update", (data) => {
+      setStopActions(false);
       const playerData = data?.players[user.username];
       setCurrentPlayer(data?.currentPlayer);
       setHand(playerData?.hand);
@@ -292,108 +303,121 @@ const Board = () => {
 
   // Handle card usage
   const handleUseCard = () => {
-    if (!gameIsOver) {
-      if (selectedCard) {
-        if (selectedCard.type === "attaque") {
-          if (attackedPlayer) {
-            socket.emit(
-              "game:player-action",
-              {
-                server_id: serverId,
-                card: selectedCard,
-                attackedPlayerId: Number(attackedPlayer),
-                user,
-              },
-              (response) => {
-                if (response.success) {
-                  if (!response.data.actionState) {
-                    setNotification({
-                      type: "error",
-                      content: response.message,
-                    });
-                    console.error(response.message);
-                  }
-                } else {
-                  setNotification({
-                    type: "error",
-                    content: response.message,
-                  });
-                  console.error(response.message);
-                }
+    if (stopActions) {
+      return;
+    }
+    if (gameIsOver) {
+      return;
+    }
 
-                setSelectedCard(null);
+    if (!selectedCard) {
+      return;
+    }
+
+    if (selectedCard.type === "attaque") {
+      if (attackedPlayer) {
+        setStopActions(true);
+        socket.emit(
+          "game:player-action",
+          {
+            server_id: serverId,
+            card: selectedCard,
+            attackedPlayerId: Number(attackedPlayer),
+            user,
+          },
+          (response) => {
+            setStopActions(false);
+            if (response.success) {
+              if (!response.data.actionState) {
+                setNotification({
+                  type: "error",
+                  content: response.message,
+                });
+                console.error(response.message);
+              }
+            } else {
+              setNotification({
+                type: "error",
+                content: response.message,
+              });
+              console.error(response.message);
+            }
+
+            setSelectedCard(null);
+            setAttackedPlayer(null);
+          }
+        );
+      } else {
+        setStopActions(true);
+        socket.emit(
+          "game:player-action",
+          {
+            server_id: serverId,
+            card: selectedCard,
+            user,
+          },
+          (response) => {
+            setStopActions(false);
+            if (response.success) {
+              if (!response.data.actionState) {
+                setNotification({
+                  type: "error",
+                  content: response.message,
+                });
+              } else if (response.data.attackablePlayers.length > 0) {
+                setAttackablePlayers(response.data.attackablePlayers);
+                setShowAttackPopup(true);
+                setShowActionPopup(false);
+              } else {
+                setNotification({
+                  type: "error",
+                  content: "Aucun joueur attaquable.",
+                });
+                setAttackablePlayers(null);
+                setShowAttackPopup(false);
+                setShowActionPopup(false);
                 setAttackedPlayer(null);
               }
-            );
+            } else {
+              setNotification({
+                type: "error",
+                content: response.message,
+              });
+              console.error(response.message);
+            }
+
+            // setSelectedCard(null);
+            setAttackedPlayer(null);
+          }
+        );
+      }
+    } else {
+      setStopActions(true);
+      socket.emit(
+        "game:player-action",
+        { server_id: serverId, card: selectedCard, user },
+        (response) => {
+          if (response.success) {
+            if (!response.data.actionState) {
+              setNotification({
+                type: "error",
+                content: response.message,
+              });
+              setSelectedCard(null);
+              setAttackedPlayer(null);
+              setAttackablePlayers(null);
+              setShowAttackPopup(false);
+              return console.error(response.message);
+            }
           } else {
-            socket.emit(
-              "game:player-action",
-              {
-                server_id: serverId,
-                card: selectedCard,
-                user,
-              },
-              (response) => {
-                if (response.success) {
-                  if (!response.data.actionState) {
-                    setNotification({
-                      type: "error",
-                      content: response.message,
-                    });
-                  } else if (response.data.attackablePlayers.length > 0) {
-                    setAttackablePlayers(response.data.attackablePlayers);
-                    setShowAttackPopup(true);
-                    setShowActionPopup(false);
-                  } else {
-                    setNotification({
-                      type: "error",
-                      content: "Aucun joueur attaquable.",
-                    });
-                    setAttackablePlayers(null);
-                    setShowAttackPopup(false);
-                    setShowActionPopup(false);
-                    setAttackedPlayer(null);
-                  }
-                } else {
-                  setNotification({
-                    type: "error",
-                    content: response.message,
-                  });
-                  console.error(response.message);
-                }
-
-                // setSelectedCard(null);
-                setAttackedPlayer(null);
-              }
+            setStopActions(false);
+            return console.error(
+              "Erreur lors de la récupération du serveur :",
+              response
             );
           }
-        } else {
-          socket.emit(
-            "game:player-action",
-            { server_id: serverId, card: selectedCard, user },
-            (response) => {
-              if (response.success) {
-                if (!response.data.actionState) {
-                  setNotification({
-                    type: "error",
-                    content: response.message,
-                  });
-                  setSelectedCard(null);
-                  setAttackedPlayer(null);
-                  setAttackablePlayers(null);
-                  setShowAttackPopup(false);
-                  return console.error(response.message);
-                }
-              } else {
-                return console.error(
-                  "Erreur lors de la récupération du serveur :",
-                  response
-                );
-              }
-            }
-          );
         }
-      }
+      );
     }
   };
 
@@ -402,11 +426,14 @@ const Board = () => {
     if (!gameIsOver) {
       if (selectedCard) {
         if (!gameIsOver) {
+          setStopActions(true);
           socket.emit(
             "game:player-remove-card",
             { server_id: serverId, card: selectedCard, user },
             (response) => {
               if (!response.success) {
+                setStopActions(false);
+
                 return console.error(
                   "Erreur lors de la récupération du serveur :",
                   response
@@ -420,6 +447,7 @@ const Board = () => {
   };
 
   const GameOverModal = ({ podium }) => {
+    setStopActions(true);
     const onQuitGame = () => {
       window.location.href = "/"; // Recharge la page en redirigeant vers la page d'accueil
     };

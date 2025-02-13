@@ -202,7 +202,7 @@ const GameRules = () => {
               avancer. Elle n'est plus nécessaire avec le bonus "infatiguable".
             </div>
           </li>
-          <div lassName="cards">
+          <div className="cards">
             <div className="card">
               <div className="card-attaque color-red">Cartes d'attaque</div>
               <div className="card-parade color-green">Cartes de défense</div>
