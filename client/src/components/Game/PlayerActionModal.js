@@ -50,10 +50,10 @@ const PlayerActionModal = ({
           {actionNotification?.type === "borne" ? (
             <>{actionNotification?.card?.value}</>
           ) : actionNotification?.type === "remove" ? (
-            <ImageLoader name="img_trash" alt="Poubelle" />
+            <ImageLoader name="trash" alt="Poubelle" />
           ) : actionNotification?.card ? ( // Vérification de l'existence de card
             <ImageLoader
-              name={`card_${actionNotification.card.tag}`}
+              name={`cards/${actionNotification.card.tag}`}
               alt={actionNotification.card.name}
             />
           ) : null}
@@ -69,19 +69,25 @@ const PlayerActionModal = ({
             actionNotification?.card?.tag === "findezonedecontrole" && (
               <>
                 Fin de <span>zone de radar</span> pour{" "}
-                <span>{actionNotification?.player}</span>.
+                <span className="cherry-font">
+                  {actionNotification?.player}
+                </span>
+                .
               </>
             )}
           {actionNotification?.type === "parade" &&
             actionNotification?.card?.tag !== "findezonedecontrole" && (
               <>
-                <span>{actionNotification?.player}</span> reprend la route !
+                <span className="cherry-font">
+                  {actionNotification?.player}
+                </span>{" "}
+                reprend la route !
               </>
             )}
           {actionNotification?.type === "bonus" && (
             <>
-              <span>{actionNotification?.player}</span> active son bonus{" "}
-              <span>{actionNotification?.card?.name} !</span>
+              <span className="cherry-font">{actionNotification?.player}</span>{" "}
+              active son bonus <span>{actionNotification?.card?.name} !</span>
             </>
           )}
           {actionNotification?.type === "remove" && (

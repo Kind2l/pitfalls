@@ -3,7 +3,7 @@ import { LoaderProvider } from "@Context/LoaderContext";
 import { NotificationProvider } from "@Context/NotificationContext";
 import { SocketProvider } from "@Context/SocketContext";
 import { SoundProvider } from "@Context/SoundContext";
-import { WelcomerPageProvider } from "@Context/WelcomerPageContext";
+import { WelcomeProvider } from "@Context/WelcomeContext";
 import Connection from "@Pages/Connection";
 import CreateServer from "@Pages/CreateServer";
 import Error from "@Pages/Error";
@@ -51,7 +51,7 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <WelcomerPageProvider>
+    <WelcomeProvider>
       <LoaderProvider>
         <SocketProvider>
           <NotificationProvider>
@@ -63,7 +63,7 @@ function App() {
           </NotificationProvider>
         </SocketProvider>
       </LoaderProvider>
-    </WelcomerPageProvider>
+    </WelcomeProvider>
   );
 }
 

@@ -10,6 +10,10 @@
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 
+  @media (max-height: 400px) {
+    padding: 0.3rem;
+  }
+
   .message {
     display: flex;
     justify-content: center;
@@ -19,6 +23,12 @@
     background: none;
     border: none;
     margin: auto;
+
+    @media (max-height: 400px) {
+      height: 1.5rem;
+      width: 1.5rem;
+    }
+
     img {
       height: 100%;
     }
@@ -29,6 +39,11 @@
     width: 3rem;
     text-align: center;
     margin: auto;
+
+    @media (max-height: 400px) {
+      height: 1.7rem;
+      width: 1.7rem;
+    }
     img {
       height: 100%;
     }
@@ -42,13 +57,18 @@
     background: none;
     border: none;
     margin: auto;
+
+    @media (max-height: 400px) {
+      height: 1.5rem;
+      width: 1.5rem;
+    }
     img {
       height: 100%;
     }
   }
 }
 .message-input {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -69,7 +89,7 @@
     border: 0;
     flex: 1;
   }
-  button {
+  button.send-message {
     height: 2rem;
     width: 2rem;
     border-radius: 50%;

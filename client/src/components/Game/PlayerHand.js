@@ -27,6 +27,7 @@ const PlayerHand = ({ hand, isMyTurn, handleClickCard }) => {
     <section className="player-area">
       <div className="player-area__hand">
         {sortedHand.map((card, index) => {
+          console.log(card);
           const { name, tag, id, type } = card;
           let positionClass = "";
 
@@ -51,7 +52,7 @@ const PlayerHand = ({ hand, isMyTurn, handleClickCard }) => {
                 {type === "borne" ? (
                   <div className={tag}>{tag}</div>
                 ) : (
-                  <ImageLoader name={`card_${tag}`} alt={name} />
+                  <ImageLoader name={`cards/${tag}`} alt={name} />
                 )}
               </div>
               <div className="card-bottom">{name}</div>

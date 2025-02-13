@@ -34,7 +34,7 @@ const AttackModal = ({
       <div className="attack-modal__image">
         {showAttackPopup && selectedCard && (
           <ImageLoader
-            name={`card_${selectedCard.tag}`}
+            name={`cards/${selectedCard.tag}`}
             alt={selectedCard.name}
           />
         )}

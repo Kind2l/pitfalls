@@ -4,7 +4,7 @@ import ImageLoader from "@Components/ImageLoader";
 import { useAuth } from "@Context/SocketContext";
 import { useSound } from "@Context/SoundContext";
 import "@Styles/Board/BoardHeader.scss";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const BoardHeader = () => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -13,6 +13,7 @@ const BoardHeader = () => {
   const [messages, setMessages] = useState([]);
   const { socket, user } = useAuth();
   const { playEffect } = useSound();
+  const inputRef = useRef(null);
 
   const handleOpen = () => {
     setMenuIsOpen(!menuIsOpen);
@@ -35,6 +36,12 @@ const BoardHeader = () => {
     setMessage("");
     setShowMessageInput(false);
   };
+
+  useEffect(() => {
+    if (showMessageInput && inputRef.current) {
+      inputRef.current.focus(); // Met le focus sur l'input
+    }
+  }, [showMessageInput]);
 
   useEffect(() => {
     socket.on("game:player-message", (data) => {
@@ -60,13 +67,13 @@ const BoardHeader = () => {
       <MessageOverlay messages={messages} />
       <div className="board-header">
         <button className="message" onClick={handleOpenMessage}>
-          <ImageLoader name="img_message" alt="Message" />
+          <ImageLoader name="message" alt="Message" />
         </button>
         <div className="logo">
-          <ImageLoader name="img_logoMin" alt="Musique" />
+          <ImageLoader name="logo-min" alt="Musique" />
         </div>
         <button className="menu" onClick={handleOpen}>
-          <ImageLoader name="img_menu" alt="Menu" />
+          <ImageLoader name="menu" alt="Menu" />
         </button>
         <ShortMenu isOpen={menuIsOpen} />
       </div>
@@ -74,14 +81,15 @@ const BoardHeader = () => {
       {showMessageInput && (
         <form className="message-input" onSubmit={handleSendMessage}>
           <input
+            ref={inputRef}
             type="text"
             maxLength={30}
             minLength={1}
             value={message}
             onChange={handleSetMessage}
           />
-          <button type="submit">
-            <ImageLoader name="img_message" alt="Envoyer le message" />
+          <button className="send-message" type="submit">
+            <ImageLoader name="message" alt="Envoyer le message" />
           </button>
         </form>
       )}

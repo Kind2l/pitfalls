@@ -2,7 +2,7 @@ import { useLoader } from "@Context/LoaderContext";
 import { useNotification } from "@Context/NotificationContext.js";
 import { useAuth } from "@Context/SocketContext";
 import { useSound } from "@Context/SoundContext";
-import "@Styles/Connection/Login.scss";
+import "@Styles/connection/Login.scss";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageLoader from "./ImageLoader";
@@ -142,15 +142,9 @@ const Login = () => {
             {password && (
               <button className="password-eye" onClick={handlePasswordView}>
                 {showPassword ? (
-                  <ImageLoader
-                    name="img_openEye"
-                    alt="Afficher le mot de passe"
-                  />
+                  <ImageLoader name="open-eye" alt="Afficher le mot de passe" />
                 ) : (
-                  <ImageLoader
-                    name="img_closeEye"
-                    alt="Cacher le mot de passe"
-                  />
+                  <ImageLoader name="close-eye" alt="Cacher le mot de passe" />
                 )}
               </button>
             )}

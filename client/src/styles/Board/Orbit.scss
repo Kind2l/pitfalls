@@ -6,7 +6,13 @@
   left: 50%;
   transform: translateX(-50%);
   width: 120vw;
-  height: 120vw;
+  max-width: 600px;
+  aspect-ratio: 1 / 1;
+
+  @media (max-height: 400px) {
+    width: 50vw;
+    bottom: -80%;
+  }
 
   .planet {
     position: absolute;

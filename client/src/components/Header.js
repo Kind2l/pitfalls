@@ -4,9 +4,9 @@ import ImageLoader from "./ImageLoader";
 
 function Header() {
   return (
-    <header>
+    <header className="header">
       <div className="logo">
-        <ImageLoader name="img_logo" alt="logo de pitfalls" />
+        <ImageLoader name="logo" alt="logo de pitfalls" />
       </div>
     </header>
   );

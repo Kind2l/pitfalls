@@ -12,10 +12,10 @@ const Orbit = ({ players, maxScore = 1000 }) => {
   return (
     <div className="orbit">
       <div className="planet">
-        <ImageLoader name="img_planet2" alt="Planète" />
+        <ImageLoader name="planet2" alt="Planète" />
       </div>
       <div className="arrival">
-        <ImageLoader name="img_arrival" alt="Hotel d'arrivée" />
+        <ImageLoader name="arrival" alt="Hotel d'arrivée" />
       </div>
       {playerKeys.map((key, index) => {
         const player = players[key];
@@ -32,7 +32,7 @@ const Orbit = ({ players, maxScore = 1000 }) => {
             <div className={`car player${player.position}`}>
               <div className="car__name">{player.username}</div>
               <div className="car__image">
-                <ImageLoader name={`cars_little_${player.position}`} />
+                <ImageLoader name={`cars/car_${player.position}`} />
               </div>
             </div>
           </div>

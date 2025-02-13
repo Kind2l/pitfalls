@@ -37,13 +37,18 @@ const PlayerAttackNotification = ({
       <div className="player-attack-notification__content">
         <div className="player-attack-notification__image">
           <ImageLoader
-            name={`card_${attackNotification.card.tag}`}
+            name={`cards/${attackNotification.card.tag}`}
             alt={`${attackNotification.player.username} attaque ${attackNotification.attackedPlayer.username} avec ${attackNotification.card.name}`}
           />
         </div>
         <div className="player-attack-notification__message">
-          <span>{attackNotification.player.username}</span> attaque{" "}
-          <span>{attackNotification.attackedPlayer.username}</span>
+          <span className="cherry-font">
+            {attackNotification.player.username}
+          </span>{" "}
+          attaque{" "}
+          <span className="cherry-font">
+            {attackNotification.attackedPlayer.username}
+          </span>
         </div>
         <div className="player-attack-notification__action">
           {attackNotification.card.name}

@@ -35,13 +35,13 @@ const ShortMenu = ({ isOpen }) => {
     <div className={`short-menu ${isOpen && "show"}`}>
       <button onClick={toggleMusic}>
         <ImageLoader
-          name={musicVolume > 0 ? "img_musicOn" : "img_musicOff"}
+          name={musicVolume > 0 ? "music-on" : "music-off"}
           alt="Musique"
         />
       </button>
       <button onClick={toggleEffect}>
         <ImageLoader
-          name={effectVolume > 0 ? "img_soundOn" : "img_soundOff"}
+          name={effectVolume > 0 ? "sound-on" : "sound-off"}
           alt="Effets sonores"
         />
       </button>

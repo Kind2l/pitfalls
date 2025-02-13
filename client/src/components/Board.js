@@ -227,7 +227,7 @@ const Board = () => {
         {Object.entries(states).map(([key, value]) =>
           value ? (
             <span key={key} className="state-item">
-              <ImageLoader name={`icon_${key}`} alt={labels[key]} />
+              <ImageLoader name={`icons/${key}`} alt={labels[key]} />
             </span>
           ) : null
         )}
@@ -249,7 +249,7 @@ const Board = () => {
         {Object.entries(bonus).map(([key, value]) =>
           value ? (
             <span key={key} className="bonus-item">
-              <ImageLoader name={`icon_${key}`} alt={labels[key]} />
+              <ImageLoader name={`icons/${key}`} alt={labels[key]} />
             </span>
           ) : null
         )}
@@ -419,7 +419,7 @@ const Board = () => {
     return (
       <div className="game-over-modal">
         <div className="game-over-modal__trophy">
-          <ImageLoader name="img_trophy" alt="Image d'un trophé" />
+          <ImageLoader name="trophy" alt="Image d'un trophé" />
           <span>{podium[0]}</span>
         </div>
         <div className="game-over-modal__title">

@@ -4,7 +4,7 @@ import { useSound } from "@Context/SoundContext";
 import Header from "@Components/Header";
 import Login from "@Components/Login";
 import Register from "@Components/Register";
-import "@Styles/Connection/Connection.scss";
+import "@Styles/connection/Connection.scss";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GameRules from "../components/GameRules";

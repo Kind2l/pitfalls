@@ -2,6 +2,10 @@
 
 .home {
   padding: 2rem 0.3rem;
+  @media (max-height: 400px) {
+    transform: scale(0.8);
+    padding-top: 0;
+  }
 
   &-content {
     background-color: Vars.$white;
@@ -11,6 +15,9 @@
     flex-direction: column;
     row-gap: 1rem;
     padding: 2rem 0;
+    @media (max-height: 400px) {
+      padding: 0.5rem 0;
+    }
   }
 
   .welcomer {

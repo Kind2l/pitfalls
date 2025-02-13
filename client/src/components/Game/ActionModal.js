@@ -27,7 +27,7 @@ const ActionModal = ({
           ) : (
             <>
               <ImageLoader
-                name={`card_${selectedCard.tag}`}
+                name={`cards/${selectedCard.tag}`}
                 alt={selectedCard.name}
               />
               <div className="action-modal__image--title">

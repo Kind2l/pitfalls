@@ -56,15 +56,15 @@ const WaitingRoom = ({ setGameIsStarted }) => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Pitfalls - Invitation à une partie", // Titre de la page
+          title: "Pitfalls Road - Invitation à une partie",
           text: `Je t'invite à me rejoindre sur le jeu Pitfalls! Ma partie s'appelle "${serverName}" !`,
-          url: "https://pitfalls.kindll.fr",
+          url: "https://pitfalls-client.onerender.fr",
         });
       } catch (error) {
         console.error("Échec du partage", error);
       }
     } else {
-      navigator.clipboard.writeText("https://pitfalls.kindll.fr");
+      navigator.clipboard.writeText("https://pitfalls-client.onerender.fr");
       addNotification("Lien copié dans le presse-papiers !");
     }
   };
@@ -102,7 +102,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
       <div className="waiting-room">
         <div className="waiting-room-content">
           <div className="waiting-room-infos">
-            <h2 className="cherry-font">{serverName}</h2>
+            <h2>{serverName}</h2>
             <p>Hôte : {author}</p>
             <p>
               {Object.keys(players)?.length || "0"}/{maxPlayers} joueurs
@@ -112,15 +112,15 @@ const WaitingRoom = ({ setGameIsStarted }) => {
           <ul className="waiting-room-players">
             {Object.keys(players).length > 0 ? (
               Object.values(players).map((player) => (
-                <li key={player.id + player.username}>{player.username}</li>
+                <li className="cherry-font" key={player.id + player.username}>
+                  {player.username}
+                </li>
               )) // Assurez-vous que chaque player a un id unique
             ) : (
               <li>Aucun joueur connecté.</li>
             )}
           </ul>
-          <p>
-            En attente du lancement de la partie par {author || "l'hôte"}...
-          </p>
+          <p>En attente du lancement de la partie par l'hôte...</p>
 
           <div className="waiting-room-content__buttons">
             {String(author) === String(user.username) &&
@@ -144,7 +144,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
           </div>
           <p className="id-server">ID du serveur : {serverId}</p>
           <button className="share-button" onClick={() => handleShare()}>
-            <ImageLoader name="img_share" alt="bouton de partage" />
+            <ImageLoader name="share" alt="bouton de partage" />
           </button>
         </div>
       </div>

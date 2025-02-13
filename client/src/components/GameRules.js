@@ -62,7 +62,7 @@ const GameRules = () => {
             <ul className="cards">
               <li>
                 <div className="card-img">
-                  <ImageLoader name="card_feurouge" />
+                  <ImageLoader name="cards/feurouge" />
                 </div>
                 <div className="card-name">Feu rouge</div>
                 <div className="card-description">
@@ -74,7 +74,7 @@ const GameRules = () => {
 
               <li>
                 <div className="card-img">
-                  <ImageLoader name="card_accident" />
+                  <ImageLoader name="cards/accident" />
                 </div>
                 <div className="card-name">Accident</div>
                 <div className="card-description">
@@ -85,7 +85,7 @@ const GameRules = () => {
               </li>
               <li>
                 <div className="card-img">
-                  <ImageLoader name="card_fatigue" />
+                  <ImageLoader name="cards/fatigue" />
                 </div>
                 <div className="card-name">Fatigue</div>
                 <div className="card-description">
@@ -96,7 +96,7 @@ const GameRules = () => {
               </li>
               <li>
                 <div className="card-img">
-                  <ImageLoader name="card_embouteillage" />
+                  <ImageLoader name="cards/embouteillage" />
                 </div>
                 <div className="card-name">Embouteillage</div>
                 <div className="card-description">
@@ -116,7 +116,7 @@ const GameRules = () => {
             <ul className="cards">
               <li>
                 <div className="card-img">
-                  <ImageLoader name="card_cartedepolice" />
+                  <ImageLoader name="cards/cartedepolice" />
                 </div>
                 <div className="card-name">Carte de police</div>
                 <div className="card-description">
@@ -126,7 +126,7 @@ const GameRules = () => {
               </li>
               <li>
                 <div className="card-img">
-                  <ImageLoader name="card_pilote" />
+                  <ImageLoader name="cards/pilote" />
                 </div>
                 <div className="card-name">Pilote</div>
                 <div className="card-description">
@@ -136,7 +136,7 @@ const GameRules = () => {
               </li>
               <li>
                 <div className="card-img">
-                  <ImageLoader name="card_infatiguable" />
+                  <ImageLoader name="cards/infatiguable" />
                 </div>
                 <div className="card-name">Infatiguable</div>
                 <div className="card-description">
@@ -146,7 +146,7 @@ const GameRules = () => {
               </li>
               <li>
                 <div className="card-img">
-                  <ImageLoader name="card_deviation" />
+                  <ImageLoader name="cards/deviation" />
                 </div>
                 <div className="card-name">Déviation</div>
                 <div className="card-description">
@@ -160,7 +160,7 @@ const GameRules = () => {
         <ul className="cards">
           <li>
             <div className="card-img">
-              <ImageLoader name="card_feuvert" />
+              <ImageLoader name="cards/feuvert" />
             </div>
             <div className="card-name">Feu vert</div>
             <div className="card-description">
@@ -172,7 +172,7 @@ const GameRules = () => {
           </li>
           <li>
             <div className="card-img">
-              <ImageLoader name="card_findezonedecontrole" />
+              <ImageLoader name="cards/findezonedecontrole" />
             </div>
             <div className="card-name">Fin de zone de contrôle</div>
             <div className="card-description">
@@ -183,7 +183,7 @@ const GameRules = () => {
           </li>
           <li>
             <div className="card-img">
-              <ImageLoader name="card_reparation" />
+              <ImageLoader name="cards/reparation" />
             </div>
             <div className="card-name">Réparation</div>
             <div className="card-description">
@@ -194,7 +194,7 @@ const GameRules = () => {
           </li>
           <li>
             <div className="card-img">
-              <ImageLoader name="card_repose" />
+              <ImageLoader name="cards/repose" />
             </div>
             <div className="card-name">En pleine forme</div>
             <div className="card-description">
@@ -210,57 +210,57 @@ const GameRules = () => {
             </div>
             <div className="card">
               <div className="card-attaque">
-                <ImageLoader name="card_feurouge" />
+                <ImageLoader name="cards/feurouge" />
               </div>
               <div className="card-parade">
-                <ImageLoader name="card_feuvert" />
+                <ImageLoader name="cards/feuvert" />
               </div>
               <div className="card-bonus">
-                <ImageLoader name="card_cartedepolice" />
+                <ImageLoader name="cards/cartedepolice" />
               </div>
             </div>
             <div className="card">
               <div className="card-attaque">
-                <ImageLoader name="card_zonedecontrole" />
+                <ImageLoader name="cards/zonedecontrole" />
               </div>
               <div className="card-parade">
-                <ImageLoader name="card_findezonedecontrole" />
+                <ImageLoader name="cards/findezonedecontrole" />
               </div>
               <div className="card-bonus">
-                <ImageLoader name="card_cartedepolice" />
+                <ImageLoader name="cards/cartedepolice" />
               </div>
             </div>
             <div className="card">
               <div className="card-attaque">
-                <ImageLoader name="card_fatigue" />
+                <ImageLoader name="cards/fatigue" />
               </div>
               <div className="card-parade">
-                <ImageLoader name="card_repose" />
+                <ImageLoader name="cards/repose" />
               </div>
               <div className="card-bonus">
-                <ImageLoader name="card_infatiguable" />
+                <ImageLoader name="cards/infatiguable" />
               </div>
             </div>
             <div className="card">
               <div className="card-attaque">
-                <ImageLoader name="card_accident" />
+                <ImageLoader name="cards/accident" />
               </div>
               <div className="card-parade">
-                <ImageLoader name="card_reparation" />
+                <ImageLoader name="cards/reparation" />
               </div>
               <div className="card-bonus">
-                <ImageLoader name="card_pilote" />
+                <ImageLoader name="cards/pilote" />
               </div>
             </div>
             <div className="card">
               <div className="card-attaque">
-                <ImageLoader name="card_embouteillage" />
+                <ImageLoader name="cards/embouteillage" />
               </div>
               <div className="card-parade">
-                <ImageLoader name="card_findembouteillage" />
+                <ImageLoader name="cards/findembouteillage" />
               </div>
               <div className="card-bonus">
-                <ImageLoader name="card_deviation" />
+                <ImageLoader name="cards/deviation" />
               </div>
             </div>
           </div>

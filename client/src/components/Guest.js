@@ -2,7 +2,7 @@ import { useLoader } from "@Context/LoaderContext";
 import { useNotification } from "@Context/NotificationContext.js";
 import { useAuth } from "@Context/SocketContext";
 import { useSound } from "@Context/SoundContext";
-import "@Styles/Connection/Guest.scss";
+import "@Styles/connection/Guest.scss";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
