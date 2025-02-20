@@ -3,19 +3,17 @@ import { useSound } from "@Context/SoundContext";
 
 import Header from "@Components/Header";
 import Login from "@Components/Login";
-import Register from "@Components/Register";
 import "@Styles/connection/Connection.scss";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import GameRules from "../components/GameRules";
-import Guest from "../components/Guest";
+import JoinAndroidProgram from "../components/JoinAndroidProgram";
 import News from "../components/News";
 
 const Connection = () => {
-  const [choice, setChoice] = useState(true);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { stopMusic, playEffect } = useSound();
+  const { stopMusic } = useSound();
 
   useEffect(() => {
     isAuthenticated && navigate("/");
@@ -29,35 +27,16 @@ const Connection = () => {
     <>
       <Header />
       <main className="connection">
-        <div className="connection-selector">
-          <input
-            type="radio"
-            id="login"
-            name="auth"
-            checked={choice === true}
-            onChange={() => {
-              playEffect("open");
-              setChoice(true);
-            }}
-          />
-          <label htmlFor="login">Connexion</label>
-
-          <input
-            type="radio"
-            id="register"
-            name="auth"
-            checked={choice === false}
-            onChange={() => {
-              playEffect("close");
-              setChoice(false);
-            }}
-          />
-          <label htmlFor="register">Inscription</label>
+        <div className="connection-container">
+          <Login />
+          <div className="info">
+            Pitfalls est en développement et le serveur s’éteint en cas
+            d'inactivité. Si c'est le cas, veuillez patienter quelques secondes
+            pour son redémarrage.
+          </div>
         </div>
-
-        <div className="connection-content">
-          {choice === true ? <Login /> : <Register setChoice={setChoice} />}
-          <Guest />
+        <div className="connection-container">
+          <JoinAndroidProgram />
         </div>
 
         <GameRules />

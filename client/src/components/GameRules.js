@@ -14,7 +14,7 @@ const GameRules = () => {
   return (
     <div className="game-rules">
       <h2
-        className="primary-button bg-orange show-rules"
+        className="btn bg-orange show-rules"
         onClick={() => toggleSection("showRules")}
       >
         Règles du Jeu

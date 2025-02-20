@@ -1,3 +1,4 @@
+import { useLoader } from "@Context/LoaderContext";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
@@ -5,7 +6,7 @@ import { io } from "socket.io-client";
 const SocketContext = createContext();
 // https://pitfalls.onrender.com
 const socketIo = io("https://pitfalls.onrender.com", {
-  // transports: ["websocket"],
+  transports: ["websocket"],
   reconnection: true,
 });
 
@@ -19,14 +20,17 @@ export const SocketProvider = ({ children }) => {
     isGuest: false,
   });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { hideLoader, showLoader } = useLoader();
 
   // Vérifie la présence d'un token pour réauthentifier l'utilisateur au chargement
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token) {
+      showLoader();
       // Émet un événement pour valider le jeton auprès du serveur
       socket.emit("user:validate-token", { token }, (response) => {
+        hideLoader();
         if (response?.success) {
           let id = response.data.id;
           let username = response.data.username;
@@ -40,6 +44,7 @@ export const SocketProvider = ({ children }) => {
         } else {
           // Supprime le jeton en cas d'échec et affiche un message d'erreur
           localStorage.removeItem("token");
+          hideLoader();
           console.info(response?.message || "Token manquant.");
         }
       });

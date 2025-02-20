@@ -239,39 +239,60 @@ exports.loginAsGuest = async (req, callback) => {
 
   // Génération d'un pseudo aléatoire
   const currentDate = Date.now();
-  const gestNumber = currentDate.toString().slice(-2);
   const id = currentDate.toString().slice(-6);
-  const uniqueUsername = generateUsername("", 7, 11) + gestNumber;
+  const username = req.username;
 
-  const guestUsername = uniqueUsername;
+  if (!username) {
+    return callback({
+      success: false,
+      message: "Aucun nom d'utilisateur",
+    });
+  }
 
-  console.log(gestNumber);
-  console.log(id);
-  console.log(uniqueUsername);
-  console.log(guestUsername);
+  const existingUser = findUserByUsername(username);
+
+  if (existingUser) {
+    console.log(
+      `loginAsGuest: Utilisateur déjà connecté sur un autre navigateur - username: ${username}`
+    );
+    return callback({
+      success: false,
+      message: "Nom d'utilisateur déjà utilisé.",
+    });
+  }
+
+  const userRecord = await findUserByUsernameInDatabase(username);
+
+  if (userRecord) {
+    console.log(`loginAsGuest: Utilisateur trouvé : ${username}`);
+    return callback({
+      success: false,
+      message: "Nom d'utilisateur déjà utilisé.",
+    });
+  }
 
   const token = jwt.sign(
-    { id: id, username: guestUsername, isGuest: true },
+    { id: id, username: username, isGuest: true },
     process.env.JWT_SECRET,
     {
-      expiresIn: "12h",
+      expiresIn: "30d",
     }
   );
 
   try {
     // Ajout de l'utilisateur invité en mémoire
     console.log(
-      `loginAsGuest: Ajout de l'utilisateur invité en mémoire - username: ${guestUsername}`
+      `loginAsGuest: Ajout de l'utilisateur invité en mémoire - username: ${username}`
     );
     addUser({
       id: id,
-      username: guestUsername,
+      username: username,
       socket_id: req.socket.id,
       isGuest: true,
     });
 
     console.log(
-      `loginAsGuest: Ajout de l'utilisateur pour l'utilisateur invité - username: ${guestUsername}`
+      `loginAsGuest: Ajout de l'utilisateur pour l'utilisateur invité - username: ${username}`
     );
 
     // Succès de la connexion
@@ -280,7 +301,7 @@ exports.loginAsGuest = async (req, callback) => {
       message: "Connexion en tant qu'invité réussie",
       data: {
         id: id,
-        username: guestUsername,
+        username: username,
         token: token,
         isGuest: true,
       },

@@ -4,7 +4,7 @@
   padding: 2rem 0.3rem;
 
   h3 {
-    margin-top: 2rem;
+    margin-top: 1rem;
     text-align: center;
     margin-bottom: 0.6rem;
     font-size: 1.1rem;
@@ -90,6 +90,13 @@
         box-shadow 0.2s ease-in-out, padding 0.2s ease-in-out,
         border-radius 0.2s ease-in-out;
     }
+  }
+
+  .server-type-info {
+    font-size: 0.8rem;
+    color: Vars.$grey;
+    line-height: 0.8rem;
+    padding-top: 1rem;
   }
 
   .create-server-content {

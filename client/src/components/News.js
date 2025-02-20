@@ -14,7 +14,7 @@ const News = () => {
   return (
     <div className="news">
       <h2
-        className="primary-button bg-blue show-news"
+        className="btn bg-black show-news"
         onClick={() => toggleSection("showNews")}
       >
         Journal du développeur

@@ -4,6 +4,7 @@ import effectAccident from "../audio/accident.mp3";
 import background1 from "../audio/background1.mp3";
 import background2 from "../audio/background2.mp3";
 import background3 from "../audio/background3.mp3";
+import effectBipCount from "../audio/bip-count.mp3";
 import effectBonus from "../audio/bonus.wav";
 import effectBrake from "../audio/brake.mp3";
 import effectCard from "../audio/card.mp3";
@@ -16,6 +17,7 @@ import effectOpen from "../audio/open.mp3";
 import effectPilote from "../audio/pilote.wav";
 import effectPolice from "../audio/police.wav";
 import effectSpecial from "../audio/special.mp3";
+import effectStartCount from "../audio/start-count.mp3";
 import effectStart from "../audio/start.mp3";
 import effectTalkie from "../audio/talkie.mp3";
 import effectTime from "../audio/time.mp3";
@@ -51,6 +53,8 @@ const EffectsList = {
   brake: effectBrake,
   message: effectMessage,
   time: effectTime,
+  startCount: effectStartCount,
+  bipCount: effectBipCount,
 };
 
 // Fournisseur du contexte

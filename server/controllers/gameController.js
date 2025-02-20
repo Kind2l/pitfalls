@@ -37,15 +37,15 @@ exports.createServer = (request, callback) => {
   console.log("createServer: Entrée dans la fonction.");
 
   try {
-    console.log("createServer: Vérification du nom du serveur.");
     if (!request.serverName || typeof request.serverName !== "string") {
-      console.error("createServer: Nom du serveur invalide ou absent.");
       return callback({
         success: false,
         message: "Le nom du serveur est requis et doit être une chaîne.",
       });
     }
+
     request.serverName.trim();
+
     if (request?.serverName.length > 35) {
       console.error("createServer: Nom du serveur invalide ou absent.");
       return callback({
@@ -61,35 +61,26 @@ exports.createServer = (request, callback) => {
       });
     }
 
-    console.log("createServer: Vérification de l'utilisateur.");
     if (
       !request.user ||
       !request.user.username ||
       typeof request.user.username !== "string"
     ) {
-      console.error("createServer: Nom d'utilisateur invalide ou absent.");
       return callback({
         success: false,
         message: "Le nom d'utilisateur est requis.",
       });
     }
 
-    console.log(
-      "createServer: Vérification du nombre maximum d'utilisateurs dans le serveur."
-    );
     if (
       !request.maxPlayers ||
       typeof request.maxPlayers !== "number" ||
       request.maxPlayers < 2 ||
       request.maxPlayers > 4
     ) {
-      console.error(
-        "createServer: Le nombre maximum de joueurs est invalide ou absent."
-      );
       return callback({
         success: false,
-        message:
-          "Le nombre de joueurs maximum est requis et doit être un entier positif.",
+        message: "Le nombre maximum de joueurs doit être compris entre 2 et 4.",
       });
     }
 
@@ -98,8 +89,6 @@ exports.createServer = (request, callback) => {
     );
 
     const uniqueId = uuidv4();
-
-    console.log(`createServer: Génération de l'ID serveur: ${uniqueId}`);
     const newServer = new GameModel(
       uniqueId,
       request.serverName,
@@ -108,19 +97,16 @@ exports.createServer = (request, callback) => {
       request.cardCounts || {}
     );
 
-    console.log("createServer: Ajout du serveur à la liste des serveurs.");
     servers[uniqueId] = newServer;
 
     if (request.socket) {
-      console.log(`createServer: Le joueur join server_${uniqueId}.`);
       request.socket.join(`server_${uniqueId}`);
-    } else {
-      console.error(
-        "createServer: Socket non fourni. L'utilisateur n'a pas été ajouté au canal."
+      console.log(
+        `createServer: ${request.socket.id} s'abonne au serveur server_${uniqueId}`
       );
     }
 
-    // Retourne un succès
+    console.log(`createServer: Serveur créé avec succès ${uniqueId}`);
     return callback({
       success: true,
       message: "Le serveur est créé avec succès.",
@@ -129,15 +115,136 @@ exports.createServer = (request, callback) => {
       },
     });
   } catch (error) {
+    console.error("createServer: Erreur catch:", error);
+    return callback({
+      success: false,
+      message:
+        "Une erreur inattendue s'est produite lors de la création du serveur.",
+    });
+  }
+};
+
+/**
+ * Rejoint un serveur existant.
+ *
+ * @param {object} request - La requête contenant les informations du joueur et du serveur.
+ * @param {string} request.server_id - L'ID du serveur à rejoindre.
+ * @param {object} request.user - Informations sur l'utilisateur.
+ * @param {string} request.user.username - Nom d'utilisateur.
+ * @param {object} request.socket - Socket de l'utilisateur.
+ * @param {object} request.io - Instance de l'objet io.
+ * @param {function} callback - La fonction de rappel à exécuter après avoir rejoint le serveur.
+ *
+ * @returns {void} Appelle le callback avec un objet `success`, un `message`, et éventuellement des données.
+ */
+exports.joinServer = (request, callback) => {
+  console.log("joinServer: Entrée dans la fonction.");
+  try {
+    const { server_id, user, socket, io } = request;
+
+    console.log("joinServer: Début de validation des paramètres.");
+    // Validation des paramètres requis
+    if (!server_id || typeof server_id !== "string") {
+      console.error("joinServer: ID du serveur manquant ou invalide.");
+      return callback({
+        success: false,
+        message: "L'ID du serveur est requis et doit être une chaîne.",
+      });
+    }
+    console.log(`joinServer: ID du serveur : ${server_id}`);
+
+    if (!user || !user.username || typeof user.username !== "string") {
+      console.error(
+        "joinServer: Informations utilisateur manquantes ou invalides."
+      );
+      return callback({
+        success: false,
+        message: "Les informations utilisateur sont incomplètes ou invalides.",
+      });
+    }
+
+    console.log(`joinServer: Joueur souhaitant rejoindre : ${user.username}`);
+
+    const server = servers[server_id];
+    if (!server) {
+      console.error(`joinServer: Serveur introuvable. ID: ${server_id}`);
+      return callback({
+        success: false,
+        message: "Serveur introuvable.",
+      });
+    }
+
+    console.log(`joinServer: Serveur trouvé :`, servers[server_id]);
+
+    if (
+      Object.keys(server.players).length >= server.maxPlayers ||
+      server.start === true
+    ) {
+      console.error(`joinServer: Serveur complet ou jeu déjà commencé.`);
+      return callback({
+        success: false,
+        message: `Le serveur est complet ou le jeu a déjà commencé.`,
+      });
+    }
+
+    // // Joindre l'utilisateur au canal Socket.io du serveur
+    // if (socket) {
+    //   socket.join(server_id);
+    //   console.log(`joinServer: L'utilisateur join le canal Socket.io}`);
+    // } else {
+    //   console.error(
+    //     "joinServer: Aucun socket fourni. L'utilisateur n'a pas join le canal."
+    //   );
+    // }
+
+    console.log(`joinServer: Tentative d'ajout du joueur au serveur.`);
+    this.addPlayer(request, (response) => {
+      if (!response.success) {
+        console.error(
+          `joinServer: Échec de l'ajout du joueur. Raison: ${response.message}`
+        );
+        return callback(response); // Retourne l'erreur de `addPlayer`
+      } else if (response.success) {
+        console.log(`joinServer: Utilisateur ajouté via AddPlayer.`);
+      }
+
+      console.log(
+        `joinServer: Joueur ajouté avec succès. Utilisateur: ${user.username}, Serveur: ${server_id}`
+      );
+
+      // Mise à jour des abonnés à la liste des serveurs
+      const filteredServers = getFilteredServers();
+      io.emit("subscription:server-list", { servers: filteredServers });
+
+      // Mise à jour des joueurs du serveur concerné
+      console.log(
+        `joinServer: Mise à jour des joueurs pour le serveur: ${server_id}`
+      );
+      io.to(server_id).emit("server:update", servers[server_id]);
+
+      // Mise à jour de l'utilisateur
+      updateUser({
+        username: user.username,
+        update: { current_server: server_id },
+      });
+
+      // Retour de succès
+      callback({
+        success: true,
+        message: `L'utilisateur ${user.username} a rejoint le serveur.`,
+        data: { server },
+      });
+    });
+  } catch (error) {
     // Gestion des erreurs inattendues
     console.error(
-      "createServer: Erreur inattendue lors de la création du serveur:",
+      "joinServer: Erreur inattendue lors de la tentative de rejoindre un serveur:",
       error
     );
     return callback({
       success: false,
       message:
-        "Une erreur inattendue s'est produite lors de la création du serveur.",
+        "Une erreur inattendue s'est produite lors de la tentative de rejoindre le serveur.",
     });
   }
 };
@@ -256,132 +363,6 @@ exports.addPlayer = (request, callback) => {
 };
 
 /**
- * Rejoint un serveur existant.
- *
- * @param {object} request - La requête contenant les informations du joueur et du serveur.
- * @param {string} request.server_id - L'ID du serveur à rejoindre.
- * @param {object} request.user - Informations sur l'utilisateur.
- * @param {string} request.user.username - Nom d'utilisateur.
- * @param {object} request.socket - Socket de l'utilisateur.
- * @param {object} request.io - Instance de l'objet io.
- * @param {function} callback - La fonction de rappel à exécuter après avoir rejoint le serveur.
- *
- * @returns {void} Appelle le callback avec un objet `success`, un `message`, et éventuellement des données.
- */
-exports.joinServer = (request, callback) => {
-  console.log("joinServer: Entrée dans la fonction.");
-
-  try {
-    const { server_id, user, socket, io } = request;
-
-    console.log("joinServer: Début de validation des paramètres.");
-    // Validation des paramètres requis
-    if (!server_id || typeof server_id !== "string") {
-      console.error("joinServer: ID du serveur manquant ou invalide.");
-      return callback({
-        success: false,
-        message: "L'ID du serveur est requis et doit être une chaîne.",
-      });
-    }
-    console.log(`joinServer: ID du serveur : ${server_id}`);
-
-    if (!user || !user.username || typeof user.username !== "string") {
-      console.error(
-        "joinServer: Informations utilisateur manquantes ou invalides."
-      );
-      return callback({
-        success: false,
-        message: "Les informations utilisateur sont incomplètes ou invalides.",
-      });
-    }
-
-    console.log(`joinServer: Joueur souhaitant rejoindre : ${user.username}`);
-
-    const server = servers[server_id];
-    if (!server) {
-      console.error(`joinServer: Serveur introuvable. ID: ${server_id}`);
-      return callback({
-        success: false,
-        message: "Serveur introuvable.",
-      });
-    }
-
-    console.log(`joinServer: Serveur trouvé :`, servers[server_id]);
-
-    if (
-      Object.keys(server.players).length >= server.maxPlayers ||
-      server.start === true
-    ) {
-      console.error(`joinServer: Serveur complet ou jeu déjà commencé.`);
-      return callback({
-        success: false,
-        message: `Le serveur est complet ou le jeu a déjà commencé.`,
-      });
-    }
-
-    // // Joindre l'utilisateur au canal Socket.io du serveur
-    // if (socket) {
-    //   socket.join(server_id);
-    //   console.log(`joinServer: L'utilisateur join le canal Socket.io}`);
-    // } else {
-    //   console.error(
-    //     "joinServer: Aucun socket fourni. L'utilisateur n'a pas join le canal."
-    //   );
-    // }
-
-    console.log(`joinServer: Tentative d'ajout du joueur au serveur.`);
-    this.addPlayer(request, (response) => {
-      if (!response.success) {
-        console.error(
-          `joinServer: Échec de l'ajout du joueur. Raison: ${response.message}`
-        );
-        return callback(response); // Retourne l'erreur de `addPlayer`
-      } else if (response.success) {
-        console.log(`joinServer: Utilisateur ajouté via AddPlayer.`);
-      }
-
-      console.log(
-        `joinServer: Joueur ajouté avec succès. Utilisateur: ${user.username}, Serveur: ${server_id}`
-      );
-
-      // Mise à jour des abonnés à la liste des serveurs
-      const filteredServers = getFilteredServers();
-      io.emit("subscription:server-list", { servers: filteredServers });
-
-      // Mise à jour des joueurs du serveur concerné
-      console.log(
-        `joinServer: Mise à jour des joueurs pour le serveur: ${server_id}`
-      );
-      io.to(server_id).emit("server:update", servers[server_id]);
-
-      // Mise à jour de l'utilisateur
-      updateUser({
-        username: user.username,
-        update: { current_server: server_id },
-      });
-
-      // Retour de succès
-      callback({
-        success: true,
-        message: `L'utilisateur ${user.username} a rejoint le serveur.`,
-        data: { server },
-      });
-    });
-  } catch (error) {
-    // Gestion des erreurs inattendues
-    console.error(
-      "joinServer: Erreur inattendue lors de la tentative de rejoindre un serveur:",
-      error
-    );
-    return callback({
-      success: false,
-      message:
-        "Une erreur inattendue s'est produite lors de la tentative de rejoindre le serveur.",
-    });
-  }
-};
-
-/**
  * Supprime un utilisateur d'un serveur en utilisant son nom d'utilisateur.
  *
  * @param {object} req - La requête contenant les informations de l'utilisateur.
@@ -389,66 +370,66 @@ exports.joinServer = (request, callback) => {
  */
 exports.leaveServer = (req, callback) => {
   console.log("leaveServer: Entrée dans la fonction");
-  let username = req.user.username || req.username || null;
-  console.log("leaveServer: Y-a-t'il un nom d'utilisateur ? ");
-  if (!username) {
-    console.log("leaveServer: Aucun nom d'utilisateur");
-    return callback({
-      success: false,
-      message: "Aucun nom d'utilisateur",
-    });
-  }
-  console.log("leaveServer: Nom d'utilisateur", username);
-
-  console.log("leaveServer: Y-a-t'il cet utilisateur dans la liste ? ");
-  let user = findUserByUsername(username);
-  console.log("leaveServer:", user);
-
-  if (!user) {
-    console.log("leaveServer: Aucun utilisateur");
-    return callback({
-      success: false,
-      message: "Aucun utilisateur dans la requête.",
-    });
-  }
-
-  console.log("leaveServer: Tentative de suppression");
-  let isRemoved = this.removeUserFromServerByUsername(username);
-  console.log("leaveServer: Tentative de suppression réussie ?", isRemoved);
-
-  // Retourne la liste des serveurs (filtrés) aux abonnés de server-list
-  let filteredServers = getFilteredServers();
-  isRemoved &&
-    req.io.emit("subscription:server-list", { servers: filteredServers });
-  req.io
-    .to(user.current_server)
-    .emit("server:update", servers[user.current_server]);
-
-  if (servers[user.current_server].players) {
-    if (Object.keys(servers[user.current_server].players).length === 0) {
-      delete servers[user.current_server];
-      let filteredServers = getFilteredServers();
-      io.emit("subscription:server-list", { servers: filteredServers });
-    } else if (
-      Object.keys(servers[user.current_server]?.players).length === 1 &&
-      servers[user.current_server].start === true &&
-      servers[user.current_server].gameOver === false
-    ) {
-      this.endGame(req);
+  try {
+    let username = req.user.username || req.username || null;
+    if (!username) {
+      return callback({
+        success: false,
+        message: "Aucun nom d'utilisateur",
+      });
     }
+
+    let user = findUserByUsername(username);
+
+    if (!user) {
+      return callback({
+        success: false,
+        message: "Aucun utilisateur dans la requête.",
+      });
+    }
+
+    let isRemoved = this.removeUserFromServerByUsername(username);
+
+    if (isRemoved) {
+      let filteredServers = getFilteredServers();
+      req.io.emit("subscription:server-list", { servers: filteredServers });
+      req.io
+        .to(user.current_server)
+        .emit("server:update", servers[user.current_server]);
+
+      if (servers[user.current_server]?.players) {
+        if (Object.keys(servers[user.current_server].players).length === 0) {
+          delete servers[user.current_server];
+          let filteredServers = getFilteredServers();
+          io.emit("subscription:server-list", { servers: filteredServers });
+        } else if (
+          Object.keys(servers[user.current_server]?.players).length === 1 &&
+          servers[user.current_server].start === true &&
+          servers[user.current_server].gameOver === false
+        ) {
+          this.endGame(req);
+        }
+      }
+    }
+
+    req.io
+      .to(user.current_server)
+      .emit("server:update", servers[user.current_server]);
+
+    return callback({
+      success: isRemoved,
+      message: isRemoved
+        ? "Utilisateur retiré du serveur"
+        : "Échec du retrait de l'utilisateur",
+    });
+  } catch (error) {
+    console.log("leaveServer: erreur catch:", error);
+
+    return callback({
+      success: false,
+      message: "Erreur durant le retrait du joueur",
+    });
   }
-
-  io.to(user.current_server).emit(
-    "server:update",
-    servers[user.current_server]
-  );
-
-  return callback({
-    success: isRemoved,
-    message: isRemoved
-      ? "Utilisateur retiré du serveur"
-      : "Échec du retrait de l'utilisateur",
-  });
 };
 
 /**
@@ -459,13 +440,11 @@ exports.leaveServer = (req, callback) => {
  */
 exports.removeUserFromServerByUsername = (username) => {
   console.log("removeUserFromServerByUsername: Entrée dans la fonction");
-
   if (!username) {
     console.log("removeUserFromServerByUsername: Aucun nom d'utilisateur");
     return false;
   }
 
-  console.log("removeUserFromServerByUsername: Y-a-t'il un server ID ?");
   let serverId = findUserServerByUsername(username);
 
   if (!serverId) {
@@ -482,8 +461,6 @@ exports.removeUserFromServerByUsername = (username) => {
     );
     return false;
   }
-
-  console.log("removeUserFromServerByUsername: serveur:", server);
 
   if (!server || !server.players[username]) {
     console.log(

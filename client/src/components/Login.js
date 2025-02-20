@@ -5,7 +5,6 @@ import { useSound } from "@Context/SoundContext";
 import "@Styles/connection/Login.scss";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ImageLoader from "./ImageLoader";
 
 const Login = () => {
   const { socket, login } = useAuth();
@@ -15,8 +14,6 @@ const Login = () => {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const { playEffect } = useSound();
 
@@ -26,11 +23,11 @@ const Login = () => {
     }
 
     if (username.length < 4) {
-      return "Le nom d'utilisateur doit contenir 4 caractères minimum.";
+      return "Minimum 4 caractères.";
     }
 
     if (username.length > 20) {
-      return "Le nom d'utilisateur doit contenir 20 caractères maximum.";
+      return "Maximum 20 caractères.";
     }
 
     // Regex autorisant lettres, chiffres, accents et caractères spéciaux définis
@@ -43,82 +40,43 @@ const Login = () => {
     return false;
   };
 
-  const validatePassword = (password) => {
-    if (!password) {
-      return "Aucun mot de passe fourni.";
-    }
-
-    if (password.length < 4) {
-      return "Le mot de passe doit contenir 4 caractères minimum.";
-    }
-
-    if (password.length > 20) {
-      return "Le mot de passe doit contenir 20 caractères maximum.";
-    }
-
-    // Regex autorisant lettres, chiffres, accents et caractères spéciaux définis
-    const passwordRegex = /^[a-zA-Z0-9À-ÖØ-öø-ÿ!@#$%^&*\-_=+?]+$/;
-
-    if (!passwordRegex.test(password)) {
-      return "Le mot de passe contient des caractères non autorisés.";
-    }
-
-    return false;
-  };
-
-  const handlePasswordView = (e) => {
-    setShowPassword(!showPassword);
-    e.preventDefault();
-  };
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (username && password) {
-      if (typeof username !== "string" || typeof username !== "string") {
-        setError("Les champs doivent êtres des chaînes de caractères");
+    if (username) {
+      if (typeof username !== "string") {
+        setError("Le nom d'utilisateur doit être une chaîne de caractères");
         return;
       }
       username.trim();
-      password.trim();
 
-      if (validatePassword(password)) {
-        setError(validatePassword(password));
-        return;
-      }
       if (validateUsername(username)) {
         setError(validateUsername(username));
         return;
       }
 
       showLoader();
-      socket.emit(
-        "user:login",
-        {
-          username,
-          password,
-        },
-        (response) => {
-          hideLoader();
-          if (!response.success) {
-            setError(response.message);
-          } else {
-            login(response.data);
-            addNotification("Connexion réussie.");
+      socket.emit("user:guest-login", { username }, (response) => {
+        hideLoader();
+        if (!response.success) {
+          setError(response.message);
+        } else {
+          login(response.data);
+          addNotification("Connexion réussie.");
 
-            navigate("/");
-          }
+          navigate("/");
         }
-      );
+      });
     } else {
-      setError("Veuillez compléter les informations ci-dessus.");
+      setError("Insérez un nom d'utilisateur.");
     }
   };
 
   return (
     <>
       <div className="login">
+        <h2>Bienvenue sur Pitfalls Road !</h2>
         <form onSubmit={handleLogin}>
           <div className="form-input">
             <input
@@ -131,33 +89,15 @@ const Login = () => {
             />
           </div>
           <div className="form-input">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Mot de passe"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              minLength={4}
-              maxLength={24}
-            />
-            {password && (
-              <button className="password-eye" onClick={handlePasswordView}>
-                {showPassword ? (
-                  <ImageLoader name="open-eye" alt="Afficher le mot de passe" />
-                ) : (
-                  <ImageLoader name="close-eye" alt="Cacher le mot de passe" />
-                )}
-              </button>
-            )}
+            <button
+              className="submit btn bg-blue cherry-font"
+              type="submit"
+              onClick={() => playEffect("open")}
+            >
+              JOUER
+            </button>
           </div>
-
           <div className="form-error">{error}</div>
-          <button
-            className="submit primary-button bg-blue"
-            type="submit"
-            onClick={() => playEffect("open")}
-          >
-            Connexion
-          </button>
         </form>
       </div>
     </>

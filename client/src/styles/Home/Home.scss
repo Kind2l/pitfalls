@@ -22,17 +22,36 @@
 
   .welcomer {
     text-align: center;
-    padding: 0 4rem;
+    margin-bottom: 0;
+    span {
+      font-weight: 800;
+    }
   }
 
   .links {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
     gap: 1rem;
+    align-items: stretch;
+    padding: 0 1rem;
 
     a {
-      width: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       text-align: center;
+      padding: 1rem;
+      color: Vars.$white;
+      border-radius: 17px;
+
+      i {
+        font-size: 2.2rem;
+      }
+      span {
+        padding-top: 0.5rem;
+        font-size: 1.2rem;
+      }
     }
   }
 }

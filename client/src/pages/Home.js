@@ -41,31 +41,34 @@ const Home = () => {
 
           <div className="links">
             <Link
-              className="primary-button bg-green"
+              className="bg-green"
               to="/server-list"
               onClick={() => handleLinkClick("open")}
               aria-label="Rejoindre une partie"
             >
-              Rejoindre une partie
+              <i class="fa-solid fa-flag-checkered"></i>
+              <span>Rejoindre une partie</span>
             </Link>
             <Link
-              className="primary-button bg-blue"
+              className="bg-blue"
               to="/create-server"
               onClick={() => handleLinkClick("open")}
               aria-label="Créer une partie"
             >
-              Créer une partie
+              <i class="fa-solid fa-gamepad"></i>
+              <span>Créer une partie</span>
             </Link>
             <Link
-              className="primary-button bg-orange"
+              className="bg-orange"
               to="/settings"
               onClick={() => handleLinkClick("open")}
               aria-label="Options"
             >
-              Options
+              <i class="fa-solid fa-sliders"></i>
+              <span>Options</span>
             </Link>
             <Link
-              className="primary-button bg-red"
+              className="bg-red"
               to="/"
               onClick={() => {
                 handleLinkClick("close");
@@ -73,7 +76,8 @@ const Home = () => {
               }}
               aria-label="Déconnexion"
             >
-              Déconnexion
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span>Déconnexion</span>
             </Link>
           </div>
         </div>

@@ -7,7 +7,6 @@ const CountStart = () => {
   const [opacity, setOpacity] = useState(1);
   const [shouldDestroy, setShouldDestroy] = useState(false);
 
-  // Effet pour gérer l'affichage du logo
   useEffect(() => {
     const logoTimer = setTimeout(() => {
       setOpacity(0);
@@ -20,7 +19,6 @@ const CountStart = () => {
     return () => clearTimeout(logoTimer);
   }, []);
 
-  // Effet pour gérer le compte à rebours
   useEffect(() => {
     if (showLogo || count < 0) return;
 
@@ -73,7 +71,7 @@ const CountdownDisplay = ({ count }) => (
   <div
     className={`message cherry-font ${
       count === 3
-        ? "color-white"
+        ? "color-black"
         : count === 2
         ? "color-orange"
         : count === 1

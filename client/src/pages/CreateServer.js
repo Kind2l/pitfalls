@@ -212,6 +212,11 @@ const CreateServer = () => {
             />
             <label htmlFor="custom-server">Personnalisée</label>
           </div>
+          <p className="server-type-info">
+            {isCustomServer
+              ? "Personnalisez le nombre de cartes"
+              : "Total de 110 cartes, main de 6 cartes, objectif 1000 kms"}
+          </p>
           <form onSubmit={handleSubmit} className="create-server-content">
             {isCustomServer && (
               <div className="create-server-custom">
@@ -391,7 +396,7 @@ const CreateServer = () => {
             )}
 
             <div>
-              <h3>Nombre de joueurs</h3>
+              <h3>Nombre de joueurs maximum</h3>
               <div className="player-selection">
                 {[2, 3, 4].map((playerCount) => (
                   <div key={playerCount + "key"}>
@@ -415,7 +420,7 @@ const CreateServer = () => {
             <div className="buttons">
               <BackButton />
               <button
-                className="primary-button bg-blue"
+                className="btn bg-green"
                 type="submit"
                 onClick={() => playEffect("open")}
               >

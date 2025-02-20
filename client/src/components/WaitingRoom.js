@@ -137,13 +137,13 @@ const WaitingRoom = ({ setGameIsStarted }) => {
         await navigator.share({
           title: "Pitfalls Road - Invitation à une partie",
           text: `Je t'invite à me rejoindre sur le jeu Pitfalls! Ma partie s'appelle "${serverName}" !`,
-          url: "https://pitfalls-client.onerender.fr",
+          url: "https://pitfalls-client.onrender.fr",
         });
       } catch (error) {
         console.error("Échec du partage", error);
       }
     } else {
-      navigator.clipboard.writeText("https://pitfalls-client.onerender.fr");
+      navigator.clipboard.writeText("https://pitfalls-client.onrender.fr");
       addNotification("Lien copié !");
     }
   };

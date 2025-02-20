@@ -13,11 +13,8 @@ const BackButton = () => {
   };
 
   return (
-    <button
-      onClick={handleBack}
-      className="back-button primary-button bg-black"
-    >
-      Retour
+    <button onClick={handleBack} className="back-button btn bg-black">
+      <i class="fa-solid fa-arrow-left"></i>
     </button>
   );
 };

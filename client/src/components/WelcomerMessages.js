@@ -6,35 +6,43 @@ function WelcomerMessages() {
   const heure = new Date().getHours();
   const phrases = {
     night: [
-      `Les vrais joueurs sont encore là, pas vrai ${user.username} ?`,
-      `Prêt à enchainer les Kilomètres de nuit, ${user.username} ?`,
-      `Une session nocturne ${user.username} ?`,
-      `C'est à cette heure que les légendes se forment, ${user.username} !`,
-      `Pas de repos pour les champions ${user.username} !`,
+      ["Les vrais joueurs sont encore là, pas vrai", "?"],
+      ["Prêt à enchaîner les kilomètres de nuit", "?"],
+      ["Une session nocturne", "?"],
+      ["C'est à cette heure que les légendes se forment", "!"],
+      ["Pas de repos pour les champions", "!"],
     ],
     day: [
-      `Bonne journée ${user.username} !`,
-      `Du soleil et des victoires, ${user.username} !`,
-      `Encore une nouvelle victoire ${user.username} ?`,
-      `Bonne chance ${user.username} !`,
-      `Une petite partie ${user.username} ?`,
+      ["Bonne journée", "!"],
+      ["Du soleil et des victoires", "!"],
+      ["Encore une nouvelle victoire", "?"],
+      ["Bonne chance", "!"],
+      ["Une petite partie", "?"],
     ],
     evening: [
-      `Prêt à faire des merveilles ce soir, ${user.username} ?`,
-      `Le soir, c'est l'heure des pros ${user.username} !`,
-      `Une petite partie ${user.username} ?`,
-      `La soirée ne fait que commencer, ${user.username} !`,
-      `Finissez la journée en beauté ${user.username} !`,
+      ["Prêt à faire des merveilles ce soir", "?"],
+      ["Le soir, c'est l'heure des pros", "!"],
+      ["Une petite partie", "?"],
+      ["La soirée ne fait que commencer", "!"],
+      ["Finissez la journée en beauté", "!"],
     ],
   };
 
-  if (heure >= 0 && heure < 5) {
-    return phrases.night[Math.floor(Math.random() * phrases.night.length)];
-  } else if (heure >= 5 && heure < 18) {
-    return phrases.day[Math.floor(Math.random() * phrases.day.length)];
-  } else {
-    return phrases.evening[Math.floor(Math.random() * phrases.evening.length)];
-  }
+  const timeOfDay =
+    heure >= 0 && heure < 5
+      ? "night"
+      : heure >= 5 && heure < 18
+      ? "day"
+      : "evening";
+
+  const [phrase, symbol] =
+    phrases[timeOfDay][Math.floor(Math.random() * phrases[timeOfDay].length)];
+
+  return (
+    <p>
+      {phrase} <span>{user.username}</span> {symbol}
+    </p>
+  );
 }
 
 export default WelcomerMessages;
