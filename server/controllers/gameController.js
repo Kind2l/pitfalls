@@ -11,6 +11,80 @@ const {
 } = require("../utils/data");
 const { v4: uuidv4 } = require("uuid");
 const { findUserByUsername } = require("../utils/data");
+const filter = require("leo-profanity");
+filter.loadDictionary("fr");
+filter.remove([
+  "bordel",
+  "putain",
+  "sale",
+  "mince",
+  "zut",
+  "flûte",
+  "merde",
+  "punaise",
+  "crotte",
+  "purée",
+  "diantre",
+  "bon sang",
+  "souffrance",
+  "boudin",
+  "foutre",
+  "pétard",
+  "mouise",
+  "bougre",
+  "relou",
+  "chelou",
+  "ouf",
+  "vénère",
+  "galère",
+  "chiant",
+  "kiffer",
+  "wesh",
+  "tarpin",
+  "lourd",
+  "naze",
+  "basta",
+  "bluff",
+  "truc",
+  "michto",
+  "oula",
+  "zarbi",
+  "taré",
+  "dingue",
+  "furax",
+  "chouiner",
+  "seum",
+  "teubé",
+  "bolos",
+  "tarpé",
+  "chelou",
+  "ouf",
+  "vénère",
+  "galère",
+  "chiant",
+  "kiffer",
+  "wesh",
+  "tarpin",
+  "péter un câble",
+  "péter un plomb",
+  "lourd",
+  "naze",
+  "basta",
+  "bluff",
+  "truc",
+  "michto",
+  "oula",
+  "pouic",
+  "zarbi",
+  "taré",
+  "dingue",
+  "furax",
+  "chouiner",
+  "seum",
+  "teubé",
+  "bolos",
+  "tarpé",
+]);
 
 /**
  * Crée un nouveau serveur et l'ajoute à la liste des serveurs.
@@ -89,9 +163,11 @@ exports.createServer = (request, callback) => {
     );
 
     const uniqueId = uuidv4();
+    let filteredserverName = filter.clean(request.serverName);
+
     const newServer = new GameModel(
       uniqueId,
-      request.serverName,
+      filteredserverName,
       request.user.username,
       request.maxPlayers,
       request.cardCounts || {}
@@ -1178,9 +1254,12 @@ exports.message = (request, callback) => {
       message: `Aucun message`,
     });
   }
+
+  let filteredMessage = filter.clean(request.message);
+
   request.io.in(server).emit("game:player-message", {
     username: request.user.username,
-    message: request.message,
+    message: filteredMessage,
   });
 
   return callback({

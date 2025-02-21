@@ -6,8 +6,6 @@ import Login from "@Components/Login";
 import "@Styles/connection/Connection.scss";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import GameRules from "../components/GameRules";
-import JoinAndroidProgram from "../components/JoinAndroidProgram";
 import News from "../components/News";
 
 const Connection = () => {
@@ -35,11 +33,6 @@ const Connection = () => {
             pour son redémarrage.
           </div>
         </div>
-        <div className="connection-container">
-          <JoinAndroidProgram />
-        </div>
-
-        <GameRules />
         <News />
       </main>
     </>

@@ -54,7 +54,7 @@ const BoardHeader = () => {
       playEffect("message");
       setTimeout(() => {
         setMessages((prev) => prev.filter((msg) => msg.id !== newMessage.id));
-      }, 3000);
+      }, 5000);
     });
 
     return () => {
@@ -92,7 +92,7 @@ const BoardHeader = () => {
             <input
               ref={inputRef}
               type="text"
-              maxLength={30}
+              maxLength={250}
               minLength={1}
               value={message}
               onChange={handleSetMessage}

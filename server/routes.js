@@ -6,6 +6,7 @@ const {
   register,
   validateConnectToken,
   validateRequestToken,
+  afk,
 } = require("./controllers/socketController");
 
 const {
@@ -96,6 +97,7 @@ module.exports = (io) => (socket) => {
     handleRequest(validateConnectToken, false, "user:validate-token")
   );
   socket.on("user:logout", handleRequest(logout, true, "user:logout"));
+  socket.on("server:afk-player", handleRequest(afk, true, "server:afk-player"));
 
   socket.on(
     "server:create",

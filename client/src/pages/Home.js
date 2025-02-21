@@ -35,10 +35,7 @@ const Home = () => {
       <Header />
       <main className="home">
         <div className="home-content">
-          <p className="welcomer">
-            <WelcomerMessages />
-          </p>
-
+          <WelcomerMessages />
           <div className="links">
             <Link
               className="bg-green"
@@ -46,7 +43,7 @@ const Home = () => {
               onClick={() => handleLinkClick("open")}
               aria-label="Rejoindre une partie"
             >
-              <i class="fa-solid fa-flag-checkered"></i>
+              <i className="fa-solid fa-flag-checkered"></i>
               <span>Rejoindre une partie</span>
             </Link>
             <Link
@@ -55,17 +52,39 @@ const Home = () => {
               onClick={() => handleLinkClick("open")}
               aria-label="Créer une partie"
             >
-              <i class="fa-solid fa-gamepad"></i>
+              <i className="fa-solid fa-gamepad"></i>
               <span>Créer une partie</span>
             </Link>
             <Link
-              className="bg-orange"
+              className="bg-sky"
               to="/settings"
               onClick={() => handleLinkClick("open")}
               aria-label="Options"
             >
-              <i class="fa-solid fa-sliders"></i>
+              <i className="fa-solid fa-sliders"></i>
               <span>Options</span>
+            </Link>
+            <Link
+              className="bg-orange"
+              to="/rules"
+              onClick={() => {
+                handleLinkClick("open");
+              }}
+              aria-label="Règles du jeu"
+            >
+              <i className="fa-regular fa-lightbulb"></i>
+              <span>Règles du jeu</span>
+            </Link>
+            <Link
+              className="bg-black"
+              to="/android-test"
+              onClick={() => {
+                handleLinkClick("open");
+              }}
+              aria-label="Application Android"
+            >
+              <i className="fa-brands fa-google-play"></i>
+              <span>Télécharger sur Android</span>
             </Link>
             <Link
               className="bg-red"
@@ -76,7 +95,7 @@ const Home = () => {
               }}
               aria-label="Déconnexion"
             >
-              <i class="fa-solid fa-right-from-bracket"></i>
+              <i className="fa-solid fa-right-from-bracket"></i>
               <span>Déconnexion</span>
             </Link>
           </div>

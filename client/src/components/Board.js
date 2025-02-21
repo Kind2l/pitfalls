@@ -8,8 +8,10 @@ import PlayerHand from "@Components/Game/PlayerHand";
 import ImageLoader from "@Components/ImageLoader.js";
 import Orbit from "@Components/Orbit.js";
 import { useLoader } from "@Context/LoaderContext";
+import { useNotification } from "@Context/NotificationContext.js";
 import { useAuth } from "@Context/SocketContext";
 import { useSound } from "@Context/SoundContext";
+
 import "@Styles/Board/Board.scss";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -18,7 +20,7 @@ import CloudPane from "./Game/CloudPane";
 import CountStart from "./Game/CountStart";
 
 const Board = () => {
-  const { socket, user } = useAuth();
+  const { socket, user, logout } = useAuth();
   const { serverId } = useParams();
   const { playMusic } = useSound();
   const { hideLoader } = useLoader();
@@ -46,14 +48,45 @@ const Board = () => {
   const [gameIsOver, setGameIsOver] = useState(false);
   const [podium, setPodium] = useState(null);
   const [showCountStart, setShowCountStart] = useState(null);
+  const [afkTimer, setAfkTimer] = useState(30);
+  const [isAfkTimerStarted, setIsAfkTimerStarted] = useState(false);
+  const { addNotification } = useNotification();
 
   useEffect(() => {
     playMusic("bgparty");
     setTimeout((e) => {
       hideLoader();
       setShowCountStart(true);
+      setTimeout(() => {
+        setIsAfkTimerStarted(true);
+      }, 5000);
     }, 1000);
   }, []);
+
+  useEffect(() => {
+    let timerInterval;
+
+    if (isMyTurn && isAfkTimerStarted) {
+      timerInterval = setInterval(() => {
+        setAfkTimer((prevTimer) => {
+          if (prevTimer > 0) {
+            return prevTimer - 1;
+          } else {
+            clearInterval(timerInterval);
+            socket.emit("server:afk-player", { user });
+            logout();
+            return 0;
+          }
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    };
+  }, [isMyTurn, isAfkTimerStarted, socket, serverId, user]);
 
   // Fetch initial game data
   useEffect(() => {
@@ -76,6 +109,7 @@ const Board = () => {
   // Fetch game data on next round
   useEffect(() => {
     socket.on("game:next-round", (response) => {
+      setAfkTimer(120);
       if (response?.data?.type) {
         if (response?.data?.type === "attaque") {
           setAttackNotification(response.data);
@@ -126,7 +160,13 @@ const Board = () => {
       setAttackedPlayer(null);
     });
 
+    socket.on("server:afk-player", (data) => {
+      let username = data.username;
+      addNotification(`${username} est exclu pour inactivité`);
+    });
+
     return () => {
+      socket.off("server:afk-player");
       socket.off("game:next-round");
       socket.off("game:is-over");
       socket.off("server:update");
@@ -496,6 +536,12 @@ const Board = () => {
         {players && <Orbit players={players} />}
         <CloudPane />
       </section>
+      {isMyTurn && (
+        <div className="timer cherry-font">
+          {Math.floor(afkTimer / 60)}:{String(afkTimer % 60).padStart(2, "0")}
+        </div>
+      )}
+
       <PlayerHand
         hand={hand}
         isMyTurn={isMyTurn}
@@ -533,9 +579,6 @@ const Board = () => {
         actionNotification={actionNotification}
         actionNotificationIsVisible={actionNotificationIsVisible}
       />
-      {/* <div className="count-start">
-        <div className="message cherry-font">C'est parti !</div>
-      </div> */}
       {showCountStart && <CountStart />}
     </div>
   );

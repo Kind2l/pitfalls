@@ -818,3 +818,34 @@ exports.disconnect = (req, callback) => {
     message: `Utilisateur ${user.username} déconnecté avec succès.`,
   });
 };
+exports.afk = (req, callback) => {
+  console.log("afk: Entrée dans la fonction");
+  const { socket, io } = req;
+  let user = findUserBySocketId(socket.id);
+  console.log("afk: Est-ce-que l'utilisateur existe ?", user);
+
+  // Si l'utilisateur n'existe pas, renvoie une erreur
+  if (!user) {
+    console.log(`afk: L'utilisateur n'éxiste pas`);
+    return callback({ success: false, message: "Utilisateur non trouvé" });
+  }
+
+  // Vérifie si l'utilisateur est sur un serveur
+  console.log(
+    `afk: L'utilisateur ${
+      user.current_server ? "est dans un serveur" : "n'est pas dans un serveur"
+    }`
+  );
+  if (user.current_server) {
+    let serverId = user.current_server;
+    if (servers[serverId]) {
+      io.to(serverId).emit("server:afk-player", user.username);
+      this.disconnect(req, callback);
+      return callback({ success: true, message: "Utilisateur afk deconnecté" });
+    }
+  }
+  return callback({
+    success: false,
+    message: "Serveur du joueur afk non trouvé",
+  });
+};

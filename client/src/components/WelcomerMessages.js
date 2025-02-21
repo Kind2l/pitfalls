@@ -39,7 +39,7 @@ function WelcomerMessages() {
     phrases[timeOfDay][Math.floor(Math.random() * phrases[timeOfDay].length)];
 
   return (
-    <p>
+    <p className="welcomer">
       {phrase} <span>{user.username}</span> {symbol}
     </p>
   );

@@ -198,7 +198,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
                   <li className="cherry-font" key={player.id + player.username}>
                     {player.username}
                   </li>
-                )) // Assurez-vous que chaque player a un id unique
+                ))
               ) : (
                 <li>Aucun joueur connecté.</li>
               )}
@@ -249,7 +249,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
             <input
               ref={inputRef}
               type="text"
-              maxLength={30}
+              maxLength={250}
               minLength={1}
               value={message}
               onChange={handleSetMessage}

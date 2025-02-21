@@ -1,0 +1,95 @@
+@use "@Styles/utils/variables.scss" as Vars;
+.android-test {
+  padding: 2rem 0.3rem;
+  @media (max-height: 400px) {
+    transform: scale(0.8);
+    padding-top: 0;
+  }
+  h2 {
+    font-family: "Outfit", serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.3rem;
+    line-height: 1.8rem;
+    color: #003049;
+    text-align: left;
+    margin: auto 3rem;
+  }
+
+  &-content {
+    background-color: Vars.$white;
+    box-shadow: 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
+    border-radius: 27px 27px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+    padding: 2rem 0rem;
+    p {
+      padding: 0 3rem;
+      line-height: 1.2rem;
+
+      &.disclaimer {
+        color: Vars.$grey;
+        font-size: 0.8rem;
+      }
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      row-gap: 1rem;
+
+      .form-input {
+        position: relative;
+        width: 80%;
+        margin: auto;
+        input {
+          all: unset;
+          box-sizing: border-box;
+          text-align: center;
+          width: 100%;
+          padding: 0.5rem 7rem 0.5rem 0.5rem;
+          color: Vars.$black;
+          background-color: Vars.$grey_transparent;
+          border-radius: 12px;
+
+          &::placeholder {
+            color: Vars.$grey;
+          }
+
+          &:focus {
+            &::placeholder {
+              color: Vars.$black;
+            }
+          }
+        }
+
+        .domain {
+          position: absolute;
+          display: flex;
+          align-items: center;
+          top: 0;
+          right: 0;
+          height: 100%;
+          padding-left: 0.5rem;
+          background-color: Vars.$green;
+          color: Vars.$white;
+          border-radius: 0 12px 12px 0;
+          width: 7rem;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+        }
+      }
+      .form-checkbox {
+        height: 0;
+        width: 0;
+        overflow: hidden;
+      }
+    }
+  }
+
+  .back-button {
+    margin-right: 1rem;
+  }
+}

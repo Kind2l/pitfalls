@@ -1,7 +1,7 @@
 import ImageLoader from "@Components/ImageLoader";
 import React from "react";
 
-const PlayerHand = ({ hand, isMyTurn, handleClickCard }) => {
+const PlayerHand = ({ hand, isMyTurn, handleClickCard, isRequestPending }) => {
   const cardOrder = {
     borne: 1,
     parade: 2,
@@ -44,7 +44,7 @@ const PlayerHand = ({ hand, isMyTurn, handleClickCard }) => {
               data-type={type}
               className={`card card-${index} ${positionClass}`}
               disabled={!isMyTurn}
-              onClick={() => handleClickCard(card)}
+              onClick={() => !isRequestPending && handleClickCard(card)}
             >
               <div className="card-top">{name}</div>
               <div className="card-image">

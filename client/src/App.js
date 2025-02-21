@@ -9,11 +9,13 @@ import CreateServer from "@Pages/CreateServer";
 import Error from "@Pages/Error";
 import GameBoard from "@Pages/GameBoard";
 import Home from "@Pages/Home";
+import Rules from "@Pages/Rules";
 import ServerSelection from "@Pages/ServerSelection";
 import Settings from "@Pages/Settings";
 import "@Styles/App.scss";
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import AndroidTest from "./pages/AndroidTest";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +41,14 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: <Settings />,
+      },
+      {
+        path: "/android-test",
+        element: <AndroidTest />,
+      },
+      {
+        path: "/rules",
+        element: <Rules />,
       },
     ],
     errorElement: <Error />,

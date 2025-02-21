@@ -49,23 +49,31 @@
     rgba(80, 201, 255, 1) 100%
   );
   .game-header {
+    display: flex;
+    justify-content: space-around;
     position: relative;
     z-index: 2;
 
     .player-header {
-      position: absolute;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      min-width: 30%;
-      max-width: 40%;
+      min-width: 20%;
+      max-width: 30%;
       overflow: hidden;
       @media (max-height: 400px) {
         transform: scale(0.5);
       }
 
-      &.current .player-header__name {
-        animation: pulse 1s infinite ease-in-out alternate;
+      &[data-order="1"].current .player-header__name,
+      &[data-order="2"].current .player-header__name {
+        animation: pulseY 1s infinite ease-in-out alternate;
+      }
+      &[data-order="3"].current .player-header__name {
+        animation: pulseXR 1s infinite ease-in-out alternate;
+      }
+      &[data-order="4"].current .player-header__name {
+        animation: pulseXL 1s infinite ease-in-out alternate;
       }
 
       &[data-order="1"] {
@@ -93,6 +101,7 @@
       }
 
       &[data-order="3"] {
+        position: absolute;
         top: 20vh;
         right: 0;
         transform-origin: right;
@@ -105,6 +114,7 @@
       }
 
       &[data-order="4"] {
+        position: absolute;
         transform-origin: left;
         top: 20vh;
         left: 0;
@@ -664,6 +674,20 @@
   }
 }
 
+.timer {
+  position: absolute;
+  font-size: 2rem;
+  left: 50%;
+  top: 30%;
+  transform: translateX(-50%);
+  color: #ffffff;
+  text-shadow: 0 1px 0 #cccccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9,
+    0 5px 0 #aaa, 0 6px 1px rgba(0, 0, 0, 0.1), 0 0 5px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.3), 0 3px 5px rgba(0, 0, 0, 0.2),
+    0 5px 10px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.2),
+    0 20px 20px rgba(0, 0, 0, 0.15);
+}
+
 .game-area {
   position: relative;
 }
@@ -866,11 +890,27 @@
   }
 }
 
-@keyframes pulse {
+@keyframes pulseY {
   from {
     transform: scale(1);
   }
   to {
-    transform: scale(0.95) translateY(-10%);
+    transform: scale(0.95) translateY(-5px);
+  }
+}
+@keyframes pulseXL {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.95) translateX(-5);
+  }
+}
+@keyframes pulseXR {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.95) translateX(5);
   }
 }
