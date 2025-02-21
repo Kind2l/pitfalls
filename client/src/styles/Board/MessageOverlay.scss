@@ -13,6 +13,7 @@
 }
 
 .message-item {
+  width: fit-content;
   max-width: 100%;
   background: rgba(255, 255, 255, 0.95);
   color: Vars.$black;
@@ -20,7 +21,7 @@
   border-radius: 15px;
   font-size: 14px;
   opacity: 1;
-  animation: fadeOut 3s forwards;
+  animation: fadeOut 5s forwards;
   word-break: break-all;
   span {
     font-weight: 600;

@@ -27,12 +27,14 @@ function CardStack({ numberOfCards }) {
       return;
     }
 
-    if (numberOfCards === 50) {
-      newMessage = "Il reste 50 cartes !";
+    if (numberOfCards === 80) {
+      newMessage = "Il reste 80 cartes !";
+    } else if (numberOfCards === 50) {
+      newMessage = "Il reste 20 cartes !";
     } else if (numberOfCards === 20) {
-      newMessage = "Il ne reste plus que 20 cartes !";
+      newMessage = "Il reste 20 cartes !";
     } else if (numberOfCards === 10) {
-      newMessage = "Plus que 10 cartes avant la fin du jeu !";
+      newMessage = "Plus que 10 cartes !";
     }
 
     if (newMessage) {

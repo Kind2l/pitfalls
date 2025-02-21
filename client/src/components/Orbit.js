@@ -12,7 +12,13 @@ const Orbit = ({ players, maxScore = 1000 }) => {
   return (
     <div className="orbit">
       <div className="planet">
-        <ImageLoader name="planet2" alt="Planète" />
+        <ImageLoader name="planet3" alt="Planète" />
+      </div>
+      <div className="planet front">
+        <ImageLoader name="planet-front" alt="Planète" />
+      </div>
+      <div className="planet back">
+        <ImageLoader name="planet-back" alt="Planète" />
       </div>
       <div className="arrival">
         <ImageLoader name="arrival" alt="Hotel d'arrivée" />

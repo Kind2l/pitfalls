@@ -48,7 +48,7 @@ const Board = () => {
   const [gameIsOver, setGameIsOver] = useState(false);
   const [podium, setPodium] = useState(null);
   const [showCountStart, setShowCountStart] = useState(null);
-  const [afkTimer, setAfkTimer] = useState(30);
+  const [afkTimer, setAfkTimer] = useState(120);
   const [isAfkTimerStarted, setIsAfkTimerStarted] = useState(false);
   const { addNotification } = useNotification();
 
@@ -536,10 +536,12 @@ const Board = () => {
         {players && <Orbit players={players} />}
         <CloudPane />
       </section>
-      {isMyTurn && (
+      {isMyTurn & (afkTimer < 50) ? (
         <div className="timer cherry-font">
           {Math.floor(afkTimer / 60)}:{String(afkTimer % 60).padStart(2, "0")}
         </div>
+      ) : (
+        ""
       )}
 
       <PlayerHand

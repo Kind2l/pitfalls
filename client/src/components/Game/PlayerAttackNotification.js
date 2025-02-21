@@ -44,7 +44,7 @@ const PlayerAttackNotification = ({
         <div className="player-attack-notification__message">
           <span className="cherry-font">
             {attackNotification.player.username}
-          </span>{" "}
+          </span>
           attaque{" "}
           <span className="cherry-font">
             {attackNotification.attackedPlayer.username}

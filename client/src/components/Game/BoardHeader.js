@@ -44,6 +44,20 @@ const BoardHeader = () => {
   }, [showMessageInput]);
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter" && !showMessageInput) {
+        handleOpenMessage();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showMessageInput]);
+
+  useEffect(() => {
     socket.on("game:player-message", (data) => {
       const newMessage = {
         id: `${Date.now()}${data.username}`,
