@@ -2,16 +2,13 @@ import { useLoader } from "@Context/LoaderContext";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-// Création d'un contexte pour la gestion de la connexion via Socket.io
 const SocketContext = createContext();
-// https://pitfalls.onrender.com
-const socketIo = io("https://pitfalls.onrender.com", {
+const socketIo = io(process.env.REACT_APP_API_ADDRESS, {
   transports: ["websocket"],
   reconnection: true,
 });
 
 export const SocketProvider = ({ children }) => {
-  // Initialisation de la socket et des états d'utilisateur et d'authentification
   const socket = socketIo;
   const [user, setUser] = useState({
     id: null,
@@ -22,13 +19,11 @@ export const SocketProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { hideLoader, showLoader } = useLoader();
 
-  // Vérifie la présence d'un token pour réauthentifier l'utilisateur au chargement
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token) {
       showLoader();
-      // Émet un événement pour valider le jeton auprès du serveur
       socket.emit("user:validate-token", { token }, (response) => {
         hideLoader();
         if (response?.success) {

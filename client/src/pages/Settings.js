@@ -2,7 +2,7 @@ import BackButton from "@Components/BackButton";
 import Header from "@Components/Header";
 import { useSound } from "@Context/SoundContext";
 import "@Styles/Settings.scss";
-import React, { useState } from "react";
+import React from "react";
 
 const Settings = () => {
   const {
@@ -13,31 +13,6 @@ const Settings = () => {
     effectVolume,
   } = useSound();
 
-  // État pour gérer la position de la bulle
-  const [musicBubblePosition, setMusicBubblePosition] = useState(() => {
-    return ((musicVolume - 0) / (1 - 0)) * 100; // Convertir en pourcentage
-  });
-
-  const [effectBubblePosition, setEffectBubblePosition] = useState(() => {
-    return ((effectVolume - 0) / (1 - 0)) * 100; // Convertir en pourcentage
-  });
-
-  /**
-   * Met à jour la position de la bulle en fonction de l'input.
-   * @param {Event} e - Événement de l'input
-   * @param {Function} setPosition - Setter pour mettre à jour la position
-   */
-  const updateBubblePosition = (e, setPosition) => {
-    const input = e.target;
-    const value = parseFloat(input.value);
-
-    // Calcul de la position en pourcentage
-    const percent = ((value - input.min) / (input.max - input.min)) * 100;
-
-    // Met à jour la position
-    setPosition(percent);
-  };
-
   return (
     <>
       <Header />
@@ -47,12 +22,7 @@ const Settings = () => {
           <h2>Options</h2>
           <h3>Volume de la musique</h3>
           <div className="range-slider">
-            <span
-              className="slider-bubble"
-              style={{ left: `${musicBubblePosition}%` }}
-            >
-              {Math.round(musicVolume * 100)}%
-            </span>
+            <div>{musicVolume * 100}%</div>
             <input
               type="range"
               min="0"
@@ -61,7 +31,6 @@ const Settings = () => {
               value={musicVolume}
               onChange={(e) => {
                 changeMusicVolume(parseFloat(e.target.value));
-                updateBubblePosition(e, setMusicBubblePosition);
               }}
             />
           </div>
@@ -69,12 +38,8 @@ const Settings = () => {
           {/* Slider pour le volume des effets */}
           <h3>Volume des effets</h3>
           <div className="range-slider">
-            <span
-              className="slider-bubble"
-              style={{ left: `${effectBubblePosition}%` }}
-            >
-              {Math.round(effectVolume * 100)}%
-            </span>
+            <div>{effectVolume * 100}%</div>
+
             <input
               type="range"
               min="0"
@@ -83,7 +48,6 @@ const Settings = () => {
               value={effectVolume}
               onChange={(e) => {
                 changeEffectVolume(parseFloat(e.target.value));
-                updateBubblePosition(e, setEffectBubblePosition);
               }}
             />
           </div>

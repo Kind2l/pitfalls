@@ -14,16 +14,9 @@ require("dotenv").config();
 // });
 
 const pool = new Pool({
-  connectionString:
-    "postgresql://pitfallsdb_user:KqS9TAFnv7wP97e2nb8891Eb3NEUE0tJ@dpg-cugkfmogph6c73a3g3ng-a.frankfurt-postgres.render.com/pitfallsdb",
+  connectionString: process.env.DB_ADDRESS,
   ssl: { rejectUnauthorized: false },
 });
-
-// const pool = new Pool({
-//   connectionString:
-//     "postgresql://pitfallsdb_user:KqS9TAFnv7wP97e2nb8891Eb3NEUE0tJ@dpg-cugkfmogph6c73a3g3ng-a.frankfurt-postgres.render.com/pitfallsdb",
-//   ssl: { rejectUnauthorized: false },
-// });
 
 // Fonction pour créer la table `users` si elle n'existe pas
 const createUsersTable = async () => {

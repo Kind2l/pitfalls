@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const CreateServer = () => {
   const [serverName, setServerName] = useState("");
-  const [maxPlayers, setMaxPlayers] = useState(2);
+  const [maxPlayers, setMaxPlayers] = useState(4);
   const [errorMessage, setErrorMessage] = useState("");
   const [isCustomServer, setIsCustomServer] = useState(false);
   const [cardCounts, setCardCounts] = useState({

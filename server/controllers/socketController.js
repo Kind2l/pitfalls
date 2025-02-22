@@ -1,7 +1,5 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { generateUsername } = require("unique-username-generator");
-
 const {
   addUser,
   updateUser,
@@ -18,6 +16,113 @@ const {
 } = require("../utils/queries");
 const { endGame, removeUserFromServerByUsername } = require("./gameController");
 const { servers, findUserBySocketId } = require("../utils/data.js");
+const filter = require("leo-profanity");
+const frenchBadwordsList = require("french-badwords-list");
+filter.clearList();
+filter.add(frenchBadwordsList.array);
+filter.add([
+  "salope",
+  "sal0pe",
+  "s4lope",
+  "salop3",
+  "salo.p3",
+  "s@lope",
+  "s4l0pe",
+  "salopee",
+  "saloperie",
+  "salaupe",
+  "salaupeee",
+  "chibre",
+  "ch1bre",
+  "chibree",
+  "chib.re",
+  "chibr3",
+  "ch!bre",
+  "chibrou",
+  "nazi",
+  "naz1",
+  "n@zi",
+  "n4zi",
+  "n@z1",
+  "nazie",
+  "naz1e",
+  "n4zie",
+  "n@zie",
+  "n4z1e",
+  "hitler",
+  "h1tler",
+  "h!tler",
+  "hîtler",
+  "hítler",
+  "h1tl3r",
+  "h!tl3r",
+  "h1t1er",
+  "h1tlêr",
+  "h1t|er",
+  "h.tler",
+  "h/tler",
+  "hît1er",
+  "reich",
+  "r3ich",
+  "rêich",
+  "r€ich",
+  "r3!ch",
+  "r3îch",
+  "r3ichh",
+  "reych",
+  "r-eich",
+  "r/ech",
+  "thirdreich",
+  "3rdreich",
+  "fuehrer",
+  "fuhrer",
+  "fuh_rer",
+  "führer",
+  "füh_rer",
+  "fuhr€r",
+  "fuhreeer",
+  "fuhr3r",
+  "fuh.rer",
+  "fu/h_rer",
+  "ss",
+  "bamboula",
+  "bamb0ula",
+  "b4mboula",
+  "b@mboula",
+  "bamb0ul4",
+  "bamb0u1a",
+  "bamboulah",
+  "bamboulaa",
+  "bamb.oula",
+  "b@mb0ul@",
+  "penis",
+  "p3nis",
+  "pénis",
+  "pén1s",
+  "pen1s",
+  "p3n1s",
+  "p3n!s",
+  "p.nis",
+  "p-nis",
+  "p3n1$",
+  "peniss",
+  "peni$",
+  "p3n!$",
+  "p3ni5",
+  "grospenis",
+  "gros-penis",
+  "gr0spenis",
+  "gr0s-p3n1s",
+  "gr0s-p3n!s",
+  "gr0sp3n1s",
+  "gr0spenis",
+  "gro$pen1s",
+  "gros_penis",
+  "gr0$pen!s",
+  "gr0s_p3n1s",
+  "gr0s_penis",
+  "gr0spenis$",
+]);
 
 const validateUsername = (username) => {
   if (!username) {
@@ -36,6 +141,9 @@ const validateUsername = (username) => {
 
   if (!usernameRegex.test(username)) {
     return "Le nom d'utilisateur contient des caractères non autorisés.";
+  }
+  if (filter.check(username)) {
+    return "Le nom d'utilisateur n'est pas approprié.";
   }
 
   return false;
@@ -246,6 +354,14 @@ exports.loginAsGuest = async (req, callback) => {
     return callback({
       success: false,
       message: "Aucun nom d'utilisateur",
+    });
+  }
+
+  let testUsername = validateUsername(username);
+  if (testUsername) {
+    return callback({
+      success: false,
+      message: testUsername,
     });
   }
 
