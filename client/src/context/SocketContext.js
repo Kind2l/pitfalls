@@ -16,8 +16,11 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     showLoader();
+    const apiUrl = process.env.REACT_APP_API_ADDRESS + "/check-auth";
+    console.log("API URL:", apiUrl);
+
     axios
-      .get(process.env.REACT_APP_API_ADDRESS + "/check-auth", {
+      .get(apiUrl, {
         withCredentials: true,
       })
       .then((res) => {
@@ -57,8 +60,11 @@ export const SocketProvider = ({ children }) => {
   }, [socket]);
 
   const handleLogin = () => {
+    const apiUrl = process.env.REACT_APP_API_ADDRESS + "/check-auth";
+    console.log("API URL:", apiUrl);
+
     axios
-      .get(process.env.REACT_APP_API_ADDRESS + "/check-auth", {
+      .get(apiUrl, {
         withCredentials: true,
       })
       .then((res) => {
@@ -109,8 +115,11 @@ export const SocketProvider = ({ children }) => {
   };
 
   const handleGuestLogin = async (username) => {
+    const apiUrl = process.env.REACT_APP_API_ADDRESS + "/check-auth";
+    console.log("API URL:", apiUrl);
+
     axios
-      .get(process.env.REACT_APP_API_ADDRESS + "/check-auth", {
+      .get(apiUrl, {
         withCredentials: true,
       })
       .then((res) => {
