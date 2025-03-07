@@ -41,7 +41,7 @@
       flex-direction: column;
       justify-content: center;
       text-align: center;
-      padding: 1rem;
+      padding: 0.5rem !important;
       color: Vars.$white;
       border-radius: 17px;
 
@@ -49,9 +49,40 @@
         font-size: 2.2rem;
       }
       span {
-        padding-top: 0.5rem;
         font-size: 1.2rem;
       }
     }
+  }
+  .create-container {
+    border-radius: 17px;
+    text-align: center;
+    padding: 0.5rem !important;
+    &__title {
+      display: flex;
+      flex-direction: column;
+      color: Vars.$white;
+      padding-bottom: 0.5rem;
+      i {
+        font-size: 2.2rem;
+      }
+      span {
+        font-size: 1.2rem;
+      }
+    }
+
+    &__types {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
+
+      a {
+        width: 100%;
+      }
+    }
+  }
+  .settings-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
   }
 }

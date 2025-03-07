@@ -48,22 +48,7 @@
     opacity: 0.65;
   }
 }
-.cloudPane {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0 auto;
-  width: 150%;
-  height: 50vh;
-  z-index: 1;
-  * {
-    pointer-events: none;
-  }
 
-  @media (max-height: 400px) {
-    display: none;
-  }
-}
 #cloud1 {
   opacity: 0.9;
   top: 50px;
@@ -220,8 +205,26 @@
   );
   top: 0px;
 }
+.cloudPane {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0 auto;
+  width: 150%;
+  height: 25%;
+  top: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  * {
+    pointer-events: none;
+  }
+
+  @media (max-height: 400px) {
+    display: none;
+  }
+}
 .bigCloud {
-  box-shadow: 10px 10px 5px 20px black inset;
   position: absolute;
 }
 .smallCircle {

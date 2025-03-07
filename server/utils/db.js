@@ -25,6 +25,7 @@ const createUsersTable = async () => {
       id SERIAL PRIMARY KEY,
       username VARCHAR(50) NOT NULL UNIQUE,
       password TEXT NOT NULL,
+      email TEXT NOT NULL,
       created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       token TEXT
     );

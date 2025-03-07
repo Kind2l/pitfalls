@@ -1,14 +1,16 @@
 import { useAuth } from "@Context/SocketContext";
 import { useSound } from "@Context/SoundContext";
 
+import Login from "@Components/Connection/Login";
+import Register from "@Components/Connection/Register";
 import Header from "@Components/Header";
-import Login from "@Components/Login";
-import "@Styles/connection/Connection.scss";
-import React, { useEffect } from "react";
+import "@Styles/Connection/Connection.scss";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import News from "../components/News";
+import Guest from "../components/Connection/Guest";
 
 const Connection = () => {
+  const [choice, setChoice] = useState(true);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { stopMusic } = useSound();
@@ -25,15 +27,37 @@ const Connection = () => {
     <>
       <Header />
       <main className="connection">
-        <div className="connection-container">
-          <Login />
-          <div className="info">
-            Pitfalls est en développement et le serveur s’éteint en cas
-            d'inactivité. Si c'est le cas, veuillez patienter quelques secondes
-            pour son redémarrage.
+        <div>
+          <div className="connection-selector">
+            <input
+              type="radio"
+              id="login"
+              name="auth"
+              checked={choice === true}
+              onChange={() => {
+                setChoice(true);
+              }}
+            />
+            <label htmlFor="login">Connexion</label>
+
+            <input
+              type="radio"
+              id="register"
+              name="auth"
+              checked={choice === false}
+              onChange={() => {
+                setChoice(false);
+              }}
+            />
+            <label htmlFor="register">Inscription</label>
+          </div>
+          <div className="connection-container">
+            {choice === true ? <Login /> : <Register setChoice={setChoice} />}
           </div>
         </div>
-        <News />
+        <div className="connection-container rounded">
+          <Guest />
+        </div>
       </main>
     </>
   );

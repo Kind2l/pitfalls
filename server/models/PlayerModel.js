@@ -1,6 +1,6 @@
 class PlayerModel {
   constructor(id, username) {
-    this.id = Number(id);
+    this.id = id;
     this.username = username;
     this.hand = [];
     this.bonus = {
@@ -11,11 +11,11 @@ class PlayerModel {
     };
     this.score = 0;
     this.states = {
-      feurouge: true,
-      zonedecontrole: false,
-      fatigue: false,
-      accident: false,
-      embouteillage: false,
+      feurouge: { value: true, count: 0 },
+      zonedecontrole: { value: false, count: 0 },
+      fatigue: { value: false, count: 0 },
+      accident: { value: false, count: 0 },
+      embouteillage: { value: false, count: 0 },
     };
   }
 

@@ -22,7 +22,7 @@
     box-shadow: 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
     height: 3rem;
     width: 3rem;
-    z-index: 9999;
+    z-index: 11;
 
     &:active,
     &:hover,
@@ -37,6 +37,13 @@
       color: Vars.$green;
       &.off {
         color: Vars.$red;
+      }
+    }
+
+    &.leave {
+      background-color: Vars.$red;
+      i {
+        color: Vars.$white;
       }
     }
   }

@@ -6,7 +6,7 @@ const MessageOverlay = ({ messages }) => {
     <div className="message-overlay">
       {messages.map((msg) => (
         <div key={msg.id} className="message-item">
-          <span>{msg.username}: </span>
+          <span className="cherry-font">{msg.username}: </span>
           {msg.text}
         </div>
       ))}

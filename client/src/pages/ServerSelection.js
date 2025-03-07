@@ -2,7 +2,6 @@ import { useAuth } from "@Context/SocketContext";
 import { useSound } from "@Context/SoundContext";
 
 import BackButton from "@Components/BackButton";
-import Header from "@Components/Header";
 import "@Styles/ServerSelection.scss";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,7 +15,6 @@ const ServerSelection = () => {
 
   const navigate = useNavigate();
 
-  // Récupère la liste des serveurs lors du premier chargement
   useEffect(() => {
     const fetchServers = () => {
       socket.emit("server:get-list", { user }, (response) => {
@@ -44,22 +42,13 @@ const ServerSelection = () => {
 
   const handleServerJoin = (server) => {
     if (!server || !server.id) return;
-
-    socket.emit("server:join", { user, server_id: server.id }, (response) => {
-      if (response?.success && response.data?.server) {
-        navigate(`/game/${response.data.server.id}`);
-      } else {
-        setErrorMessage(
-          response?.message || "Impossible de rejoindre le serveur."
-        );
-      }
-    });
+    navigate(`/game/${server.id}`);
   };
 
   const filteredServers = Object.values(servers).filter(
     (server) =>
       server?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      server?.author?.toLowerCase().includes(searchQuery.toLowerCase())
+      server?.host?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const ServerItem = ({ server }) => {
@@ -70,88 +59,91 @@ const ServerSelection = () => {
     const isStarted = server.start;
 
     return (
-      <li className="list-item">
-        <span className="server-name">{server.name || "Nom inconnu"}</span>
-        <span className="server-players">
-          {`${Object.keys(server?.players || {}).length}/${
-            server?.maxPlayers || 0
-          } joueurs`}
-        </span>
-        <span className="server-custom">
-          {server.custom && Object.keys(server.custom).length > 0
-            ? "Partie personnalisée"
-            : "Partie classique"}
-        </span>
-        <span className="server-author">
-          {server.author || "Auteur inconnu"}
-        </span>
-        <button
-          className={`primary-button ${
-            isFull || isStarted ? "bg-red" : "bg-green"
-          }`}
-          disabled={isFull || isStarted}
-          onClick={() => {
-            isFull || isStarted ? playEffect("close") : playEffect("open");
-            handleServerJoin(server);
-          }}
-        >
-          {isStarted ? "En cours" : isFull ? "Complet" : "Rejoindre"}
-        </button>
-      </li>
+      <button
+        className={`server ${isFull || isStarted ? "bg-red" : "bg-green"}`}
+        disabled={isFull || isStarted}
+        onClick={() => {
+          isFull || isStarted ? playEffect("close") : playEffect("open");
+          handleServerJoin(server);
+        }}
+      >
+        <div className="server-infos">
+          <span className="server-name">{server.name || "Nom inconnu"}</span>
+          <span className="server-players">
+            {`${Object.keys(server?.players || {}).length}/${
+              server?.maxPlayers || 0
+            } joueurs`}
+          </span>
+          <span className="server-type">
+            {" "}
+            {server.type === "classic"
+              ? "Classique"
+              : server.type === "classic"
+              ? "Hardcore"
+              : server.type === "infinite"
+              ? "Jusqu'à l'hotel"
+              : server.type === "custom"
+              ? "Personnalisé"
+              : "undefined"}
+          </span>
+          <span className="server-host">{server.host || "Auteur inconnu"}</span>
+        </div>
+        <div className="server-button">
+          <i
+            className={`fa-solid fa-arrow-right ${
+              isFull || isStarted ? "bg-red" : "bg-green"
+            }`}
+          ></i>
+        </div>
+      </button>
     );
   };
 
   return (
-    <>
-      <Header />
-      <div className="server-selection">
-        <div className="server-selection-content">
-          <h2>Rejoindre une partie</h2>
+    <div className="server-selection page">
+      <div className="page-content">
+        <h2 className="page-title">Rejoindre une partie</h2>
 
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Rechercher par nom ou auteur..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-          </div>
-
-          <ul className="list">
-            {filteredServers.length > 0 ? (
-              filteredServers.map((server) => (
-                <ServerItem key={server.id} server={server} />
-              ))
-            ) : (
-              <li className="empty">Aucune partie disponible</li>
-            )}
-          </ul>
-
-          <p>
-            Vous pouvez aussi{" "}
-            <Link
-              to="/create-server"
-              className="color-orange"
-              onClick={() => playEffect("open")}
-            >
-              créer une partie
-            </Link>{" "}
-            !
-          </p>
-
-          <div className="buttons">
-            <BackButton />
-          </div>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Rechercher par nom ou auteur..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
         </div>
 
-        {errorMessage && (
-          <div className="server-selection-error">
-            <p className="error">{errorMessage}</p>
-          </div>
-        )}
+        <ul className="list">
+          {filteredServers.length > 0 ? (
+            filteredServers.map((server) => (
+              <ServerItem key={server.id} server={server} />
+            ))
+          ) : (
+            <li className="empty">Aucune partie disponible</li>
+          )}
+        </ul>
+
+        <p>
+          Vous pouvez aussi{" "}
+          <Link
+            to="/create-server/classic"
+            className="color-orange"
+            onClick={() => playEffect("open")}
+          >
+            créer une partie
+          </Link>{" "}
+          !
+        </p>
       </div>
-    </>
+
+      {errorMessage && (
+        <div className="server-selection-error">
+          <p className="error">{errorMessage}</p>
+        </div>
+      )}
+      <BackButton />
+    </div>
   );
 };
 

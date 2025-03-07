@@ -1,97 +1,154 @@
 import { useLoader } from "@Context/LoaderContext";
+import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const SocketContext = createContext();
-const socketIo = io(process.env.REACT_APP_API_ADDRESS, {
-  transports: ["websocket"],
-  reconnection: true,
-});
 
 export const SocketProvider = ({ children }) => {
-  const socket = socketIo;
+  const [socket, setSocket] = useState(null);
   const [user, setUser] = useState({
     id: null,
     username: null,
-    token: null,
-    isGuest: false,
   });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { hideLoader, showLoader } = useLoader();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      showLoader();
-      socket.emit("user:validate-token", { token }, (response) => {
+    showLoader();
+    axios
+      .get(process.env.REACT_APP_API_ADDRESS + "/check-auth", {
+        withCredentials: true,
+      })
+      .then((res) => {
         hideLoader();
-        if (response?.success) {
-          let id = response.data.id;
-          let username = response.data.username;
-          // Met à jour les informations de l'utilisateur si le jeton est valide
-          setUser({
-            id,
-            username,
-            token,
+
+        const { token, id, username } = res.data;
+
+        if (token) {
+          const newSocket = io(process.env.REACT_APP_API_ADDRESS, {
+            transports: ["websocket"],
+            autoConnect: false,
+            query: { token },
           });
+
+          newSocket.connect();
+          setSocket(newSocket);
           setIsAuthenticated(true);
-        } else {
-          // Supprime le jeton en cas d'échec et affiche un message d'erreur
-          localStorage.removeItem("token");
-          hideLoader();
-          console.info(response?.message || "Token manquant.");
+          if (id && username) {
+            setUser({
+              id,
+              username,
+            });
+          }
         }
+      })
+      .catch((err) => {
+        hideLoader();
+        console.error("Erreur de récupération du token :", err);
       });
-    }
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fonction pour connecter un utilisateur et stocker son jeton
-  const login = (data) => {
-    if (!data || !data.token || typeof data.token !== "string") {
-      console.error("Données de connexion manquantes."); // Vérifie si les données sont présentes
-      return;
-    }
-    // Stocke le jeton et met à jour l'état utilisateur
-    localStorage.setItem("token", data.token);
-    setUser(data);
+  useEffect(() => {
+    socket?.on("error", (error) => {
+      setIsAuthenticated(false);
+    });
+  }, [socket]);
 
-    setIsAuthenticated(true);
+  const handleLogin = () => {
+    axios
+      .get(process.env.REACT_APP_LOCAL_ADDRESS + "/check-auth", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        hideLoader();
+
+        const { token, id, username } = res.data;
+
+        if (token) {
+          const newSocket = io(process.env.REACT_APP_LOCAL_ADDRESS, {
+            transports: ["websocket"],
+            autoConnect: false,
+            query: { token },
+          });
+
+          newSocket.connect();
+          setSocket(newSocket);
+          setIsAuthenticated(true);
+          if (id && username) {
+            setUser({
+              id,
+              username,
+            });
+          }
+        }
+      })
+      .catch((err) => console.error("Erreur de récupération du token :", err));
   };
 
-  // Fonction pour déconnecter un utilisateur et réinitialiser l'état
-  const logout = () => {
-    const username = user.username; // Récupère le nom d'utilisateur actuel
-    if (!username) {
-      console.error("Aucun utilisateur à déconnecter."); // Vérifie si un utilisateur est connecté
-      return;
-    }
-
-    // Supprime le jeton stocké dans le navigateur
-    localStorage.removeItem("token");
-
-    // Informe le serveur de la déconnexion
-    socket.emit("user:logout", { user }, (response) => {
-      if (!response.success) {
-        console.error(response.message || "Erreur lors de la déconnexion.");
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        process.env.REACT_APP_LOCAL_ADDRESS + "/logout",
+        {},
+        { withCredentials: true }
+      );
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
       }
-    });
-
-    // Réinitialise l'état utilisateur et l'authentification
-    setUser({
-      id: null,
-      username: null,
-      token: null,
-      isGuest: false,
-    });
-    setIsAuthenticated(false);
+      setIsAuthenticated(false);
+      setUser({
+        id: null,
+        username: null,
+      });
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion :", error);
+    }
   };
 
-  // Fournit le contexte aux composants enfants
+  const handleGuestLogin = async (username) => {
+    axios
+      .get(process.env.REACT_APP_LOCAL_ADDRESS + "/check-auth", {
+        withCredentials: true,
+      })
+      .then((res) => {
+        hideLoader();
+
+        const { token, id, username } = res.data;
+
+        if (token) {
+          const newSocket = io(process.env.REACT_APP_LOCAL_ADDRESS, {
+            transports: ["websocket"],
+            autoConnect: false,
+            query: { token },
+          });
+
+          newSocket.connect();
+          setSocket(newSocket);
+          setIsAuthenticated(true);
+          if (id && username) {
+            setUser({
+              id,
+              username,
+            });
+          }
+        }
+      })
+      .catch((err) => console.error("Erreur de récupération du token :", err));
+  };
+
   return (
     <SocketContext.Provider
-      value={{ socket, user, isAuthenticated, login, logout }}
+      value={{
+        socket,
+        user,
+        isAuthenticated,
+        handleLogin,
+        handleLogout,
+        handleGuestLogin,
+      }}
     >
       {children}
     </SocketContext.Provider>

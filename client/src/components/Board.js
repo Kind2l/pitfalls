@@ -1,12 +1,13 @@
 import ActionModal from "@Components/Game/ActionModal";
 import AttackModal from "@Components/Game/AttackModal";
 import BoardHeader from "@Components/Game/BoardHeader";
+import CloudPane from "@Components/Game/CloudPane";
 import NotificationPopup from "@Components/Game/NotificationPopup";
 import PlayerActionModal from "@Components/Game/PlayerActionModal";
 import PlayerAttackNotification from "@Components/Game/PlayerAttackNotification";
-import PlayerHand from "@Components/Game/PlayerHand";
+import PlayerDashboard from "@Components/Game/PlayerDashboard";
 import ImageLoader from "@Components/ImageLoader.js";
-import Orbit from "@Components/Orbit.js";
+import RaceTrack from "@Components/RaceTrack.js";
 import { useLoader } from "@Context/LoaderContext";
 import { useNotification } from "@Context/NotificationContext.js";
 import { useAuth } from "@Context/SocketContext";
@@ -16,8 +17,7 @@ import "@Styles/Board/Board.scss";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CardStack from "./Game/CardStack";
-import CloudPane from "./Game/CloudPane";
-import CountStart from "./Game/CountStart";
+import Orbit from "./Game/Orbit";
 
 const Board = () => {
   const { socket, user, logout } = useAuth();
@@ -25,6 +25,7 @@ const Board = () => {
   const { playMusic } = useSound();
   const { hideLoader } = useLoader();
 
+  const [serverInfos, setServerInfos] = useState(null);
   const [hand, setHand] = useState([]);
   const [playerEnvironment, setPlayerEnvironment] = useState(null);
   const [players, setPlayers] = useState(null);
@@ -50,6 +51,7 @@ const Board = () => {
   const [showCountStart, setShowCountStart] = useState(null);
   const [afkTimer, setAfkTimer] = useState(120);
   const [isAfkTimerStarted, setIsAfkTimerStarted] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
   const { addNotification } = useNotification();
 
   useEffect(() => {
@@ -57,29 +59,33 @@ const Board = () => {
     setTimeout((e) => {
       hideLoader();
       setShowCountStart(true);
-      setTimeout(() => {
-        setIsAfkTimerStarted(true);
-      }, 5000);
+      // setTimeout(() => {
+      //   setIsAfkTimerStarted(true);
+      // }, 5000);
     }, 1000);
   }, []);
 
   useEffect(() => {
+    console.log("isWaiting ? ", isWaiting);
+  }, [setIsWaiting, isWaiting]);
+
+  useEffect(() => {
     let timerInterval;
 
-    if (isMyTurn && isAfkTimerStarted) {
-      timerInterval = setInterval(() => {
-        setAfkTimer((prevTimer) => {
-          if (prevTimer > 0) {
-            return prevTimer - 1;
-          } else {
-            clearInterval(timerInterval);
-            socket.emit("server:afk-player", { user });
-            logout();
-            return 0;
-          }
-        });
-      }, 1000);
-    }
+    // if (isMyTurn && isAfkTimerStarted) {
+    //   timerInterval = setInterval(() => {
+    //     setAfkTimer((prevTimer) => {
+    //       if (prevTimer > 0) {
+    //         return prevTimer - 1;
+    //       } else {
+    //         clearInterval(timerInterval);
+    //         socket.emit("server:afk-player", { user });
+    //         logout();
+    //         return 0;
+    //       }
+    //     });
+    //   }, 1000);
+    // }
 
     return () => {
       if (timerInterval) {
@@ -99,6 +105,15 @@ const Board = () => {
         setPosition(playerData.position);
         setPlayers(response.data.players);
         setDeckCount(response.data.deck.length);
+        setServerInfos({
+          maxPlayers: response.data.maxPlayers || "",
+          name: response.data.name || "",
+          canDrawLastDiscard: response.data.canDrawLastDiscard || "",
+          autoRemovePenality: response.data.autoRemovePenality || "",
+          requiredScore: response.data.requiredScore || "",
+          isDeckUnlimited: response.data.isDeckUnlimited || "",
+          type: response.data.type || "",
+        });
       } else {
         console.error("Erreur lors de la récupération du serveur :", response);
       }
@@ -138,12 +153,14 @@ const Board = () => {
           );
         }
       });
+      setIsWaiting(false);
     });
 
     socket.on("game:is-over", (data) => {
       setPlayers(data.players);
       setGameIsOver(true);
       setPodium(data.podium);
+      setIsWaiting(true);
     });
 
     socket.on("server:update", (data) => {
@@ -158,6 +175,7 @@ const Board = () => {
       setNotification(null);
       setAttackablePlayers(null);
       setAttackedPlayer(null);
+      setIsWaiting(false);
     });
 
     socket.on("server:afk-player", (data) => {
@@ -241,7 +259,6 @@ const Board = () => {
     }
   }, [notification, attackNotification, actionNotification]);
 
-  // Show action popup when a card is selected
   useEffect(() => {
     setShowActionPopup(!!selectedCard);
   }, [selectedCard]);
@@ -263,7 +280,7 @@ const Board = () => {
   }, [attackedPlayer]);
 
   // Component to display player states
-  function PlayerHeaderStates(states) {
+  function PlayerHeaderStates(states, autoRemovePenality) {
     const labels = {
       feurouge: "Feu rouge",
       zonedecontrole: "Zone de contrôle",
@@ -274,10 +291,24 @@ const Board = () => {
 
     return (
       <div className="player-header__states">
-        {Object.entries(states).map(([key, value]) =>
-          value ? (
+        {Object.entries(states).map(([key, obj]) =>
+          obj.value ? (
             <span key={key} className="state-item">
               <ImageLoader name={`icons/${key}`} alt={labels[key]} />
+              {console.log("obj", obj)}
+              {autoRemovePenality && (
+                <span className="state-item__count cherry-font">
+                  {Number(obj.count) === 0
+                    ? "4"
+                    : Number(obj.count) === 1
+                    ? "3"
+                    : Number(obj.count) === 2
+                    ? "2"
+                    : Number(obj.count) === 3
+                    ? "1"
+                    : ""}
+                </span>
+              )}
             </span>
           ) : null
         )}
@@ -333,133 +364,158 @@ const Board = () => {
 
   // Handle card usage
   const handleUseCard = () => {
-    if (gameIsOver) {
-      return;
-    }
-
-    if (!selectedCard) {
+    if (isWaiting || gameIsOver || !selectedCard) {
       return;
     }
 
     if (selectedCard.type === "attaque") {
       if (attackedPlayer) {
-        socket.emit(
-          "game:player-action",
-          {
-            server_id: serverId,
-            card: selectedCard,
-            attackedPlayerId: Number(attackedPlayer),
-            user,
-          },
-          (response) => {
-            if (response.success) {
-              if (!response.data.actionState) {
+        try {
+          setIsWaiting(true);
+          socket.emit(
+            "game:player-action",
+            {
+              server_id: serverId,
+              card: selectedCard,
+              attackedPlayerId: attackedPlayer,
+              user,
+            },
+            (response) => {
+              setIsWaiting(false);
+
+              if (response.success) {
+                if (!response.data.actionState) {
+                  setNotification({
+                    type: "error",
+                    content: response.message,
+                  });
+                  console.error(response.message);
+                }
+              } else {
+                setIsWaiting(false);
                 setNotification({
                   type: "error",
                   content: response.message,
                 });
                 console.error(response.message);
               }
-            } else {
-              setNotification({
-                type: "error",
-                content: response.message,
-              });
-              console.error(response.message);
-            }
 
-            setSelectedCard(null);
-            setAttackedPlayer(null);
-          }
-        );
+              setSelectedCard(null);
+              setAttackedPlayer(null);
+            }
+          );
+        } catch (error) {
+          console.log(error);
+          setIsWaiting(false);
+        }
       } else {
+        try {
+          setIsWaiting(true);
+          socket.emit(
+            "game:player-action",
+            {
+              server_id: serverId,
+              card: selectedCard,
+              user,
+            },
+            (response) => {
+              setIsWaiting(false);
+              if (response.success) {
+                if (!response.data.actionState) {
+                  setNotification({
+                    type: "error",
+                    content: response.message,
+                  });
+                } else if (response.data.attackablePlayers.length > 0) {
+                  setAttackablePlayers(response.data.attackablePlayers);
+                  setShowAttackPopup(true);
+                  setShowActionPopup(false);
+                } else {
+                  setNotification({
+                    type: "error",
+                    content: "Aucun joueur attaquable.",
+                  });
+                  setAttackablePlayers(null);
+                  setShowAttackPopup(false);
+                  setShowActionPopup(false);
+                  setAttackedPlayer(null);
+                }
+              } else {
+                setNotification({
+                  type: "error",
+                  content: response.message,
+                });
+                console.error(response.message);
+              }
+              setAttackedPlayer(null);
+            }
+          );
+        } catch (error) {
+          setIsWaiting(false);
+          console.log(error);
+        }
+      }
+    } else {
+      try {
+        setIsWaiting(true);
         socket.emit(
           "game:player-action",
-          {
-            server_id: serverId,
-            card: selectedCard,
-            user,
-          },
+          { server_id: serverId, card: selectedCard, user },
           (response) => {
+            setIsWaiting(false);
+
             if (response.success) {
               if (!response.data.actionState) {
                 setNotification({
                   type: "error",
                   content: response.message,
                 });
-              } else if (response.data.attackablePlayers.length > 0) {
-                setAttackablePlayers(response.data.attackablePlayers);
-                setShowAttackPopup(true);
-                setShowActionPopup(false);
-              } else {
-                setNotification({
-                  type: "error",
-                  content: "Aucun joueur attaquable.",
-                });
+                setSelectedCard(null);
+                setAttackedPlayer(null);
                 setAttackablePlayers(null);
                 setShowAttackPopup(false);
-                setShowActionPopup(false);
-                setAttackedPlayer(null);
+                return console.error(response.message);
               }
             } else {
-              setNotification({
-                type: "error",
-                content: response.message,
-              });
-              console.error(response.message);
+              return console.error(
+                "Erreur lors de la récupération du serveur :",
+                response
+              );
             }
-
-            // setSelectedCard(null);
-            setAttackedPlayer(null);
           }
         );
+      } catch (error) {
+        console.log(error);
+        setIsWaiting(false);
       }
-    } else {
-      socket.emit(
-        "game:player-action",
-        { server_id: serverId, card: selectedCard, user },
-        (response) => {
-          if (response.success) {
-            if (!response.data.actionState) {
-              setNotification({
-                type: "error",
-                content: response.message,
-              });
-              setSelectedCard(null);
-              setAttackedPlayer(null);
-              setAttackablePlayers(null);
-              setShowAttackPopup(false);
-              return console.error(response.message);
-            }
-          } else {
-            return console.error(
-              "Erreur lors de la récupération du serveur :",
-              response
-            );
-          }
-        }
-      );
     }
   };
 
   // Handle card removal
   const handleRemoveCard = () => {
-    if (!gameIsOver) {
-      if (selectedCard) {
-        if (!gameIsOver) {
-          socket.emit(
-            "game:player-remove-card",
-            { server_id: serverId, card: selectedCard, user },
-            (response) => {
-              if (!response.success) {
-                return console.error(
-                  "Erreur lors de la récupération du serveur :",
-                  response
-                );
-              }
+    if (isWaiting) {
+      return;
+    }
+    if (!gameIsOver && selectedCard) {
+      try {
+        setIsWaiting(true);
+        socket.emit(
+          "game:player-remove-card",
+          { server_id: serverId, card: selectedCard, user },
+          (response) => {
+            setIsWaiting(false);
+
+            if (!response.success) {
+              return console.error(
+                "Erreur lors de la récupération du serveur :",
+                response
+              );
             }
-          );
-        }
+          }
+        );
+      } catch (error) {
+        setIsWaiting(false);
+        console.log(error);
       }
     }
   };
@@ -504,11 +560,14 @@ const Board = () => {
 
   return (
     <div className="game-board">
-      <BoardHeader />
+      <BoardHeader serverInfos={serverInfos} />
       <header className="game-header">
         {players &&
           Object.values(players).map((player, index) => {
             const uniqueKey = `${player.id}-${index}`; // Combinaison de l'ID du joueur et de l'index
+            if (player.username === playerEnvironment?.username) {
+              return;
+            }
             return (
               <div
                 className={`player-header ${
@@ -525,36 +584,49 @@ const Board = () => {
               >
                 {PlayerHeaderName(player.username)}
                 {PlayerHeaderScore(player.score)}
-                {PlayerHeaderStates(player.states)}
+                {PlayerHeaderStates(
+                  player.states,
+                  serverInfos?.autoRemovePenality
+                )}
                 {PlayerHeaderBonus(player.bonus)}
               </div>
             );
           })}
       </header>
       <section className="game-area">
-        <CardStack numberOfCards={deckCount} />
-        {players && <Orbit players={players} />}
-        <CloudPane />
+        <CardStack
+          numberOfCards={deckCount}
+          isDeckUnlimited={serverInfos?.isDeckUnlimited}
+        />
+        {players && <Orbit players={players} serverInfos={serverInfos} />}
+        {players && <RaceTrack players={players} serverInfos={serverInfos} />}
       </section>
-      {isMyTurn & (afkTimer < 50) ? (
+      {/* {isMyTurn & (afkTimer < 50) ? (
         <div className="timer cherry-font">
           {Math.floor(afkTimer / 60)}:{String(afkTimer % 60).padStart(2, "0")}
         </div>
       ) : (
         ""
-      )}
+      )} */}
 
-      <PlayerHand
-        hand={hand}
-        isMyTurn={isMyTurn}
-        handleClickCard={handleClickCard}
-      />
+      {
+        <PlayerDashboard
+          players={players}
+          isMyTurn={isMyTurn}
+          currentPlayer={currentPlayer}
+          hand={hand}
+          handleClickCard={handleClickCard}
+          isWaiting={isWaiting}
+          serverInfos={serverInfos}
+        />
+      }
       <ActionModal
         showActionPopup={showActionPopup}
         selectedCard={selectedCard}
         handleUseCard={handleUseCard}
         handleRemoveCard={handleRemoveCard}
         setSelectedCard={setSelectedCard}
+        isWaiting={isWaiting}
       />
       <AttackModal
         showAttackPopup={showAttackPopup}
@@ -567,6 +639,7 @@ const Board = () => {
         setNotification={setNotification}
         setShowActionPopup={setShowActionPopup}
         gameIsOver={gameIsOver}
+        isWaiting={isWaiting}
       />
       <NotificationPopup
         notification={notification}
@@ -581,7 +654,8 @@ const Board = () => {
         actionNotification={actionNotification}
         actionNotificationIsVisible={actionNotificationIsVisible}
       />
-      {showCountStart && <CountStart />}
+      {/* {showCountStart && <CountStart />} */}
+      <CloudPane />
     </div>
   );
 };

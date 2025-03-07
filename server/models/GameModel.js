@@ -1,7 +1,7 @@
 const PlayerModel = require("./PlayerModel");
 
-function generateCards(custom) {
-  let cardCounts = custom || {};
+function generateCards(cardCounts) {
+  let cards = cardCounts || {};
   const baseCards = [
     {
       id: "",
@@ -119,7 +119,6 @@ function generateCards(custom) {
     },
   ];
 
-  // Valeurs par défaut pour chaque type de carte
   const defaultCounts = {
     cartedepolice: 1,
     deviation: 1,
@@ -145,9 +144,21 @@ function generateCards(custom) {
   let generatedCards = [];
   let currentId = 1;
 
-  // Utiliser les valeurs de cardCounts ou les valeurs par défaut
+  let multiplier = 1;
+  if (cardCounts === "x2") {
+    multiplier = 2;
+  } else if (cardCounts === "x3") {
+    multiplier = 3;
+  }
+
   for (const [tag, defaultCount] of Object.entries(defaultCounts)) {
-    const count = cardCounts[tag] || defaultCount; // Utilise la valeur de cardCounts ou la valeur par défaut
+    let count = defaultCount;
+    if (
+      (cardCounts !== "unlimited") & (cardCounts !== "x1") &&
+      !bonusCards.some((card) => card.tag === tag)
+    ) {
+      count *= multiplier;
+    }
 
     const cardTemplate = baseCards.find((card) => card.tag === tag);
     if (cardTemplate) {
@@ -162,30 +173,55 @@ function generateCards(custom) {
     generatedCards.push({ ...card, id: currentId++ });
   });
 
+  console.log(`Nombre total de cartes générées: ${generatedCards.length}`);
+
   return generatedCards;
 }
 
 class GameModel {
-  constructor(id, name, author, maxPlayers, custom) {
-    this.id = id;
-    this.name = name;
-    this.author = author;
-    this.players = {};
-    this.maxPlayers = maxPlayers;
+  constructor({
+    id,
+    name,
+    host,
+    type,
+    maxPlayers,
+    handSize,
+    isDeckUnlimited,
+    canDrawLastDiscard,
+    requiredScore,
+    autoRemovePenality,
+    cardCounts,
+    isProtected,
+  }) {
+    // Informations de base
+    this.id = id || null;
+    this.name = name || null;
+    this.host = host || null;
+    this.type = type || null;
+    // Configuration de la partie
+    this.maxPlayers = maxPlayers || null;
+    this.handSize = handSize || 6;
+    this.isDeckUnlimited = isDeckUnlimited || false;
+    this.canDrawLastDiscard = canDrawLastDiscard || false;
+    this.requiredScore = requiredScore || 1000;
+    this.autoRemovePenality = autoRemovePenality || false;
+    this.cardCounts = cardCounts || null;
+    this.isProtected = isProtected || null;
+    // État du jeu
     this.deck = [];
-    this.discard = [];
+    this.discard = null;
     this.start = false;
     this.gameOver = false;
     this.currentPlayer = 1;
-    this.requiredScore = 1000;
+    // Joueurs & classement
+    this.players = {};
     this.podium = [];
-    this.custom = custom;
   }
 
   reset() {
     // Mélange du deck
-    if (this.custom) {
-      this.deck = generateCards(this.custom);
+    if (this.cardCounts) {
+      this.deck = generateCards(this.cardCounts);
     } else {
       this.deck = generateCards();
     }
@@ -195,7 +231,7 @@ class GameModel {
 
     // Distribution des cartes aux joueurs
     playersArray.forEach((player) => {
-      player.hand = this.deck.splice(0, 6);
+      player.hand = this.deck.splice(0, this.handSize);
     });
 
     // Mélangez les positions des joueurs
@@ -206,7 +242,6 @@ class GameModel {
     playersArray.forEach((player, index) => {
       player.position = positions[index];
     });
-    console.log("reset end");
   }
 
   startGame() {
@@ -221,38 +256,25 @@ class GameModel {
   }
 
   addPlayer(id, username) {
-    console.log(`GameModel addPlayer: Entrée dans la fonction`);
+    console.log(`addPlayer: Entrée dans la fonction`);
+
     let playerCount = Object.keys(this.players).length;
-    console.log(`GameModel addPlayer: Nombre de joueur : ${playerCount}`);
 
     if (Number(playerCount) + 1 <= Number(this.maxPlayers)) {
       let newPlayer = new PlayerModel(id, username);
-      console.log(
-        `GameModel addPlayer: Création d'un nouveau model de joueur`,
-        newPlayer
-      );
       this.players[username] = newPlayer;
-      console.log(`GameModel addPlayer: Ajout du joueur`, newPlayer);
       return true;
     }
     return false;
   }
 
   nextPlayer() {
-    console.log("nextPlayer: Entrée dans la fonction");
-
     let newCurrentPlayer = Number(this.currentPlayer) + 1;
-    console.log("nextPlayer: currentPlayer", this.currentPlayer);
-    console.log("nextPlayer: newCurrentPlayer", newCurrentPlayer);
-
     if (newCurrentPlayer > Object.keys(this.players).length) {
       this.currentPlayer = 1;
-      console.log("nextPlayer: newCurrentPlayer", newCurrentPlayer);
     } else {
       this.currentPlayer = newCurrentPlayer;
-      console.log("nextPlayer: newCurrentPlayer", newCurrentPlayer);
     }
-    console.log("nextPlayer:", this.players);
   }
 
   updatePlayer(id, update) {
@@ -265,7 +287,7 @@ class GameModel {
     let cardIndex = player.hand.findIndex((card) => card.id === cardId);
     let [discardedCard] = player.hand.splice(cardIndex, 1);
 
-    this.discard.push(discardedCard);
+    this.discard = discardedCard;
 
     console.log(`Carte défaussée par le joueur ${playerUsername}.`);
   }
@@ -273,20 +295,17 @@ class GameModel {
   drawCard(playerUsername) {
     const player = this.players[playerUsername];
 
-    // Vérifie si le deck contient des cartes
-    if (this.deck.length === 0) {
+    if (this.isDeckUnlimited && this.deck.length === 1) {
+      this.deck = generateCards();
+    } else if (this.deck.length === 0) {
       console.log("Le deck est vide, aucune carte à tirer.");
       return;
     }
 
-    // Tire une carte au hasard
     const randomIndex = Math.floor(Math.random() * this.deck.length);
     const drawnCard = this.deck[randomIndex];
 
-    // Retire la carte du deck
     this.deck.splice(randomIndex, 1);
-
-    // Ajoute la carte à la main du joueur
     player.hand.push(drawnCard);
 
     console.log(

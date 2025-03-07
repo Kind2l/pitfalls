@@ -38,16 +38,13 @@ const ActionModal = ({
       </div>
 
       <div className="action-modal__buttons">
-        <button className="primary-button bg-green" onClick={handleUseCard}>
+        <button className="btn bg-green" onClick={handleUseCard}>
           Utiliser
         </button>
-        <button className="primary-button bg-red" onClick={handleRemoveCard}>
+        <button className="btn bg-red" onClick={handleRemoveCard}>
           Jeter
         </button>
-        <button
-          className="primary-button bg-black"
-          onClick={() => setSelectedCard(null)}
-        >
+        <button className="btn bg-black" onClick={() => setSelectedCard(null)}>
           Annuler
         </button>
       </div>

@@ -1,14 +1,30 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+
 const http = require("http");
 const socketIo = require("socket.io");
 const routes = require("./routes");
 const app = express();
 const PORT = process.env.PORT || 3000;
+const {
+  register,
+  login,
+  loginAsGuest,
+} = require("./controllers/userController.js");
+const loginLimiter = require("./middlewares/loginLimiter.js");
+const { users, addUser, findUserByUsername } = require("./utils/data.js");
 
-app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: "https://pitfalls.elseif.fr",
+    credentials: true,
+  })
+);
 
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -18,10 +34,107 @@ const io = socketIo(server, {
   },
 });
 
-// Routes Socket.io
+io.use((socket, next) => {
+  const token = socket.handshake.query.token;
+  if (!token) {
+    return next(new Error("Authentication error"));
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return next(new Error("Authentication error"));
+    }
+    socket.user = decoded;
+    next();
+  });
+});
+
+app.post("/register", register);
+app.post("/login", loginLimiter, login);
+app.post("/guest-login", loginAsGuest);
+app.get("/check-auth", (req, res) => {
+  try {
+    let token = req.cookies.auth_token;
+
+    if (!token) {
+      return res.status(400).json({ message: "Aucun token." });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        res.clearCookie("auth_token", {
+          httpOnly: true,
+          secure: true, // Mettre `true` en production (HTTPS obligatoire)
+          sameSite: "Lax",
+          path: "/",
+        });
+        return res.status(400).json({ message: "Erreur d'authentification." });
+      }
+
+      return res
+        .status(200)
+        .json({ token, id: decoded.id, username: decoded.username });
+    });
+  } catch (error) {
+    console.error(error);
+    res.clearCookie("auth_token", {
+      httpOnly: true,
+      secure: true, // Mettre `true` en production (HTTPS obligatoire)
+      sameSite: "Lax",
+      path: "/",
+    });
+    return res.status(500).json({ message: "Erreur serveur." });
+  }
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("auth_token", {
+    httpOnly: true,
+    secure: false, // Mettre `true` en production (HTTPS obligatoire)
+    sameSite: "Lax",
+    path: "/",
+  });
+
+  return res.json({ success: true, message: "Déconnexion réussie." });
+});
+
 io.on("connection", (socket) => {
-  console.log(`${socket.id} is connected`);
-  routes(io)(socket);
+  try {
+    const token = socket.handshake.query.token;
+    if (!token) {
+      console.error("Aucun token pour la connexion");
+      socket.emit("error", { message: "Aucun token pour la connexion" });
+      return;
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        console.error("Impossible de décoder le token");
+        socket.emit("error", { message: "Impossible de décoder le token" });
+        return;
+      }
+      const { id, username, isGuest } = decoded;
+      const userisLogged = findUserByUsername(username);
+
+      if (userisLogged) {
+        console.error("Déjà connecté");
+        socket.emit("error", { message: "Déjà connecté" });
+        return;
+      }
+      addUser({
+        id,
+        username,
+        socket_id: socket.id,
+        isGuest,
+      });
+
+      console.log(`${socket.id} is connected`);
+      routes(io)(socket);
+    });
+  } catch (error) {
+    console.error("Erreur lors de la connexion", error);
+    socket.emit("error", { message: "Erreur lors de la connexion" });
+  }
 });
 
 server.listen(PORT, () => {

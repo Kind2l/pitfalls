@@ -7,7 +7,7 @@ header.header {
   }
 
   @media (max-height: 400px) {
-    display: none;
+    scale: 0.9;
   }
 
   .logo img {

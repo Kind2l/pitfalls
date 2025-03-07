@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import Header from "@Components/Header";
-
 import { useLoader } from "@Context/LoaderContext.js";
 import { useNotification } from "@Context/NotificationContext.js";
 import { useAuth } from "@Context/SocketContext";
@@ -21,8 +19,9 @@ const WaitingRoom = ({ setGameIsStarted }) => {
 
   const [players, setPlayers] = useState([]);
   const [maxPlayers, setMaxPlayers] = useState(0);
-  const [author, setAuthor] = useState("null");
+  const [host, setHost] = useState("");
   const [serverName, setServerName] = useState("");
+  const [serverType, setServerType] = useState("");
   const [showMessageInput, setShowMessageInput] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -37,8 +36,9 @@ const WaitingRoom = ({ setGameIsStarted }) => {
         setGameIsStarted(response.data.start);
         setPlayers(response.data.players);
         setMaxPlayers(response.data.maxPlayers);
-        setAuthor(response.data.author);
+        setHost(response.data.host);
         setServerName(response.data.name);
+        setServerType(response.data.type);
       } else {
         console.error(response);
       }
@@ -47,44 +47,21 @@ const WaitingRoom = ({ setGameIsStarted }) => {
   }, []);
 
   useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      event.preventDefault();
-      event.returnValue = "Êtes-vous sûr de vouloir quitter la partie ?";
-    };
-
-    const handleBackButton = (event) => {
-      event.preventDefault();
-      const confirmLeave = window.confirm(
-        "Souhaitez-vous vraiment quitter la partie ?"
-      );
-      if (!confirmLeave) {
-        window.history.pushState(null, "", window.location.pathname);
-      } else {
-        handleLeaveServer();
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.history.pushState(null, "", window.location.pathname);
-    window.addEventListener("popstate", handleBackButton);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handleBackButton);
-    };
-  }, []);
+    console.log("players : ", players);
+  }, [setPlayers, players]);
 
   useEffect(() => {
     // Écoute des mises à jour du serveur
     socket.on("server:update", (data) => {
       if (data) {
+        console.log("serveur", data);
         if (data.start === true) {
           showLoader();
         }
         data.start && setGameIsStarted(data.start);
         data.players && setPlayers(data.players);
         data.maxPlayers && setMaxPlayers(data.maxPlayers);
-        data.author && setAuthor(data.author);
+        data.host && setHost(data.host);
       }
     });
 
@@ -99,7 +76,8 @@ const WaitingRoom = ({ setGameIsStarted }) => {
     });
 
     return () => {
-      socket.off();
+      socket.off("server:update");
+      socket.off("game:player-message");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
@@ -118,17 +96,13 @@ const WaitingRoom = ({ setGameIsStarted }) => {
   }, [messages]);
 
   const handleSubmit = () => {
-    socket.emit(
-      "server:initalization",
-      { user, server_id: serverId },
-      (response) => {
-        if (!response.success) {
-          console.error(response);
-        } else {
-          console.log(response);
-        }
+    socket.emit("server:initalization", { user, serverId }, (response) => {
+      if (!response.success) {
+        console.error(response);
+      } else {
+        console.log(response);
       }
-    );
+    });
   };
 
   const handleShare = async () => {
@@ -149,13 +123,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
   };
 
   const handleLeaveServer = () => {
-    socket.emit("server:leave", { user, server_id: serverId }, (response) => {
-      if (!response.success) {
-        console.error(response);
-      } else {
-        navigate(`/`);
-      }
-    });
+    navigate(`/`);
   };
 
   const handleSetMessage = (e) => {
@@ -173,96 +141,121 @@ const WaitingRoom = ({ setGameIsStarted }) => {
   };
 
   return (
-    <>
-      <Header />
-      <div className="waiting-room">
-        <div className="waiting-room-container">
-          <div className="waiting-room-container__header">
-            <h2>{serverName}</h2>
-            <button className="share" onClick={() => handleShare()}>
-              <i className="fa-solid fa-share-nodes"></i>
-            </button>
-          </div>
+    <div className="waiting-room page">
+      <div className="page-content">
+        <h2 className="page-title">En attente ...</h2>
+        <h3 className="subtitle server-name">{serverName}</h3>
 
-          <div className="waiting-room-container__content">
-            <div className="infos">
-              <span>Hôte : {author}</span>
-              <span>
-                {Object.keys(players)?.length || "0"}/{maxPlayers} joueurs
-              </span>
-            </div>
-
-            <ul className="players">
-              {Object.keys(players)?.length > 0 ? (
-                Object.values(players)?.map((player) => (
-                  <li className="cherry-font" key={player.id + player.username}>
-                    {player.username}
-                  </li>
-                ))
-              ) : (
-                <li>Aucun joueur connecté.</li>
-              )}
-            </ul>
-
-            <p className="status">
-              {Object.keys(players)?.length === 0
-                ? "En attente de joueurs supplémentaires"
-                : "En attente du lancement de la partie par l'hôte..."}
+        <ul className="server-infos">
+          <li>
+            <span>Hôte : </span> {host}
+          </li>
+          <li>
+            <span>Joueur(s) : </span>
+            {Object.keys(players)?.length || "0"}/{maxPlayers}
+          </li>
+          <li>
+            <span>Type : </span>{" "}
+            {serverType === "classic"
+              ? "Classique"
+              : serverType === "classic"
+              ? "Hardcore"
+              : serverType === "infinite"
+              ? "Jusqu'à l'hotel"
+              : serverType === "custom"
+              ? "Personnalisé"
+              : "undefined"}
+          </li>
+        </ul>
+        <div className="server-description">
+          {serverType === "classic" ? (
+            <p>
+              L'objectif est de parcourir 1000 km avec 110 cartes disponibles.
+              Chaque joueur a une main de 7 cartes, les malus disparaissent
+              après 3 tours et il n'y a pas de pioche dans la défausse.
             </p>
-
-            <div className="buttons">
-              {String(author) === String(user.username) &&
-              Number(Object.keys(players).length) >= 2 &&
-              Number(Object.keys(players).length) <= Number(maxPlayers) ? (
-                <button
-                  className="primary-button bg-green"
-                  onClick={() => handleSubmit()}
-                >
-                  Démarrer la partie
-                </button>
-              ) : null}
-              <button
-                className="primary-button bg-red"
-                onClick={() => {
-                  handleLeaveServer();
-                }}
-              >
-                Quitter la partie
-              </button>
-            </div>
-          </div>
+          ) : serverType === "infinite" ? (
+            <p>
+              L'objectif est de parcourir 1000 km avec un nombre illimité de
+              cartes (sauf les bonus). Chaque joueur a une main de 7 cartes, les
+              malus disparaissent après 3 tours et il n'y a pas de pioche dans
+              la défausse.
+            </p>
+          ) : serverType === "hardcore" ? (
+            <p>
+              L'objectif est de parcourir 1000 km avec 110 cartes disponibles.
+              Chaque joueur commence avec une main de 3 cartes, les malus
+              restent actifs jusqu'à la parade, et il est possible de piocher la
+              dernière carte défaussée.
+            </p>
+          ) : (
+            <p>Partie personnalisée.</p>
+          )}
         </div>
 
-        <form className="waiting-room-chat" onSubmit={handleSendMessage}>
-          <h3>Messages</h3>
-          <ul>
-            {messages.map((msg) => (
-              <li key={msg.id} className="message">
-                <span className="cherry-font">{msg.username}: </span>
-                {msg.text}
+        <ul className="players">
+          {Object.keys(players)?.length > 0 ? (
+            Object.values(players)?.map((player) => (
+              <li className="cherry-font" key={player.id + player.username}>
+                {player.username}
               </li>
-            ))}
-            <div ref={messagesBottomRef} />
-          </ul>
+            ))
+          ) : (
+            <li>Aucun joueur connecté.</li>
+          )}
+        </ul>
 
-          <label>
-            <input
-              ref={inputRef}
-              type="text"
-              maxLength={250}
-              minLength={1}
-              value={message}
-              onChange={handleSetMessage}
-            />
-            <button className="send" type="submit">
-              <i className="fa-solid fa-paper-plane"></i>
+        <p className="status">
+          {Object.keys(players)?.length === 0
+            ? "En attente de joueurs supplémentaires"
+            : "En attente du lancement de la partie par l'hôte..."}
+        </p>
+
+        <div className="buttons">
+          {String(host) === String(user.username) &&
+          Number(Object.keys(players).length) >= 2 &&
+          Number(Object.keys(players).length) <= Number(maxPlayers) ? (
+            <button className="btn bg-green" onClick={() => handleSubmit()}>
+              Démarrer
             </button>
-          </label>
-        </form>
-
-        <span className="id">ID : {serverId}</span>
+          ) : null}
+          <button
+            className="btn bg-red"
+            onClick={() => {
+              handleLeaveServer();
+            }}
+          >
+            Quitter
+          </button>
+        </div>
       </div>
-    </>
+
+      <form className="waiting-room-chat" onSubmit={handleSendMessage}>
+        <ul>
+          {messages.map((msg) => (
+            <li key={msg.id} className="message">
+              <span className="cherry-font">{msg.username}: </span>
+              {msg.text}
+            </li>
+          ))}
+          <div ref={messagesBottomRef} />
+        </ul>
+
+        <label>
+          <input
+            ref={inputRef}
+            type="text"
+            maxLength={250}
+            minLength={1}
+            value={message}
+            onChange={handleSetMessage}
+          />
+          <button className="send" type="submit">
+            <i className="fa-solid fa-paper-plane"></i>
+          </button>
+        </label>
+      </form>
+    </div>
   );
 };
 

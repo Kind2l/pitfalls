@@ -4,31 +4,5 @@
     display: flex;
     flex-direction: column;
     row-gap: 1rem;
-
-    .form-input {
-      position: relative;
-      width: 80%;
-      margin: auto;
-      input {
-        all: unset;
-        box-sizing: border-box;
-        text-align: center;
-        width: 100%;
-        padding: 0.5rem;
-        color: Vars.$black;
-        background-color: Vars.$grey_transparent;
-        border-radius: 12px;
-
-        &::placeholder {
-          color: Vars.$grey;
-        }
-
-        &:focus {
-          &::placeholder {
-            color: Vars.$black;
-          }
-        }
-      }
-    }
   }
 }

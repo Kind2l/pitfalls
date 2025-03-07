@@ -1,5 +1,6 @@
 import Header from "@Components/Header";
 import WelcomerMessages from "@Components/WelcomerMessages";
+import { useNotification } from "@Context/NotificationContext.js";
 import { useAuth } from "@Context/SocketContext";
 import { useSound } from "@Context/SoundContext";
 import "@Styles/home/Home.scss";
@@ -7,14 +8,10 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
-  const { logout } = useAuth();
-  const {
-    playMusic,
-    playEffect,
-    currentMusicName,
-    // stopMusic,
-    // changeEffectVolume,
-  } = useSound();
+  const { handleLogout } = useAuth();
+  const { addNotification } = useNotification();
+
+  const { playMusic, playEffect, currentMusicName } = useSound();
 
   useEffect(() => {
     if (currentMusicName) {
@@ -46,37 +43,54 @@ const Home = () => {
               <i className="fa-solid fa-flag-checkered"></i>
               <span>Rejoindre une partie</span>
             </Link>
+
             <Link
               className="bg-blue"
-              to="/create-server"
+              to="/create-server/classic"
               onClick={() => handleLinkClick("open")}
-              aria-label="Créer une partie"
+              aria-label="Classique"
             >
               <i className="fa-solid fa-gamepad"></i>
-              <span>Créer une partie</span>
+              Créer une partie
             </Link>
-            <Link
-              className="bg-sky"
-              to="/settings"
-              onClick={() => handleLinkClick("open")}
-              aria-label="Options"
-            >
-              <i className="fa-solid fa-sliders"></i>
-              <span>Options</span>
-            </Link>
+
+            <div className="settings-container">
+              <Link
+                className="bg-black"
+                to="/settings"
+                onClick={() => handleLinkClick("open")}
+                aria-label="Options"
+              >
+                <i className="fa-solid fa-sliders"></i>
+                <span>Options</span>
+              </Link>
+              <Link
+                className="bg-sky"
+                to="/rules"
+                onClick={() => {
+                  handleLinkClick("open");
+                }}
+                aria-label="Règles du jeu"
+              >
+                <i className="fa-regular fa-lightbulb"></i>
+                <span>Règles du jeu</span>
+              </Link>
+            </div>
+
             <Link
               className="bg-orange"
-              to="/rules"
+              to="/profile"
               onClick={() => {
                 handleLinkClick("open");
               }}
-              aria-label="Règles du jeu"
+              aria-label="Mon profil"
             >
-              <i className="fa-regular fa-lightbulb"></i>
-              <span>Règles du jeu</span>
+              <i className="fa-regular fa-user"></i>
+              <span>Mon profil</span>
             </Link>
+
             <Link
-              className="bg-black"
+              className="bg-blue"
               to="/android-test"
               onClick={() => {
                 handleLinkClick("open");
@@ -86,12 +100,15 @@ const Home = () => {
               <i className="fa-brands fa-google-play"></i>
               <span>Télécharger sur Android</span>
             </Link>
+
             <Link
               className="bg-red"
               to="/"
               onClick={() => {
                 handleLinkClick("close");
-                logout();
+                addNotification("Vous êtes déconnecté.");
+
+                handleLogout();
               }}
               aria-label="Déconnexion"
             >

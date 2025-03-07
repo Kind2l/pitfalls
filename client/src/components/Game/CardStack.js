@@ -1,7 +1,7 @@
 import { useSound } from "@Context/SoundContext";
 import { useEffect, useState } from "react";
 
-function CardStack({ numberOfCards }) {
+function CardStack({ numberOfCards, isDeckUnlimited }) {
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
   const { playEffect } = useSound();
@@ -23,14 +23,12 @@ function CardStack({ numberOfCards }) {
     if (!numberOfCards) return;
 
     let newMessage = null;
-    if (numberOfCards > 50 || numberOfCards < 10) {
+    if (numberOfCards > 50 || numberOfCards < 10 || isDeckUnlimited) {
       return;
     }
 
-    if (numberOfCards === 80) {
-      newMessage = "Il reste 80 cartes !";
-    } else if (numberOfCards === 50) {
-      newMessage = "Il reste 20 cartes !";
+    if (numberOfCards === 50) {
+      newMessage = "Il reste 50 cartes !";
     } else if (numberOfCards === 20) {
       newMessage = "Il reste 20 cartes !";
     } else if (numberOfCards === 10) {

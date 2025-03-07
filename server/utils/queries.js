@@ -5,14 +5,14 @@ const { db } = require("./db");
  * @param {string} username - Nom d'utilisateur à rechercher.
  * @returns {Promise<object|null>} Résultat de la requête contenant l'utilisateur correspondant.
  */
-const findUserByUsernameInDatabase = async (username) => {
+const databaseFindUserByUsername = async (username) => {
   try {
     const { rows } = await db.query("SELECT * FROM users WHERE username = $1", [
       username,
     ]);
     return rows.length ? rows[0] : null;
   } catch (err) {
-    console.error("Erreur dans findUserByUsernameInDatabase:", err);
+    console.error("Erreur dans databaseFindUserByUsername:", err);
     throw err;
   }
 };
@@ -22,14 +22,16 @@ const findUserByUsernameInDatabase = async (username) => {
  * @param {string} email - Adresse à rechercher.
  * @returns {Promise<object|null>} Résultat de la requête contenant l'utilisateur correspondant.
  */
-const findUserByEmailInDatabase = async (email) => {
+const databaseFindUserByEmail = async (email) => {
   try {
     const { rows } = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
+    console.log(rows);
+
     return rows.length ? rows[0] : null;
   } catch (err) {
-    console.error("Erreur dans findUserByEmailInDatabase:", err);
+    console.error("Erreur dans databaseFindUserByEmail:", err);
     throw err;
   }
 };
@@ -40,15 +42,15 @@ const findUserByEmailInDatabase = async (email) => {
  * @param {string} hashedPassword - Hash du mot de passe de l'utilisateur.
  * @returns {Promise<number>} Promesse résolue avec l'ID de l'utilisateur inséré.
  */
-const insertUserInDatabase = async (username, hashedPassword) => {
+const databaseInsertUser = async (username, hashedPassword, email) => {
   try {
     const { rows } = await db.query(
-      "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
-      [username, hashedPassword]
+      "INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id",
+      [username, hashedPassword, email]
     );
     return rows[0].id;
   } catch (err) {
-    console.error("Erreur dans insertUserInDatabase:", err);
+    console.error("Erreur dans databaseInsertUser:", err);
     throw err;
   }
 };
@@ -59,7 +61,7 @@ const insertUserInDatabase = async (username, hashedPassword) => {
  * @param {string} token - Nouveau token à attribuer à l'utilisateur.
  * @returns {Promise<boolean>} Indique si la mise à jour a réussi.
  */
-const updateUserTokenInDatabase = async (username, token) => {
+const databaseUpdateUserToken = async (username, token) => {
   try {
     const { rowCount } = await db.query(
       "UPDATE users SET token = $1 WHERE username = $2",
@@ -90,9 +92,9 @@ const findUserByIdInDatabase = async (userId) => {
 };
 
 module.exports = {
-  findUserByUsernameInDatabase,
-  findUserByEmailInDatabase,
-  insertUserInDatabase,
-  updateUserTokenInDatabase,
+  databaseFindUserByUsername,
+  databaseFindUserByEmail,
+  databaseInsertUser,
+  databaseUpdateUserToken,
   findUserByIdInDatabase,
 };

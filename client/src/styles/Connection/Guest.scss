@@ -1,27 +1,12 @@
 @use "@Styles/utils/variables.scss" as Vars;
 .guest {
-  padding: 1rem 0 2rem;
-  width: 100%;
-  border-top: 1px solid Vars.$grey_transparent;
-  form {
-    button {
-      display: block;
-      background: none;
-      border: none;
-      font-weight: 600;
-      font-size: 1.2rem;
-      margin: auto;
-      cursor: pointer;
-      animation: pulse 1s infinite ease-in-out alternate;
-    }
+  h2 {
+    text-align: center;
   }
 
-  @keyframes pulse {
-    from {
-      transform: scale(1);
-    }
-    to {
-      transform: scale(1.1);
-    }
+  form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
   }
 }

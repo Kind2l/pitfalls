@@ -1,305 +1,166 @@
 @use "./utils/variables.scss" as Vars;
 
 .create-server {
-  padding: 2rem 0.3rem;
-
-  h3 {
-    margin-top: 1rem;
+  input[type="text"],
+  input[type="number"] {
+    all: unset;
+    position: relative;
     text-align: center;
-    margin-bottom: 0.6rem;
-    font-size: 1.1rem;
-  }
-
-  .create-server-title {
-    margin-bottom: 1rem;
-  }
-
-  .create-server-container {
-    background-color: Vars.$white;
-    box-shadow: 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
-    border-radius: 27px;
-    padding: 2rem 0;
-    margin-bottom: 2rem;
-    text-align: center;
-
-    // @media (min-width: 641px) {
-    //   width: 80vw;
-    // }
-
-    h2 {
-      font-family: "Outfit", serif;
-      font-optical-sizing: auto;
-      font-style: normal;
-      font-weight: 500;
-      font-size: 1.3rem;
-      line-height: 1.8rem;
-      color: #003049;
-      text-align: left;
-      margin: 0.6rem 0 2rem 3rem;
+    width: 95%;
+    padding: 0.5rem;
+    color: Vars.$black;
+    border-radius: 15px;
+    &::placeholder {
+      color: Vars.$grey;
     }
-
-    input {
-      all: unset;
-      position: relative;
-      text-align: center;
-      width: 95%;
-      padding: 0.5rem;
-      color: Vars.$black;
-
+    &:focus {
       &::placeholder {
-        color: Vars.$grey;
+        color: Vars.$black;
       }
-
-      &:focus {
-        &::placeholder {
-          color: Vars.$black;
-        }
-      }
-
-      &:active,
-      &:focus,
-      &:focus-visible,
-      &:hover {
-        background-color: Vars.$grey_transparent;
-        border-radius: 15px;
-      }
+    }
+    &:active,
+    &:focus,
+    &:focus-visible,
+    &:hover {
+      background-color: Vars.$grey_transparent;
     }
   }
 
-  .server-type-selection {
+  .selector {
     display: flex;
-    justify-content: space-around;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 2rem;
+
+    // Input radio pour les joueurs
+    label {
+      background-color: Vars.$grey;
+    }
 
     input {
       display: none;
+
       &:checked + label {
-        box-shadow: none;
-        color: Vars.$orange;
-        font-weight: 700;
+        background-color: Vars.$orange;
+        font-weight: 800;
       }
     }
+  }
 
-    label {
-      flex: 1 1;
-      text-align: center;
-      position: relative;
-      background-color: Vars.$white;
-      color: Vars.$grey;
-      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out,
-        box-shadow 0.2s ease-in-out, padding 0.2s ease-in-out,
-        border-radius 0.2s ease-in-out;
+  .server-type {
+    &-selection {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+
+      input {
+        display: none;
+        &:checked + label {
+          box-shadow: none;
+          background-color: Vars.$orange;
+          font-weight: 700;
+        }
+      }
+      label {
+        display: block;
+        background-color: Vars.$grey;
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+    &-description {
+      padding-top: 1rem;
+      p,
+      li {
+        font-size: 0.8rem;
+        line-height: 1.2rem;
+        span {
+          font-size: inherit;
+          line-height: 1.2rem;
+          font-weight: 600;
+        }
+      }
     }
   }
 
-  .server-type-info {
-    font-size: 0.8rem;
-    color: Vars.$grey;
-    line-height: 0.8rem;
-    padding-top: 1rem;
-  }
+  .cards-selection {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    row-gap: 1rem;
 
-  .create-server-content {
-    display: flex;
-    flex-direction: column;
-    row-gap: 2rem;
-
-    display: block;
-    text-align: center;
-    // Sections générales
-    section {
+    .card {
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
 
-    // Styles des inputs texte
-    input[type="text"] {
-      all: unset;
-      position: relative;
-      border: none;
-      text-align: center;
-      padding: 0.5rem;
-      margin: 0 auto;
-      color: black;
-      font-weight: 600;
-      width: 70%;
-      border-radius: 15px;
-      background-color: rgba(216, 216, 216, 0.1);
-
-      &::placeholder {
-        color: rgb(202, 202, 202);
-      }
-
-      &:focus {
-        &::placeholder {
-          color: rgb(0, 0, 0);
-        }
-      }
-    }
-
-    // Sélection des joueurs
-    .player-selection {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-
-      // Input radio pour les joueurs
-      input {
-        display: none;
-
-        &:checked + label {
-          color: Vars.$orange;
-          font-weight: 800;
-          box-shadow: 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
-        }
-      }
-
-      // Labels des joueurs
       label {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        height: 2rem;
-        width: 2rem;
-        background-color: Vars.$dark_white;
-        border-radius: 12px;
-        box-shadow: inset 0px -1px 15px -5px rgba(0, 0, 0, 0.2);
-        color: rgb(165, 165, 165);
-        transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out,
-          box-shadow 0.2s ease-in-out, padding 0.2s ease-in-out;
-      }
-    }
+        .card-image {
+          width: 2.5rem;
 
-    // Sélection du type de serveur
-    .server-type-selection__content {
-      display: flex;
-      gap: 2rem 0.5rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      label {
-        font-size: 0.8rem;
-      }
-    }
-
-    // Groupe de cartes
-    .card-group {
-      display: grid;
-      border-radius: 15px;
-      padding: 1rem 0;
-      margin: 0.5rem 0;
-
-      h4 {
-        font-weight: 600;
-        font-size: 1.2rem;
-        text-align: center;
-        margin-bottom: 1rem;
-      }
-
-      // Types de cartes
-      &.parade {
-        color: Vars.$green;
-        border: 1px solid Vars.$green;
-      }
-
-      &.borne {
-        color: Vars.$sky;
-        border: 1px solid Vars.$sky;
-      }
-
-      &.attack {
-        color: Vars.$red;
-        border: 1px solid Vars.$red;
-      }
-
-      &.bonus {
-        color: Vars.$orange;
-        border: 1px solid Vars.$orange;
-      }
-
-      // Comptage des cartes
-      .card-counts {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        @media (min-width: 641px) {
-          grid-template-columns: 1fr 1fr 1fr;
-        }
-
-        &__element {
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-        }
-
-        &__title {
-          text-align: center;
-          color: Vars.$black;
-          font-size: 0.9rem;
-          word-break: break-all;
-          padding: 0.5rem;
-        }
-
-        &__buttons {
-          width: 80%;
-          margin: 0 auto;
-          display: flex;
-          justify-content: space-around;
-          align-items: center;
-
-          button {
-            padding: 0;
-            background: none;
-            border: none;
-            font-size: 2rem;
+          img {
+            width: 100%;
           }
-
           span {
-            color: Vars.$black;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            height: 3rem;
+            color: Vars.$sky;
           }
         }
       }
-
-      // Labels et inputs pour les cartes
-      label {
-        text-align: center;
-        font-size: 0.9rem;
-      }
-
-      input[type="number"] {
-        all: unset;
-        position: relative;
-        border: none;
-        text-align: center;
-        padding: 0.5rem;
-        margin: 0 auto;
-        color: Vars.$grey;
-
-        &::placeholder {
-          color: rgb(202, 202, 202);
-        }
-
-        &:focus {
-          &::placeholder {
-            color: rgb(0, 0, 0);
-          }
-        }
+      input {
+        background-color: Vars.$grey_transparent;
+        width: 2.5rem;
       }
     }
   }
 
-  // Messages d'erreur
+  .custom-server {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-row: 1fr;
+    gap: 0.2rem;
+    > div {
+      border-radius: 27px;
+      border: 1px solid Vars.$grey_transparent;
+      padding: 1rem 0;
+    }
+    h3.page-subtitle {
+      display: block;
+      height: 3rem !important;
+    }
+
+    .custom-server-section {
+      padding: 0rem 0.2rem 1rem;
+    }
+
+    .selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+
+      label {
+        display: block;
+      }
+    }
+    .cards-selection {
+      grid-column: span 2;
+    }
+  }
+
   .error {
     text-align: center;
     color: Vars.$red;
     margin: 1rem 0;
   }
 
-  .buttons {
+  button[type="submit"] {
     margin-top: 2rem;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    font-weight: 800 !important;
   }
 }

@@ -4,120 +4,12 @@ const {
   getFilteredServers,
   updateUser,
   findUserServerByUsername,
-  cleanupInactiveServer,
-  checkIfPlayerIsOwner,
-  checkIfPlayerIsCurrentPlayer,
-  setNewOwner,
+  checkIfPlayerIsHost,
+  setNewHost,
 } = require("../utils/data");
 const { v4: uuidv4 } = require("uuid");
 const { findUserByUsername } = require("../utils/data");
-const filter = require("leo-profanity");
-const frenchBadwordsList = require("french-badwords-list");
-filter.clearList();
-filter.add(frenchBadwordsList.array);
-filter.add([
-  "salope",
-  "sal0pe",
-  "s4lope",
-  "salop3",
-  "salo.p3",
-  "s@lope",
-  "s4l0pe",
-  "salopee",
-  "saloperie",
-  "salaupe",
-  "salaupeee",
-  "chibre",
-  "ch1bre",
-  "chibree",
-  "chib.re",
-  "chibr3",
-  "ch!bre",
-  "chibrou",
-  "nazi",
-  "naz1",
-  "n@zi",
-  "n4zi",
-  "n@z1",
-  "nazie",
-  "naz1e",
-  "n4zie",
-  "n@zie",
-  "n4z1e",
-  "hitler",
-  "h1tler",
-  "h!tler",
-  "hîtler",
-  "hítler",
-  "h1tl3r",
-  "h!tl3r",
-  "h1t1er",
-  "h1tlêr",
-  "h1t|er",
-  "h.tler",
-  "h/tler",
-  "hît1er",
-  "reich",
-  "r3ich",
-  "rêich",
-  "r€ich",
-  "r3!ch",
-  "r3îch",
-  "r3ichh",
-  "reych",
-  "r-eich",
-  "r/ech",
-  "thirdreich",
-  "3rdreich",
-  "fuehrer",
-  "fuhrer",
-  "fuh_rer",
-  "führer",
-  "füh_rer",
-  "fuhr€r",
-  "fuhreeer",
-  "fuhr3r",
-  "fuh.rer",
-  "fu/h_rer",
-  "ss",
-  "bamboula",
-  "bamb0ula",
-  "b4mboula",
-  "b@mboula",
-  "bamb0ul4",
-  "bamb0u1a",
-  "bamboulah",
-  "bamboulaa",
-  "bamb.oula",
-  "b@mb0ul@",
-  "penis",
-  "p3nis",
-  "pénis",
-  "pén1s",
-  "pen1s",
-  "p3n1s",
-  "p3n!s",
-  "p.nis",
-  "p-nis",
-  "p3n1$",
-  "peniss",
-  "peni$",
-  "p3n!$",
-  "p3ni5",
-  "grospenis",
-  "gros-penis",
-  "gr0spenis",
-  "gr0s-p3n1s",
-  "gr0s-p3n!s",
-  "gr0sp3n1s",
-  "gr0spenis",
-  "gro$pen1s",
-  "gros_penis",
-  "gr0$pen!s",
-  "gr0s_p3n1s",
-  "gr0s_penis",
-  "gr0spenis$",
-]);
+const { censorText } = require("../utils/censor");
 
 /**
  * Crée un nouveau serveur et l'ajoute à la liste des serveurs.
@@ -142,29 +34,20 @@ filter.add([
  */
 exports.createServer = (request, callback) => {
   console.log("createServer: Entrée dans la fonction.");
-
   try {
     if (!request.serverName || typeof request.serverName !== "string") {
       return callback({
         success: false,
-        message: "Le nom du serveur est requis et doit être une chaîne.",
+        message: "Le nom du serveur est invalide.",
       });
     }
 
     request.serverName.trim();
 
-    if (request?.serverName.length > 35) {
-      console.error("createServer: Nom du serveur invalide ou absent.");
+    if (request?.serverName.length > 30 || request?.serverName.length < 2) {
       return callback({
         success: false,
-        message: "Nom de serveur trop long (maximum 35 caractères).",
-      });
-    }
-
-    if (request?.serverName.length < 2) {
-      return callback({
-        success: false,
-        message: "Nom de serveur trop court (minimum 2 caractères).",
+        message: "Longueur du nom invalide.",
       });
     }
 
@@ -191,44 +74,93 @@ exports.createServer = (request, callback) => {
       });
     }
 
-    console.log(
-      "createServer: Paramètres validés, début de la création du serveur."
-    );
-
-    const uniqueId = uuidv4();
-    let filteredserverName = filter.clean(request.serverName);
-
-    const newServer = new GameModel(
-      uniqueId,
-      filteredserverName,
-      request.user.username,
-      request.maxPlayers,
-      request.cardCounts || {}
-    );
-
-    servers[uniqueId] = newServer;
-
-    if (request.socket) {
-      request.socket.join(`server_${uniqueId}`);
-      console.log(
-        `createServer: ${request.socket.id} s'abonne au serveur server_${uniqueId}`
-      );
+    if (!request.serverType || typeof request.serverType !== "string") {
+      return callback({
+        success: false,
+        message: "Le type de serveur est requis.",
+      });
     }
 
-    console.log(`createServer: Serveur créé avec succès ${uniqueId}`);
+    let id = uuidv4();
+    let name = request.serverName;
+    let host = request.user.username;
+    let maxPlayers = request.maxPlayers;
+    let type = request.serverType;
+
+    let newServer = null;
+
+    if (type === "classic") {
+      newServer = new GameModel({
+        id,
+        name,
+        type,
+        host,
+        maxPlayers,
+        autoRemovePenality: true,
+      });
+    }
+    if (type === "hardcore") {
+      newServer = new GameModel({
+        id,
+        name,
+        type,
+        host,
+        maxPlayers,
+        handSize: 3,
+        canDrawLastDiscard: true,
+      });
+    }
+    if (type === "infinite") {
+      newServer = new GameModel({
+        id,
+        name,
+        type,
+        host,
+        maxPlayers,
+        isDeckUnlimited: true,
+      });
+    }
+    if (type === "custom") {
+      newServer = new GameModel({
+        id,
+        name,
+        host,
+        type,
+        maxPlayers,
+        canDrawLastDiscard: request?.canDrawLastDiscard || null,
+        requiredScore: request?.requiredScore || null,
+        autoRemovePenality: request?.autoRemovePenality || null,
+      });
+
+      if (request?.cardCounts === "unlimited") {
+        newServer = { ...newServer, isDeckUnlimited: true };
+      } else if (request?.cardCounts) {
+        newServer = { ...newServer, cardCounts: request.cardCounts };
+      }
+    }
+
+    servers[id] = newServer;
+
+    if (!request.socket) {
+      delete servers[id];
+      return callback({
+        success: false,
+        message: "Impossible de créer le serveur.",
+      });
+    }
+    request.socket.join(`server_${id}`);
     return callback({
       success: true,
-      message: "Le serveur est créé avec succès.",
+      message: "Serveur enregistré avec succès.",
       data: {
-        server_id: uniqueId,
+        server_id: id,
       },
     });
   } catch (error) {
-    console.error("createServer: Erreur catch:", error);
+    console.error("Erreur createServer :", error);
     return callback({
       success: false,
-      message:
-        "Une erreur inattendue s'est produite lors de la création du serveur.",
+      message: "Une erreur s'est produite.",
     });
   }
 };
@@ -248,101 +180,65 @@ exports.createServer = (request, callback) => {
  */
 exports.joinServer = (request, callback) => {
   console.log("joinServer: Entrée dans la fonction.");
+
   try {
     const { server_id, user, socket, io } = request;
 
-    console.log("joinServer: Début de validation des paramètres.");
-    // Validation des paramètres requis
     if (!server_id || typeof server_id !== "string") {
-      console.error("joinServer: ID du serveur manquant ou invalide.");
       return callback({
         success: false,
-        message: "L'ID du serveur est requis et doit être une chaîne.",
+        message: "ID du serveur requis et doit être une chaîne.",
       });
     }
-    console.log(`joinServer: ID du serveur : ${server_id}`);
 
     if (!user || !user.username || typeof user.username !== "string") {
-      console.error(
-        "joinServer: Informations utilisateur manquantes ou invalides."
-      );
       return callback({
         success: false,
-        message: "Les informations utilisateur sont incomplètes ou invalides.",
+        message: "Informations utilisateur incomplètes/invalides.",
       });
     }
 
-    console.log(`joinServer: Joueur souhaitant rejoindre : ${user.username}`);
-
     const server = servers[server_id];
+
     if (!server) {
-      console.error(`joinServer: Serveur introuvable. ID: ${server_id}`);
       return callback({
         success: false,
         message: "Serveur introuvable.",
       });
     }
 
-    console.log(`joinServer: Serveur trouvé :`, servers[server_id]);
-
     if (
       Object.keys(server.players).length >= server.maxPlayers ||
       server.start === true
     ) {
-      console.error(`joinServer: Serveur complet ou jeu déjà commencé.`);
       return callback({
         success: false,
-        message: `Le serveur est complet ou le jeu a déjà commencé.`,
+        message: `Le serveur est complet ou a déjà commencé.`,
       });
     }
 
-    // // Joindre l'utilisateur au canal Socket.io du serveur
-    // if (socket) {
-    //   socket.join(server_id);
-    //   console.log(`joinServer: L'utilisateur join le canal Socket.io}`);
-    // } else {
-    //   console.error(
-    //     "joinServer: Aucun socket fourni. L'utilisateur n'a pas join le canal."
-    //   );
-    // }
-
-    console.log(`joinServer: Tentative d'ajout du joueur au serveur.`);
-    this.addPlayer(request, (response) => {
-      if (!response.success) {
-        console.error(
-          `joinServer: Échec de l'ajout du joueur. Raison: ${response.message}`
-        );
-        return callback(response); // Retourne l'erreur de `addPlayer`
-      } else if (response.success) {
-        console.log(`joinServer: Utilisateur ajouté via AddPlayer.`);
-      }
-
-      console.log(
-        `joinServer: Joueur ajouté avec succès. Utilisateur: ${user.username}, Serveur: ${server_id}`
-      );
-
-      // Mise à jour des abonnés à la liste des serveurs
-      const filteredServers = getFilteredServers();
-      io.emit("subscription:server-list", { servers: filteredServers });
-
-      // Mise à jour des joueurs du serveur concerné
-      console.log(
-        `joinServer: Mise à jour des joueurs pour le serveur: ${server_id}`
-      );
-      io.to(server_id).emit("server:update", servers[server_id]);
-
-      // Mise à jour de l'utilisateur
-      updateUser({
-        username: user.username,
-        update: { current_server: server_id },
+    if (!socket) {
+      return callback({
+        success: false,
+        message: `Impossible de s'abonner au serveur.`,
       });
+    }
 
-      // Retour de succès
-      callback({
-        success: true,
-        message: `L'utilisateur ${user.username} a rejoint le serveur.`,
-        data: { server },
-      });
+    socket.join(`server_${server_id}`);
+    socket.leave("subscription:server-list");
+    servers[server_id].addPlayer(user.id, user.username);
+
+    io.emit("subscription:server-list", { servers: getFilteredServers() });
+    io.to(`server_${server_id}`).emit("server:update", servers[server_id]);
+
+    updateUser({
+      username: user.username,
+      update: { current_server: server_id },
+    });
+
+    return callback({
+      success: true,
+      message: `Joueur ajouté au serveur.`,
     });
   } catch (error) {
     // Gestion des erreurs inattendues
@@ -378,16 +274,12 @@ exports.addPlayer = (request, callback) => {
   try {
     const { server_id, user, socket, io } = request;
 
-    // Validation des paramètres requis
     if (!server_id || typeof server_id !== "string") {
-      console.error("addPlayer: ID du serveur manquant ou invalide.");
       return callback({
         success: false,
         message: "L'ID du serveur est requis et doit être une chaîne.",
       });
     }
-
-    console.log(`addPlayer: ID Serveur : ${server_id}`);
 
     if (
       !user ||
@@ -395,68 +287,32 @@ exports.addPlayer = (request, callback) => {
       !user.username ||
       typeof user.username !== "string"
     ) {
-      console.error(
-        "addPlayer: Informations utilisateur manquantes ou invalides."
-      );
       return callback({
         success: false,
         message: "Les informations utilisateur sont incomplètes ou invalides.",
       });
     }
 
-    console.log(`addPlayer: Nom de l'utilisateur : ${user.username}`);
-
-    // Vérification de l'existence du serveur
-    const server = servers[server_id];
-    if (!server) {
-      console.error(`addPlayer: Serveur introuvable. ID: ${server_id}`);
+    if (!servers[server_id]) {
       return callback({
         success: false,
         message: "Serveur introuvable.",
       });
     }
 
-    console.log(`addPlayer: Serveur trouvé :`, server);
-
-    console.log(
-      `addPlayer: utilisation de addPlayer (GameModel) pour ajouter l'utilisateur`
-    );
-    const playerAdded = server.addPlayer(user.id, user.username);
+    const playerAdded = servers[server_id].addPlayer(user.id, user.username);
     if (!playerAdded) {
-      console.error(
-        `addPlayer: Impossible d'ajouter le joueur. ID: ${server_id}`
-      );
       return callback({
         success: false,
         message: "Impossible d'ajouter le joueur.",
       });
     }
 
-    console.log(`addPlayer: ${user.username} ajouté au serveur ${server_id}`);
-
-    // Joindre le joueur au canal Socket.io du serveur
-    if (socket) {
-      socket.join(server_id);
-      console.log(
-        `addPlayer: L'utilisateur a rejoint le canal Socket.io: ${server_id}`
-      );
-    } else {
-      console.warn(
-        "addPlayer: Aucun socket fourni. L'utilisateur n'a pas rejoint le canal."
-      );
-    }
-
-    // Retourner les informations de succès
-    callback({
-      success: true,
-      message: `L'utilisateur ${user.username} a été ajouté au serveur.`,
-      data: { server },
+    return callback({
+      success: false,
+      message:
+        "Une erreur inattendue s'est produite lors de l'ajout du joueur.",
     });
-
-    // Mise à jour des abonnés à la liste des serveurs
-    const filteredServers = getFilteredServers();
-    console.log("addPlayer: Emission de la liste des serveurs mise à jour.");
-    io.emit("subscription:server-list", { servers: filteredServers });
   } catch (error) {
     // Gestion des erreurs inattendues
     console.error(
@@ -472,71 +328,85 @@ exports.addPlayer = (request, callback) => {
 };
 
 /**
- * Supprime un utilisateur d'un serveur en utilisant son nom d'utilisateur.
+ * Supprime un utilisateur de toutes les rooms serveurs.
  *
- * @param {object} req - La requête contenant les informations de l'utilisateur.
- * @param {function} callback - La fonction de rappel à exécuter après la suppression de l'utilisateur.
+ * @param {object} socket - Socket de l'utilisateur.
+ */
+
+exports.leaveAllServerRooms = (socket) => {
+  if (!socket) {
+    return false;
+  }
+  socket.rooms.forEach((room) => {
+    if (room.startsWith("server_")) {
+      socket.leave(room);
+    }
+  });
+  return true;
+};
+
+/**
+ * Permet à un utilisateur de quitter un serveur.
+ *
+ * @param {object} req - La requête contenant l'utilisateur, le socket et l'instance io.
+ * @param {function} callback - La fonction de rappel exécutée après le retrait du joueur.
  */
 exports.leaveServer = (req, callback) => {
-  console.log("leaveServer: Entrée dans la fonction");
+  console.log("🚪 leaveServer: Entrée dans la fonction", { req });
+
   try {
-    let username = req.user.username || req.username || null;
-    if (!username) {
+    const { user, socket, io } = req;
+
+    if (!user?.username) {
       return callback({
         success: false,
-        message: "Aucun nom d'utilisateur",
+        message: "Aucun nom d'utilisateur fourni.",
       });
     }
 
-    let user = findUserByUsername(username);
+    const { username } = user;
 
-    if (!user) {
+    const userData = findUserByUsername(username);
+    if (!userData) {
       return callback({
         success: false,
-        message: "Aucun utilisateur dans la requête.",
+        message: "Utilisateur introuvable.",
       });
     }
 
-    let isRemoved = this.removeUserFromServerByUsername(username);
+    const serverId = findUserServerByUsername(username);
 
-    if (isRemoved) {
-      let filteredServers = getFilteredServers();
-      req.io.emit("subscription:server-list", { servers: filteredServers });
-      req.io
-        .to(user.current_server)
-        .emit("server:update", servers[user.current_server]);
+    if (serverId) {
+      const isRemoved = this.removeUserFromServerByUsername(username);
 
-      if (servers[user.current_server]?.players) {
-        if (Object.keys(servers[user.current_server].players).length === 0) {
-          delete servers[user.current_server];
-          let filteredServers = getFilteredServers();
-          io.emit("subscription:server-list", { servers: filteredServers });
-        } else if (
-          Object.keys(servers[user.current_server]?.players).length === 1 &&
-          servers[user.current_server].start === true &&
-          servers[user.current_server].gameOver === false
-        ) {
-          this.endGame(req);
-        }
+      if (!isRemoved) {
+        return callback({
+          success: false,
+          message: "Erreur lors de la suppression du joueur du serveur.",
+        });
       }
     }
 
-    req.io
-      .to(user.current_server)
-      .emit("server:update", servers[user.current_server]);
+    const server = servers[serverId];
 
-    return callback({
-      success: isRemoved,
-      message: isRemoved
-        ? "Utilisateur retiré du serveur"
-        : "Échec du retrait de l'utilisateur",
-    });
+    if (server) {
+      const totalPlayers = Object.keys(server.players).length;
+      if (totalPlayers === 0) {
+        delete servers[serverId];
+      } else if (totalPlayers === 1 && server.start && !server.gameOver) {
+        this.endGame(req);
+      } else {
+        socket.to("server_" + serverId).emit("server:update", server);
+        this.leaveAllServerRooms(socket);
+      }
+    }
+
+    io.emit("subscription:server-list", { servers: getFilteredServers() });
+    return callback({ success: true, message: "Joueur retiré avec succès." });
   } catch (error) {
-    console.log("leaveServer: erreur catch:", error);
-
     return callback({
       success: false,
-      message: "Erreur durant le retrait du joueur",
+      message: "Erreur lors du retrait du joueur.",
     });
   }
 };
@@ -544,86 +414,39 @@ exports.leaveServer = (req, callback) => {
 /**
  * Supprime un utilisateur d'un serveur en utilisant son nom d'utilisateur.
  *
- * @param {string} username - Le nom d'utilisateur de l'utilisateur à supprimer.
- * @returns {boolean} - Retourne true si l'utilisateur a été supprimé, sinon false.
+ * @param {string} username - Le nom d'utilisateur du joueur à supprimer.
+ * @returns {boolean} - Retourne `true` si le joueur a été supprimé avec succès, sinon `false`.
  */
 exports.removeUserFromServerByUsername = (username) => {
-  console.log("removeUserFromServerByUsername: Entrée dans la fonction");
-  if (!username) {
-    console.log("removeUserFromServerByUsername: Aucun nom d'utilisateur");
-    return false;
+  if (!username) return false;
+
+  const serverId = findUserServerByUsername(username);
+  if (!serverId) return false;
+
+  const server = servers[serverId];
+  if (!server || !server.players[username]) return false;
+
+  const isPlayerOwner = checkIfPlayerIsHost(username);
+  if (isPlayerOwner) {
+    setNewHost(serverId);
   }
 
-  let serverId = findUserServerByUsername(username);
+  const playerPosition = server.players[username].position;
+  const totalPlayers = Object.keys(server.players).length;
 
-  if (!serverId) {
-    console.log(
-      "removeUserFromServerByUsername: Aucun ID de serveur pour l'utilisateur"
-    );
-    return false;
-  }
-
-  let server = servers[serverId];
-  if (!server) {
-    console.log(
-      "removeUserFromServerByUsername: Aucun serveur pour l'utilisateur"
-    );
-    return false;
-  }
-
-  if (!server || !server.players[username]) {
-    console.log(
-      `removeUserFromServerByUsername: Utilisateur ${username} introuvable`
-    );
-    return false; // L'utilisateur n'est pas trouvé sur le serveur
-  }
-
-  // Vérifie si le joueur est l'auteur du serveur, sinon sélection d'un autre
-  let playerIsOwner = checkIfPlayerIsOwner(username);
-  console.log(
-    `removeUserFromServerByUsername: Utilisateur ${username} est propriétaire ?`,
-    playerIsOwner
-  );
-  playerIsOwner && setNewOwner(serverId);
-
-  let isCurrentPlayer = checkIfPlayerIsCurrentPlayer(username);
-  console.log(
-    `removeUserFromServerByUsername: Utilisateur ${username} est le joueur actuel ?`,
-    isCurrentPlayer
-  );
-  isCurrentPlayer && server.nextPlayer();
-
-  // Supprime l'utilisateur du serveur
   delete server.players[username];
-  console.log(
-    `removeUserFromServerByUsername: Utilisateur ${username} supprimé`
-  );
 
-  // Réajustement des positions des joueurs restants
-  let players = Object.entries(server.players)
-    .map(([key, value]) => ({
-      username: key,
-      position: value.position,
-    }))
-    .sort((a, b) => a.position - b.position); // Trier par position croissante
+  const players = Object.entries(server.players)
+    .map(([username, { position }]) => ({ username, position }))
+    .sort((a, b) => a.position - b.position);
 
-  console.log(
-    "removeUserFromServerByUsername: Positions avant ajustement:",
-    players
-  );
-
-  // Réattribuer les positions
   players.forEach((player, index) => {
     server.players[player.username].position = index + 1;
   });
 
-  console.log(
-    "removeUserFromServerByUsername: Positions après ajustement:",
-    players
-  );
-
-  // Supprime le serveur s'il est vide
-  cleanupInactiveServer(serverId);
+  if (totalPlayers === playerPosition) {
+    server.nextPlayer();
+  }
 
   return true;
 };
@@ -653,6 +476,7 @@ exports.serverList = (request, callback) => {
  */
 exports.findServer = (request, callback) => {
   let server_id = request.server_id;
+
   if (!server_id) {
     callback({
       success: false,
@@ -660,6 +484,7 @@ exports.findServer = (request, callback) => {
     });
     return;
   }
+
   let server = servers[server_id];
 
   if (!server) {
@@ -686,8 +511,8 @@ exports.findServer = (request, callback) => {
 exports.initServer = (request, callback) => {
   try {
     // Validation de l'identifiant du serveur
-    const server_id = request?.server_id;
-    if (!server_id) {
+    const { serverId } = request;
+    if (!serverId) {
       console.error("initServer: Aucun identifiant de serveur fourni.");
       return callback({
         success: false,
@@ -696,10 +521,10 @@ exports.initServer = (request, callback) => {
     }
 
     // Récupération du serveur
-    const server = servers[server_id];
+    const server = servers[serverId];
     if (!server) {
       console.error(
-        `initServer: Le serveur avec l'ID ${server_id} n'existe pas.`
+        `initServer: Le serveur avec l'ID ${serverId} n'existe pas.`
       );
       return callback({
         success: false,
@@ -708,7 +533,7 @@ exports.initServer = (request, callback) => {
     }
 
     // Réinitialisation et démarrage du jeu
-    console.log(`initServer: Réinitialisation du serveur ${server_id}.`);
+    console.log(`initServer: Réinitialisation du serveur ${serverId}.`);
     server.reset();
     server.startGame();
 
@@ -721,9 +546,9 @@ exports.initServer = (request, callback) => {
 
     // Notification des clients connectés au serveur
     console.log(
-      `initServer: Notification des clients pour le serveur ${server_id}.`
+      `initServer: Notification des clients pour le serveur ${serverId}.`
     );
-    request.io.to(server_id).emit("server:update", servers[server_id]);
+    request.io.to(`server_${serverId}`).emit("server:update", server);
   } catch (error) {
     console.error("initServer: Une erreur est survenue.", error);
     callback({
@@ -781,6 +606,11 @@ exports.playerAction = (request, callback) => {
       success: false,
       message: "Aucune carte sélectionnée",
     });
+  }
+
+  console.log("REMOVE PENALITY ?", server.autoRemovePenality);
+  if (server.autoRemovePenality) {
+    updateStatesCount({ server, playerUsername });
   }
 
   // Gestion des cartes de type "attaque"
@@ -847,9 +677,9 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
     const isProtectedByBonus = bonusProtectionMap[card.tag];
     const hasBlockingState =
       card.tag === "zonedecontrole"
-        ? attackedPlayer.states.zonedecontrole
+        ? attackedPlayer.states.zonedecontrole.value
         : ["fatigue", "accident", "feurouge", "embouteillage"].some(
-            (state) => attackedPlayer.states[state]
+            (state) => attackedPlayer.states[state].value
           );
 
     if (isProtectedByBonus || hasBlockingState) {
@@ -859,7 +689,8 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
       });
     }
 
-    attackedPlayer.states[card.tag] = true;
+    attackedPlayer.states[card.tag].value = true;
+    attackedPlayer.states[card.tag].count = 0;
     servers[request.server_id].updatePlayer(
       attackedPlayer.username,
       attackedPlayer
@@ -880,18 +711,21 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
       return this.endGame(request);
     }
 
-    return request.io.to(request.server_id).emit("game:next-round", {
-      servers: servers[request.server_id],
-      data: {
-        type: "attaque",
-        attackedPlayer: attackedPlayer,
-        player: request.user,
-        card,
-      },
-    });
+    return request.io
+      .to(`server_${request.server_id}`)
+      .emit("game:next-round", {
+        servers: servers[request.server_id],
+        data: {
+          type: "attaque",
+          attackedPlayer: attackedPlayer,
+          player: request.user,
+          card,
+        },
+      });
   }
 
   const attackablePlayers = Object.values(players).filter((plr) => {
+    console.log("players", players);
     if (plr.username === playerUsername) {
       return false;
     }
@@ -907,9 +741,9 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
     const isProtectedByBonus = bonusProtectionMap[card.tag];
     const hasBlockingState =
       card.tag === "zonedecontrole"
-        ? plr.states.zonedecontrole
+        ? plr.states.zonedecontrole.value
         : ["fatigue", "accident", "feurouge", "embouteillage"].some(
-            (state) => plr.states[state]
+            (state) => plr.states[state].value
           );
 
     return !isProtectedByBonus && !hasBlockingState;
@@ -950,11 +784,11 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
  */
 const handleParadeCard = (request, callback, card, playerUsername, player) => {
   const requiredMalusState = {
-    feuvert: player.states.feurouge,
-    findezonedecontrole: player.states.zonedecontrole,
-    findembouteillage: player.states.embouteillage,
-    repose: player.states.fatigue,
-    reparation: player.states.accident,
+    feuvert: player.states.feurouge.value,
+    findezonedecontrole: player.states.zonedecontrole.value,
+    findembouteillage: player.states.embouteillage.value,
+    repose: player.states.fatigue.value,
+    reparation: player.states.accident.value,
   };
 
   if (!requiredMalusState[card.tag]) {
@@ -1000,19 +834,19 @@ const handleParadeCard = (request, callback, card, playerUsername, player) => {
 
   switch (card.tag) {
     case "feuvert":
-      player.states.feurouge = false;
+      player.states.feurouge.value = false;
       break;
     case "findezonedecontrole":
-      player.states.zonedecontrole = false;
+      player.states.zonedecontrole.value = false;
       break;
     case "findembouteillage":
-      player.states.embouteillage = false;
+      player.states.embouteillage.value = false;
       break;
     case "repose":
-      player.states.fatigue = false;
+      player.states.fatigue.value = false;
       break;
     case "reparation":
-      player.states.accident = false;
+      player.states.accident.value = false;
       break;
     default:
       break;
@@ -1032,7 +866,7 @@ const handleParadeCard = (request, callback, card, playerUsername, player) => {
     return this.endGame(request);
   }
 
-  return request.io.to(request.server_id).emit("game:next-round", {
+  return request.io.to(`server_${request.server_id}`).emit("game:next-round", {
     servers: servers[request.server_id],
     data: {
       type: "parade",
@@ -1056,22 +890,22 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
   console.log(servers[request.server_id]);
 
   if (
-    player.states.feurouge ||
-    player.states.fatigue ||
-    player.states.accident ||
-    player.states.embouteillage
+    player.states.feurouge.value ||
+    player.states.fatigue.value ||
+    player.states.accident.value ||
+    player.states.embouteillage.value
   ) {
     let message = "Vous ne pouvez plus rouler";
-    if (player.states.feurouge) {
+    if (player.states.feurouge.value) {
       message = "Vous êtes à l'arrêt (Feu rouge)";
     }
-    if (player.states.fatigue) {
+    if (player.states.fatigue.value) {
       message = "Vous êtes à l'arrêt (Fatigue)";
     }
-    if (player.states.accident) {
+    if (player.states.accident.value) {
       message = "Vous êtes à l'arrêt (Accident)";
     }
-    if (player.states.embouteillage) {
+    if (player.states.embouteillage.value) {
       message = "Vous êtes à l'arrêt (Embouteillage)";
     }
     return callback({
@@ -1081,7 +915,7 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
     });
   }
 
-  if (player.states.zonedecontrole && card.value > 50) {
+  if (player.states.zonedecontrole.value && card.value > 50) {
     return callback({
       success: true,
       message: `Vous êtes limité à 50 Kms`,
@@ -1130,14 +964,16 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
       return this.endGame(request);
     }
 
-    return request.io.to(request.server_id).emit("game:next-round", {
-      servers: servers[request.server_id],
-      data: {
-        type: "borne",
-        player: playerUsername,
-        card,
-      },
-    });
+    return request.io
+      .to(`server_${request.server_id}`)
+      .emit("game:next-round", {
+        servers: servers[request.server_id],
+        data: {
+          type: "borne",
+          player: playerUsername,
+          card,
+        },
+      });
   }
 };
 
@@ -1153,21 +989,21 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
 const handleBonusCard = (request, callback, card, playerUsername, player) => {
   switch (card.tag) {
     case "infatiguable":
-      player.bonus.infatiguable = true;
-      player.states.fatigue = false;
+      player.bonus.infatiguable.value = true;
+      player.states.fatigue.value = false;
       break;
     case "cartedepolice":
       player.bonus.cartedepolice = true;
-      player.states.feurouge = false;
-      player.states.zonedecontrole = false;
+      player.states.feurouge.value = false;
+      player.states.zonedecontrole.value = false;
       break;
     case "deviation":
       player.bonus.deviation = true;
-      player.states.embouteillage = false;
+      player.states.embouteillage.value = false;
       break;
     case "pilote":
       player.bonus.pilote = true;
-      player.states.accident = false;
+      player.states.accident.value = false;
       break;
     default:
       break;
@@ -1187,7 +1023,7 @@ const handleBonusCard = (request, callback, card, playerUsername, player) => {
     return this.endGame(request);
   }
 
-  return request.io.to(request.server_id).emit("game:next-round", {
+  return request.io.to(`server_${request.server_id}`).emit("game:next-round", {
     servers: servers[request.server_id],
     data: {
       type: "bonus",
@@ -1198,14 +1034,37 @@ const handleBonusCard = (request, callback, card, playerUsername, player) => {
 };
 
 /**
+ * Permet de compter les tours et de mettre a jour les malus.
+ **/
+const updateStatesCount = ({ server, playerUsername }) => {
+  Object.keys(server.players[playerUsername].states).forEach((stateKey) => {
+    let state = server.players[playerUsername].states[stateKey];
+
+    if (state.value) {
+      state.count++;
+
+      if (state.count >= 4) {
+        state.count = 0;
+        state.value = false;
+      }
+    }
+  });
+};
+
+/**
  * Supprime une carte d'un joueur.
  *
  * @param {object} request - La requête contenant les informations de la carte et du joueur.
  * @param {function} callback - La fonction de rappel à exécuter après avoir supprimé la carte.
  */
 exports.removeCard = (request, callback) => {
+  const server = servers[request.server_id];
   const { card } = request;
   const playerUsername = request.user.username;
+  if (server.autoRemovePenality) {
+    updateStatesCount({ server, playerUsername });
+  }
+
   servers[request.server_id].removeCard(playerUsername, card.id);
   servers[request.server_id].drawCard(playerUsername);
   servers[request.server_id].nextPlayer();
@@ -1214,8 +1073,7 @@ exports.removeCard = (request, callback) => {
   if (Object.keys(servers[request.server_id].deck).length === 0) {
     return this.endGame(request);
   }
-
-  return request.io.to(request.server_id).emit("game:next-round", {
+  return request.io.to(`server_${request.server_id}`).emit("game:next-round", {
     servers: servers[request.server_id],
     data: {
       type: "remove",
@@ -1254,7 +1112,7 @@ exports.endGame = (request) => {
     return false;
   }
   return request.io
-    .to(request.server_id)
+    .to(`server_${request.server_id}`)
     .emit("game:is-over", servers[request.server_id]);
 };
 
@@ -1288,11 +1146,12 @@ exports.message = (request, callback) => {
     });
   }
 
-  let filteredMessage = filter.clean(request.message);
+  let filteredMessage = censorText(request.message);
+  console.log("Message filtré envoyé :", filteredMessage);
 
-  request.io.in(server).emit("game:player-message", {
+  request.io.in(`server_${server}`).emit("game:player-message", {
     username: request.user.username,
-    message: filteredMessage,
+    message: filteredMessage.result,
   });
 
   return callback({

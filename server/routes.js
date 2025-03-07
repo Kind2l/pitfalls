@@ -1,13 +1,4 @@
-const {
-  login,
-  loginAsGuest,
-  logout,
-  disconnect,
-  register,
-  validateConnectToken,
-  validateRequestToken,
-  afk,
-} = require("./controllers/socketController");
+const { disconnect, afk } = require("./controllers/socketController");
 
 const {
   createServer,
@@ -22,118 +13,56 @@ const {
   message,
 } = require("./controllers/gameController");
 
-const tokenMiddleware = async (req, requestName) => {
-  console.log(`Nouvelle requête : ${requestName}`);
-
-  // Récupération du token depuis la requête
-  const token = req?.user?.token || null;
-
-  // Vérification que le token est fourni
-  if (!token) {
-    console.error(
-      `tokenMiddleware: Aucun token fourni pour la requête ${requestName}.`
-    );
-    throw {
-      success: false,
-      message: "Token manquant. L'utilisateur n'est pas authentifié.",
-    };
-  }
-
-  return new Promise((resolve, reject) => {
-    console.log(`tokenMiddleware: Validation du token pour ${requestName}.`);
-
-    validateRequestToken({ token }, (result) => {
-      if (!result?.success) {
-        // Échec de la validation du token
-        console.error(
-          `Erreur de validation du token pour la requête ${requestName}:`,
-          result
-        );
-        return reject({
-          success: false,
-          message:
-            result?.message || "Échec de la validation du token. Accès refusé.",
-        });
-      }
-
-      // Validation réussie
-      console.log(`tokenMiddleware: Validation réussie pour ${requestName}.`);
-      req.user = result.data; // Met à jour les informations utilisateur
-      resolve(true);
-    });
-  });
-};
-
 module.exports = (io) => (socket) => {
-  const handleRequest =
-    (handler, useTokenMiddleware = false, requestName) =>
-    async (req, res) => {
-      req.socket = socket;
-      req.io = io;
-      console.log(`Nouvelle requete ${requestName}`);
-      if (useTokenMiddleware) {
-        try {
-          await tokenMiddleware(req, requestName);
-          handler(req, res);
-        } catch (error) {
-          console.log(
-            `Problème avec le middleware pour la requête ${requestName}`
-          );
-          console.log(error);
-        }
-      } else {
-        handler(req, res);
-      }
-    };
+  /**
+   * Middleware pour injecter `socket` et `io` dans chaque requête,
+   * et enregistrer la requête dans la console.
+   */
+  const handleRequest = (handler, requestName) => async (req, res) => {
+    req.socket = socket;
+    req.io = io;
+    console.log(`Nouvelle requête : ${requestName}`);
+    handler(req, res);
+  };
 
-  socket.on("user:login", handleRequest(login, false, "user:login"));
-  socket.on(
-    "user:guest-login",
-    handleRequest(loginAsGuest, false, "user:guest-login")
-  );
-  socket.on("user:register", handleRequest(register, false, "user:register"));
-  socket.on(
-    "user:validate-token",
-    handleRequest(validateConnectToken, false, "user:validate-token")
-  );
-  socket.on("user:logout", handleRequest(logout, true, "user:logout"));
-  socket.on("server:afk-player", handleRequest(afk, true, "server:afk-player"));
+  /** ==============================
+   *  🔹 Gestion des utilisateurs 🔹
+   *  ============================== */
 
-  socket.on(
-    "server:create",
-    handleRequest(createServer, true, "server:create")
-  );
-  socket.on(
-    "server:add-player",
-    handleRequest(addPlayer, true, "server:add-player")
-  );
-  socket.on(
-    "server:get-list",
-    handleRequest(serverList, true, "server:get-list")
-  );
-  socket.on("server:join", handleRequest(joinServer, true, "server:join"));
-  socket.on("server:leave", handleRequest(leaveServer, true, "server:leave"));
-  socket.on("server:find", handleRequest(findServer, true, "server:find"));
+  socket.on("user:afk-player", handleRequest(afk, "server:afk-player"));
+
+  /** ==============================
+   *  🔹 Gestion des serveurs 🔹
+   *  ============================== */
+  socket.on("server:create", handleRequest(createServer, "server:create"));
+  socket.on("server:join", handleRequest(joinServer, "server:join"));
+  socket.on("server:add-player", handleRequest(addPlayer, "server:add-player"));
+  socket.on("server:get-list", handleRequest(serverList, "server:get-list"));
+  socket.on("server:leave", handleRequest(leaveServer, "server:leave"));
+  socket.on("server:find", handleRequest(findServer, "server:find"));
   socket.on(
     "server:initalization",
-    handleRequest(initServer, true, "server:initalization")
+    handleRequest(initServer, "server:initalization")
   );
 
+  /** ==============================
+   *  🔹 Gestion du jeu 🔹
+   *  ============================== */
   socket.on(
     "game:player-action",
-    handleRequest(playerAction, true, "game:player-action")
+    handleRequest(playerAction, "game:player-action")
   );
   socket.on(
     "game:player-remove-card",
-    handleRequest(removeCard, true, "game:player-remove-card")
+    handleRequest(removeCard, "game:player-remove-card")
   );
   socket.on(
     "game:player-message",
-    handleRequest(message, true, "game:player-message")
+    handleRequest(message, "game:player-message")
   );
 
-  socket.on("disconnect", () => {
-    disconnect({ socket, io }, (res) => {});
-    console.log(`${socket.id} is disconnected`);
-  });
+  /** ==============================
+   *  🔹 Déconnexion 🔹
+   *  ============================== */
+  socket.on("disconnect", () => disconnect({ socket, io }));
 };

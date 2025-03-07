@@ -2,94 +2,84 @@
 
 .orbit {
   position: fixed;
-  bottom: -15%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120vw;
-  max-width: 600px;
+  bottom: 150px;
+  left: 0;
+  width: 100%;
   aspect-ratio: 1 / 1;
 
-  @media (max-height: 400px) {
-    width: 50vw;
-    bottom: -80%;
-  }
+  // @media (max-height: 400px) {
+  //   width: 50vw;
+  //   bottom: -80%;
+  // }
 
   .planet {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
-    z-index: 10;
+    top: 70%;
+    left: 0%;
+    transform: translateY(-50%);
+    width: 70%;
+    height: 70%;
+    z-index: 11;
     img {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      height: calc(100%);
-      width: calc(100%);
+      height: 100%;
+      width: 100%;
       animation: rotate 800s linear reverse infinite;
-      z-index: 1;
-    }
-
-    &.back {
-      animation: rotate 750s linear reverse infinite;
-      z-index: 0;
-      width: 105%;
-      height: 105%;
-    }
-    &.front {
-      animation: rotate 700s linear reverse infinite;
-      z-index: 10;
     }
   }
 
-  .arrival {
+  .hotel {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(30deg);
-    // border-radius: 50%;
-    width: 100%;
-    height: 100%;
+    bottom: 60%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 60%;
+    height: fit-content;
+    z-index: 10;
+    transition: right 2s ease;
+
     img {
       position: absolute;
-      top: -115px;
+      top: 50%;
       left: 50%;
-      height: 120px;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
+      width: 100%;
+      z-index: 1;
     }
-    z-index: 9;
   }
 
   .car-orbit {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 100%;
-    width: 100%;
+    top: 70%;
+    left: 0%;
+    transform: translateY(-50%);
+    height: 70%;
+    width: 70%;
     transition: transform 2s ease;
+    z-index: 10;
     .car {
       position: absolute;
-      top: -52px;
+      top: -29px;
       left: 50%;
-      height: 60px;
-      width: 60px;
+      height: 30px;
+      width: 70px;
       transform: translateX(-50%);
 
       &__image {
         position: absolute;
         bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
+        left: 0;
+        height: 100%;
 
         text-align: center;
         img {
+          position: absolute;
+          bottom: 0;
+          left: 0;
           height: 100%;
-          width: 100%;
         }
       }
 

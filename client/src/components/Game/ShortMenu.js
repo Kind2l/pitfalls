@@ -2,12 +2,21 @@ import { useSound } from "@Context/SoundContext";
 import "@Styles/Board/ShortMenu.scss";
 import React, { useState } from "react";
 
-const ShortMenu = ({ isOpen }) => {
+const ShortMenu = ({
+  isOpen,
+  serverInfosIsOpen,
+  setServerInfosIsOpen,
+  handleLeave,
+}) => {
   const { changeEffectVolume, effectVolume, changeMusicVolume, musicVolume } =
     useSound();
 
   const [savedMusicVolume, setSavedMusicVolume] = useState(musicVolume || 1);
   const [savedEffectVolume, setSavedEffectVolume] = useState(effectVolume || 1);
+
+  const toggleInfos = () => {
+    setServerInfosIsOpen(!serverInfosIsOpen);
+  };
 
   const toggleMusic = () => {
     if (musicVolume > 0) {
@@ -29,6 +38,9 @@ const ShortMenu = ({ isOpen }) => {
 
   return (
     <div className={`short-menu ${isOpen && "show"}`}>
+      <button onClick={toggleInfos}>
+        <i className="fa-solid fa-question color-blue"></i>
+      </button>
       <button onClick={toggleMusic}>
         <i
           className={`fa-solid fa-music ${musicVolume > 0 ? "on" : "off"}`}
@@ -40,6 +52,9 @@ const ShortMenu = ({ isOpen }) => {
             effectVolume > 0 ? "on" : "off"
           }`}
         ></i>
+      </button>
+      <button onClick={handleLeave} className="leave">
+        <i className="fa-solid fa-right-from-bracket"></i>
       </button>
     </div>
   );
