@@ -21,12 +21,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [
-      "https://pitfalls.elseif.fr",
-      "https://www.pitfalls.elseif.fr",
-      "https://pitfalls-client.onrender.com",
-      "http://pitfalls-client.onrender.com",
-    ],
+    origin: "*", // Autoriser toutes les origines
     credentials: true,
   })
 );
@@ -34,12 +29,7 @@ app.use(
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: [
-      "https://pitfalls.elseif.fr",
-      "https://www.pitfalls.elseif.fr",
-      "https://pitfalls-client.onrender.com",
-      "http://pitfalls-client.onrender.com",
-    ],
+    origin: "*", // Autoriser toutes les origines
     methods: ["GET", "POST"],
   },
 });

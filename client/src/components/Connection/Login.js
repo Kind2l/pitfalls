@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import axios from "axios";
 import { useLoader } from "@Context/LoaderContext";
 import { useNotification } from "@Context/NotificationContext.js";
 import { useAuth } from "@Context/SocketContext";
 import "@Styles/Connection/Login.scss";
+import axios from "axios";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
@@ -38,7 +38,7 @@ const Login = () => {
     showLoader();
     try {
       const response = await axios.post(
-        process.env.REACT_APP_API_ADDRESS + "/login",
+        `${process.env.REACT_APP_API_ADDRESS}/login`,
         {
           username,
           password,

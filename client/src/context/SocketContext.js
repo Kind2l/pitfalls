@@ -16,11 +16,8 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     showLoader();
-    const apiUrl = process.env.REACT_APP_API_ADDRESS + "/check-auth";
-    console.log("API URL:", apiUrl);
-
     axios
-      .get(apiUrl, {
+      .get(`${process.env.REACT_APP_API_ADDRESS}/check-auth`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -29,7 +26,7 @@ export const SocketProvider = ({ children }) => {
         const { token, id, username } = res.data;
 
         if (token) {
-          const newSocket = io(process.env.REACT_APP_API_ADDRESS, {
+          const newSocket = io(`${process.env.REACT_APP_API_ADDRESS}`, {
             transports: ["websocket"],
             autoConnect: false,
             query: { token },
@@ -60,11 +57,8 @@ export const SocketProvider = ({ children }) => {
   }, [socket]);
 
   const handleLogin = () => {
-    const apiUrl = process.env.REACT_APP_API_ADDRESS + "/check-auth";
-    console.log("API URL:", apiUrl);
-
     axios
-      .get(apiUrl, {
+      .get(`${process.env.REACT_APP_API_ADDRESS}/check-auth`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -73,7 +67,7 @@ export const SocketProvider = ({ children }) => {
         const { token, id, username } = res.data;
 
         if (token) {
-          const newSocket = io(process.env.REACT_APP_API_ADDRESS, {
+          const newSocket = io(`${process.env.REACT_APP_API_ADDRESS}`, {
             transports: ["websocket"],
             autoConnect: false,
             query: { token },
@@ -96,7 +90,7 @@ export const SocketProvider = ({ children }) => {
   const handleLogout = async () => {
     try {
       await axios.post(
-        process.env.REACT_APP_API_ADDRESS + "/logout",
+        `${process.env.REACT_APP_API_ADDRESS}/logout`,
         {},
         { withCredentials: true }
       );
@@ -115,11 +109,8 @@ export const SocketProvider = ({ children }) => {
   };
 
   const handleGuestLogin = async (username) => {
-    const apiUrl = process.env.REACT_APP_API_ADDRESS + "/check-auth";
-    console.log("API URL:", apiUrl);
-
     axios
-      .get(apiUrl, {
+      .get(`${process.env.REACT_APP_API_ADDRESS}/check-auth`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -128,7 +119,7 @@ export const SocketProvider = ({ children }) => {
         const { token, id, username } = res.data;
 
         if (token) {
-          const newSocket = io(process.env.REACT_APP_API_ADDRESS, {
+          const newSocket = io(`${process.env.REACT_APP_API_ADDRESS}`, {
             transports: ["websocket"],
             autoConnect: false,
             query: { token },

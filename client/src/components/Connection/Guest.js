@@ -29,7 +29,7 @@ const Guest = () => {
     showLoader();
     try {
       const response = await axios.post(
-        process.env.REACT_APP_API_ADDRESS + "/guest-login",
+        `${process.env.REACT_APP_API_ADDRESS}/guest-login`,
         {
           username,
         },

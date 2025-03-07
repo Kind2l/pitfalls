@@ -90,18 +90,6 @@ const Home = () => {
             </Link>
 
             <Link
-              className="bg-blue"
-              to="/android-test"
-              onClick={() => {
-                handleLinkClick("open");
-              }}
-              aria-label="Application Android"
-            >
-              <i className="fa-brands fa-google-play"></i>
-              <span>Télécharger sur Android</span>
-            </Link>
-
-            <Link
               className="bg-red"
               to="/"
               onClick={() => {

@@ -15,7 +15,6 @@ import Settings from "@Pages/Settings";
 import "@Styles/App.scss";
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import AndroidTest from "./pages/AndroidTest";
 
 const router = createBrowserRouter([
   {
@@ -41,10 +40,6 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: <Settings />,
-      },
-      {
-        path: "/android-test",
-        element: <AndroidTest />,
       },
       {
         path: "/rules",
