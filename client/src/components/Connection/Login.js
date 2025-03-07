@@ -38,7 +38,7 @@ const Login = () => {
     showLoader();
     try {
       const response = await axios.post(
-        process.env.REACT_APP_LOCAL_ADDRESS + "/login",
+        process.env.REACT_APP_API_ADDRESS + "/login",
         {
           username,
           password,
