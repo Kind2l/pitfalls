@@ -31,6 +31,9 @@ app.use(
   })
 );
 
+// Configure Express to trust proxies
+app.set("trust proxy", 1);
+
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
@@ -65,6 +68,7 @@ app.post("/guest-login", loginAsGuest);
 app.get("/check-auth", (req, res) => {
   try {
     let token = req.cookies.auth_token;
+    console.log("Token reçu :", token);
 
     if (!token) {
       return res.status(400).json({ message: "Aucun token." });
