@@ -100,7 +100,7 @@ app.get("/check-auth", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("auth_token", {
     httpOnly: true,
-    secure: false, // Mettre `true` en production (HTTPS obligatoire)
+    secure: true, // Mettre `true` en production (HTTPS obligatoire)
     sameSite: "Lax",
     path: "/",
   });
