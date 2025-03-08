@@ -79,7 +79,7 @@ app.get("/check-auth", (req, res) => {
         res.clearCookie("auth_token", {
           httpOnly: true,
           secure: true, // Mettre `true` en production (HTTPS obligatoire)
-          sameSite: "Lax",
+          sameSite: "None",
           path: "/",
         });
         return res.status(400).json({ message: "Erreur d'authentification." });
@@ -94,7 +94,7 @@ app.get("/check-auth", (req, res) => {
     res.clearCookie("auth_token", {
       httpOnly: true,
       secure: true, // Mettre `true` en production (HTTPS obligatoire)
-      sameSite: "Lax",
+      sameSite: "None",
       path: "/",
     });
     return res.status(500).json({ message: "Erreur serveur." });
@@ -105,7 +105,7 @@ app.post("/logout", (req, res) => {
   res.clearCookie("auth_token", {
     httpOnly: true,
     secure: true, // Mettre `true` en production (HTTPS obligatoire)
-    sameSite: "Lax",
+    sameSite: "None",
     path: "/",
   });
 
