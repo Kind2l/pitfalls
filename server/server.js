@@ -21,12 +21,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [
-      "https://pitfalls.elseif.fr",
-      "https://www.pitfalls.elseif.fr",
-      "https://pitfalls-client.onrender.com",
-      "http://pitfalls-client.onrender.com",
-    ],
+    origin: process.env.ORIGIN,
     credentials: true,
   })
 );
@@ -37,12 +32,7 @@ app.set("trust proxy", 1);
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: [
-      "https://pitfalls.elseif.fr",
-      "https://www.pitfalls.elseif.fr",
-      "https://pitfalls-client.onrender.com",
-      "http://pitfalls-client.onrender.com",
-    ],
+    origin: process.env.ORIGIN,
     methods: ["GET", "POST"],
   },
 });
@@ -61,7 +51,9 @@ io.use((socket, next) => {
     next();
   });
 });
-
+app.get("/ping", (req, res) => {
+  res.send("pong");
+});
 app.post("/register", register);
 app.post("/login", loginLimiter, login);
 app.post("/guest-login", loginAsGuest);
@@ -78,7 +70,7 @@ app.get("/check-auth", (req, res) => {
       if (err) {
         res.clearCookie("auth_token", {
           httpOnly: true,
-          secure: true, // Mettre `true` en production (HTTPS obligatoire)
+          secure: process.env.SECURE, // Mettre `true` en production (HTTPS obligatoire)
           sameSite: "None",
           path: "/",
         });
@@ -93,7 +85,7 @@ app.get("/check-auth", (req, res) => {
     console.error(error);
     res.clearCookie("auth_token", {
       httpOnly: true,
-      secure: true, // Mettre `true` en production (HTTPS obligatoire)
+      secure: process.env.SECURE, // Mettre `true` en production (HTTPS obligatoire)
       sameSite: "None",
       path: "/",
     });
@@ -104,7 +96,7 @@ app.get("/check-auth", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("auth_token", {
     httpOnly: true,
-    secure: true, // Mettre `true` en production (HTTPS obligatoire)
+    secure: process.env.SECURE, // Mettre `true` en production (HTTPS obligatoire)
     sameSite: "None",
     path: "/",
   });

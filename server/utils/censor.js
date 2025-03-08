@@ -7,7 +7,7 @@ function loadBannedWords() {
     // const customWords = JSON.parse(data);
 
     // Ajouter les mots personnalisés à la liste existante
-    filter.clearList();
+    leoProfanity.clearList();
     // leoProfanity.add(customWords);
   } catch (error) {
     console.error("Erreur lors du chargement des mots interdits :", error);

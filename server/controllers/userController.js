@@ -209,7 +209,7 @@ exports.login = async (req, res) => {
 
     res.cookie("auth_token", token, {
       httpOnly: true,
-      secure: true, // Mettre `true` en production (HTTPS obligatoire)
+      secure: process.env.SECURE, // Mettre `true` en production (HTTPS obligatoire)
       sameSite: "None",
       maxAge: 1000 * 60 * 60 * 24 * 365, // 1 an en millisecondes
     });
@@ -282,7 +282,7 @@ exports.loginAsGuest = async (req, res) => {
 
     res.cookie("auth_token", token, {
       httpOnly: true,
-      secure: true, // Mettre `true` en production (HTTPS obligatoire)
+      secure: process.env.SECURE, // Mettre `true` en production (HTTPS obligatoire)
       sameSite: "None",
       maxAge: 86400000, // 1 jour en millisecondes
     });
