@@ -15,13 +15,20 @@ const {
   loginAsGuest,
 } = require("./controllers/userController.js");
 const loginLimiter = require("./middlewares/loginLimiter.js");
-const { users, addUser, findUserByUsername } = require("./utils/data.js");
+const { addUser, findUserByUsername } = require("./utils/data.js");
+const allowedOrigins = process.env.ORIGINS.split(",");
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.ORIGIN,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
