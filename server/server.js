@@ -59,6 +59,7 @@ io.use((socket, next) => {
   });
 });
 app.get("/ping", (req, res) => {
+  console.log("Ping reçu");
   res.send("pong");
 });
 app.post("/register", register);
