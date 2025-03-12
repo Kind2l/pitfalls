@@ -43,7 +43,6 @@ const databaseFindUserByEmail = async (email) => {
     const { rows } = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
-    console.log(rows);
 
     return rows.length ? rows[0] : null;
   } catch (err) {

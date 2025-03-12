@@ -34,8 +34,6 @@ app.use(
     credentials: true,
   })
 );
-
-// Configure Express to trust proxies
 app.set("trust proxy", 1);
 
 const server = http.createServer(app);
@@ -61,7 +59,6 @@ io.use((socket, next) => {
   });
 });
 app.get("/ping", (req, res) => {
-  console.log("Ping reçu");
   res.send("pong");
 });
 app.post("/register", register);
@@ -72,13 +69,12 @@ app.post("/guest-login", loginAsGuest);
 app.get("/check-auth", (req, res) => {
   try {
     let token = req.cookies.auth_token;
-    console.log("Token reçu :", token);
-
     if (!token) {
       return res.status(400).json({ message: "Aucun token." });
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      console.log("decoded", decoded);
       if (err) {
         res.clearCookie("auth_token", {
           httpOnly: true,
@@ -89,9 +85,12 @@ app.get("/check-auth", (req, res) => {
         return res.status(400).json({ message: "Erreur d'authentification." });
       }
 
-      return res
-        .status(200)
-        .json({ token, id: decoded.id, username: decoded.username });
+      return res.status(200).json({
+        token,
+        id: decoded.id,
+        username: decoded.username,
+        isGuest: decoded.isGuest,
+      });
     });
   } catch (error) {
     console.error(error);

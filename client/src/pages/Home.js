@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
-  const { handleLogout } = useAuth();
+  const { handleLogout, user } = useAuth();
   const { addNotification } = useNotification();
 
   const { playMusic, playEffect, currentMusicName } = useSound();
@@ -76,18 +76,21 @@ const Home = () => {
                 <span>Règles du jeu</span>
               </Link>
             </div>
-
-            <Link
-              className="bg-orange"
-              to="/profile"
-              onClick={() => {
-                handleLinkClick("open");
-              }}
-              aria-label="Mon profil"
-            >
-              <i className="fa-regular fa-user"></i>
-              <span>Mon profil</span>
-            </Link>
+            {user & !user?.isGuest ? (
+              <Link
+                className="bg-orange"
+                to="/profile"
+                onClick={() => {
+                  handleLinkClick("open");
+                }}
+                aria-label="Mon profil"
+              >
+                <i className="fa-regular fa-user"></i>
+                <span>Mon profil</span>
+              </Link>
+            ) : (
+              ""
+            )}
 
             <Link
               className="bg-red"

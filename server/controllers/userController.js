@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 
 const {
-  addUser,
   findUserByUsername,
   removeUserByUsername,
 } = require("../utils/data.js");
@@ -291,7 +290,6 @@ exports.login = async (req, res) => {
         .json({ message: "Nom d'utilisateur/Mot de passe incorrect." });
     }
     const userisLogged = findUserByUsername(username);
-    console.log("ISLOGGED", userisLogged);
     if (userisLogged) {
       return res.status(401).json({ message: "Vous êtes déjà connecté." });
     }

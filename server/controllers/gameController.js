@@ -224,7 +224,6 @@ exports.joinServer = (request, callback) => {
 
     socket.join(`server_${server_id}`);
     socket.leave("subscription:server-list");
-    console.log("JOIN ERR", servers[server_id], user.id, user.username);
     servers[server_id].addPlayer(user.id, user.username);
 
     io.emit("subscription:server-list", { servers: getFilteredServers() });
@@ -393,7 +392,6 @@ exports.leaveServer = (req, callback) => {
       if (totalPlayers === 0) {
         delete servers[serverId];
       } else if (totalPlayers === 1 && server.start && !server.gameOver) {
-        console.log("🚪 leaveServer: Fin de la partie.");
         req.server_id = serverId;
         this.endGame(req);
       } else {
@@ -459,7 +457,6 @@ exports.removeUserFromServerByUsername = (username) => {
  * @param {function} callback - La fonction de rappel à exécuter après avoir obtenu la liste des serveurs.
  */
 exports.serverList = (request, callback) => {
-  console.log(servers);
   callback({
     success: true,
     message: `Liste des serveurs`,
@@ -609,7 +606,6 @@ exports.playerAction = (request, callback) => {
     });
   }
 
-  console.log("REMOVE PENALITY ?", server.autoRemovePenality);
   if (server.autoRemovePenality) {
     updateStatesCount({ server, playerUsername });
   }
@@ -725,7 +721,6 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
   }
 
   const attackablePlayers = Object.values(players).filter((plr) => {
-    console.log("players", players);
     if (plr.username === playerUsername) {
       return false;
     }
@@ -887,7 +882,6 @@ const handleParadeCard = (request, callback, card, playerUsername, player) => {
  */
 const handleBorneCard = (request, callback, card, playerUsername, player) => {
   const updatedScore = player.score + card.value;
-  console.log(servers[request.server_id]);
 
   if (
     player.states.feurouge.value ||
@@ -959,7 +953,6 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
       data: { actionState: true, player: playerUsername, card },
     });
 
-    console.log("deck", Object.keys(servers[request.server_id].deck).length);
     if (Object.keys(servers[request.server_id].deck).length === 0) {
       return this.endGame(request);
     }
@@ -987,11 +980,8 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
  * @param {object} player - Le joueur.
  */
 const handleBonusCard = (request, callback, card, playerUsername, player) => {
-  console.log("carte : ", card);
-
   switch (card.tag) {
     case "infatiguable":
-      console.log("application de infatiguable");
       player.bonus.infatiguable = true;
       player.states.fatigue.value = false;
       break;

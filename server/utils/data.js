@@ -13,7 +13,6 @@ let servers = {};
  */
 const addUser = ({ username, id, socket_id, isGuest }) => {
   console.log(`data addUser: Entrée dans la fonction`);
-  console.log(username, id, socket_id, isGuest);
 
   if (!username || !id || !socket_id) {
     return false;
@@ -27,7 +26,6 @@ const addUser = ({ username, id, socket_id, isGuest }) => {
     isGuest,
   };
 
-  console.log("UTILISATEURS - addUser", users);
   return true;
 };
 
@@ -158,7 +156,6 @@ const removeUserFromServer = (username) => {
     "removeUserFromServer: Recherche de l'ID serveur de l'utilisateur"
   );
   const serverId = findUserServerByUsername(username);
-  console.log(serverId);
   // Vérifie si un serveur est associé à cet utilisateur
   if (!serverId) {
     return false;
@@ -188,8 +185,6 @@ const removeUserFromServer = (username) => {
   playerIsOwner && setNewHost(serverId);
   console.log("removeUserFromServer: Nettoyage serveur si inactif");
   cleanupInactiveServer(serverId);
-
-  console.log("UTILISATEURS - rmFromServer", users);
 
   // Parcourt les joueurs pour trouver et supprimer l'utilisateur
   // for (const playerId in serverPlayers) {

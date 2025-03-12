@@ -23,7 +23,8 @@ export const SocketProvider = ({ children }) => {
       .then((res) => {
         hideLoader();
 
-        const { token, id, username } = res.data;
+        const { token, id, username, isGuest } = res.data;
+        console.log("res", res);
 
         if (token) {
           const newSocket = io(`${process.env.REACT_APP_API_ADDRESS}`, {
@@ -35,10 +36,11 @@ export const SocketProvider = ({ children }) => {
           newSocket.connect();
           setSocket(newSocket);
           setIsAuthenticated(true);
-          if (id && username) {
+          if (id && username && isGuest) {
             setUser({
               id,
               username,
+              isGuest,
             });
           }
         }
@@ -64,7 +66,7 @@ export const SocketProvider = ({ children }) => {
       .then((res) => {
         hideLoader();
 
-        const { token, id, username } = res.data;
+        const { token, id, username, isGuest } = res.data;
 
         if (token) {
           const newSocket = io(`${process.env.REACT_APP_API_ADDRESS}`, {
@@ -76,10 +78,11 @@ export const SocketProvider = ({ children }) => {
           newSocket.connect();
           setSocket(newSocket);
           setIsAuthenticated(true);
-          if (id && username) {
+          if (id && username && isGuest) {
             setUser({
               id,
               username,
+              isGuest,
             });
           }
         }
