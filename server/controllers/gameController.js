@@ -1031,18 +1031,20 @@ const handleBonusCard = (request, callback, card, playerUsername, player) => {
  * Permet de compter les tours et de mettre a jour les malus.
  **/
 const updateStatesCount = ({ server, playerUsername }) => {
-  Object.keys(server.players[playerUsername].states).forEach((stateKey) => {
-    let state = server.players[playerUsername].states[stateKey];
+  if (server.players[playerUsername].states) {
+    Object.keys(server.players[playerUsername].states).forEach((stateKey) => {
+      let state = server.players[playerUsername].states[stateKey];
 
-    if (state.value) {
-      state.count--;
+      if (state.value) {
+        state.count--;
 
-      if (state.count <= 0) {
-        state.count = 8;
-        state.value = false;
+        if (state.count <= 0) {
+          state.count = 8;
+          state.value = false;
+        }
       }
-    }
-  });
+    });
+  }
 };
 
 /**
