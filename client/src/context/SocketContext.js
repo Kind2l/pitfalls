@@ -36,7 +36,7 @@ export const SocketProvider = ({ children }) => {
           newSocket.connect();
           setSocket(newSocket);
           setIsAuthenticated(true);
-          if (id && username && isGuest) {
+          if (id && username) {
             setUser({
               id,
               username,
@@ -78,7 +78,7 @@ export const SocketProvider = ({ children }) => {
           newSocket.connect();
           setSocket(newSocket);
           setIsAuthenticated(true);
-          if (id && username && isGuest) {
+          if (id && username) {
             setUser({
               id,
               username,
