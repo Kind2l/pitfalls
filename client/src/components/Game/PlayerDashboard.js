@@ -38,9 +38,7 @@ const PlayerDashboard = ({
               <span key={key} className="states-item">
                 <ImageLoader name={`icons/${key}`} alt={labels[key]} />
                 {autoRemovePenality && (
-                  <span className="states-item_count">
-                    {obj.count === 1 ? "" : obj.count - 1}
-                  </span>
+                  <span className="states-item_count">{obj.count}</span>
                 )}
               </span>
             )
