@@ -11,11 +11,11 @@ class PlayerModel {
     };
     this.score = 0;
     this.states = {
-      feurouge: { value: true, count: 0 },
-      zonedecontrole: { value: false, count: 0 },
-      fatigue: { value: false, count: 0 },
-      accident: { value: false, count: 0 },
-      embouteillage: { value: false, count: 0 },
+      feurouge: { value: true, count: 8 },
+      zonedecontrole: { value: false, count: 8 },
+      fatigue: { value: false, count: 8 },
+      accident: { value: false, count: 8 },
+      embouteillage: { value: false, count: 8 },
     };
   }
 

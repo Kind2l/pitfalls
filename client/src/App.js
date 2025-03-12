@@ -15,6 +15,7 @@ import Settings from "@Pages/Settings";
 import "@Styles/App.scss";
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Profile from "./pages/Profile";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: <Settings />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />,
       },
       {
         path: "/rules",

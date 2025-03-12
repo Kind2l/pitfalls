@@ -4,7 +4,7 @@ const addUser = ({ username, id, socket_id }) => {
   if (username && id !== undefined && id !== null && socket_id) {
     users[username] = {
       username,
-      id: Number(id),
+      id: id,
       socket_id,
       current_server: null,
       removalTimer: false,

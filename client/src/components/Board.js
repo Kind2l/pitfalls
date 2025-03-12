@@ -108,7 +108,6 @@ const Board = () => {
         setServerInfos({
           maxPlayers: response.data.maxPlayers || "",
           name: response.data.name || "",
-          canDrawLastDiscard: response.data.canDrawLastDiscard || "",
           autoRemovePenality: response.data.autoRemovePenality || "",
           requiredScore: response.data.requiredScore || "",
           isDeckUnlimited: response.data.isDeckUnlimited || "",
@@ -295,19 +294,8 @@ const Board = () => {
           obj.value ? (
             <span key={key} className="state-item">
               <ImageLoader name={`icons/${key}`} alt={labels[key]} />
-              {console.log("obj", obj)}
               {autoRemovePenality && (
-                <span className="state-item__count cherry-font">
-                  {Number(obj.count) === 0
-                    ? "4"
-                    : Number(obj.count) === 1
-                    ? "3"
-                    : Number(obj.count) === 2
-                    ? "2"
-                    : Number(obj.count) === 3
-                    ? "1"
-                    : ""}
-                </span>
+                <span className="state-item__count">{obj.count}</span>
               )}
             </span>
           ) : null
@@ -349,7 +337,7 @@ const Board = () => {
 
   // Component to display player score
   function PlayerHeaderScore(score) {
-    return <span className="player-header__score">{score}</span>;
+    return <span className="player-header__score cherry-font">{score}</span>;
   }
 
   // Handle card click

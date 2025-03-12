@@ -51,9 +51,9 @@
 
 #cloud1 {
   opacity: 0.9;
-  top: 50px;
+  top: 10%;
   left: 120%;
-  transform: scale(0.8);
+  transform: scale(0.5);
   animation: drift 25s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
@@ -62,9 +62,9 @@
 }
 #cloud2 {
   opacity: 0.8;
-  top: 40px;
+  top: 20%;
   left: 120%;
-  transform: scale(0.5);
+  transform: scale(0.3);
   animation: drift 50s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
@@ -72,7 +72,7 @@
 }
 #cloud3 {
   opacity: 0;
-  top: 20px;
+  top: 30%;
   left: 50%;
   transform: scale(0.2);
   animation: driftBg 70s;
@@ -81,27 +81,27 @@
 }
 #cloud4 {
   opacity: 0;
-  top: 50px;
+  top: 35%;
   left: 20%;
-  transform: scale(0.4, 0.45);
+  transform: scale(0.3, 0.35);
   animation: driftBg2 60s;
   animation-timing-function: linear;
   z-index: 0;
 }
 #cloud5 {
   opacity: 0;
-  top: 220px;
+  top: 50%;
   left: 90%;
-  transform: scale(0.4);
+  transform: scale(0.15);
   animation: driftBg3 90s;
   animation-timing-function: linear;
   z-index: 0;
 }
 #cloud6 {
   opacity: 0.7;
-  top: 60px;
+  top: 70%;
   left: 120%;
-  transform: scale(0.4);
+  transform: scale(0.25);
   animation: drift 110s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
@@ -110,9 +110,9 @@
 }
 #cloud7 {
   opacity: 0.8;
-  top: 95px;
+  top: 65%;
   left: 120%;
-  transform: scale(0.7);
+  transform: scale(0.2);
   -mox-animation-iteration-count: infinite;
   animation: drift 45s;
   animation-timing-function: linear;
@@ -212,7 +212,7 @@
   margin: 0 auto;
   width: 150%;
   height: 25%;
-  top: 0;
+  top: 65px;
   z-index: 1;
   pointer-events: none;
 

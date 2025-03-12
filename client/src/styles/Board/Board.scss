@@ -50,8 +50,6 @@
   );
   .game-header {
     position: relative;
-    display: flex;
-    justify-content: space-around;
     z-index: 2;
 
     .player-header {
@@ -60,69 +58,49 @@
       min-width: 20%;
       max-width: 30%;
       overflow: hidden;
-      @media (max-height: 400px) {
-        transform: scale(0.5);
+
+      &.current .player-header__name {
+        animation: pulse 1s infinite ease-in-out alternate;
       }
 
-      &[data-order="1"].current .player-header__name,
-      &[data-order="2"].current .player-header__name {
-        animation: pulseY 1s infinite ease-in-out alternate;
-      }
-      &[data-order="3"].current .player-header__name {
-        animation: pulseXR 1s infinite ease-in-out alternate;
-      }
-      &[data-order="4"].current .player-header__name {
-        animation: pulseXL 1s infinite ease-in-out alternate;
-      }
-
-      &[data-order="1"] {
-        top: 0;
-        left: 10vw;
-        transform-origin: top;
-
-        .player-header__name {
-          color: Vars.$white;
-          background-color: Vars.$blue;
-          border-radius: 0 0 20px 20px;
-        }
-      }
-
-      &[data-order="2"] {
-        top: 0;
-        right: 10vw;
-        transform-origin: top;
-
-        .player-header__name {
-          color: Vars.$white;
-          background-color: Vars.$red;
-          border-radius: 0 0 20px 20px;
-        }
-      }
-
-      &[data-order="3"] {
+      &:nth-child(1) {
         position: absolute;
-        top: 20vh;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        transform-origin: top;
+      }
+
+      &:nth-child(2) {
+        position: absolute;
+        top: 160px;
+        left: 0;
+        transform-origin: left;
+      }
+      &:nth-child(3) {
+        position: absolute;
+        top: 160px;
         right: 0;
         transform-origin: right;
-
-        .player-header__name {
-          color: Vars.$white;
-          background-color: Vars.$green;
-          border-radius: 15px 0 0 15px;
-        }
       }
 
-      &[data-order="4"] {
-        position: absolute;
-        transform-origin: left;
-        top: 20vh;
-        left: 0;
+      &[data-order="1"] .player-header__name {
+        color: Vars.$white;
+        background-color: Vars.$blue;
+      }
+      &[data-order="2"] .player-header__name {
+        color: Vars.$white;
+        background-color: Vars.$red;
+      }
 
-        .player-header__name {
-          color: Vars.$white;
-          background-color: Vars.$orange;
-          border-radius: 0 15px 15px 0;
-        }
+      &[data-order="3"] .player-header__name {
+        color: Vars.$white;
+        background-color: Vars.$green;
+      }
+
+      &[data-order="4"] .player-header__name {
+        color: Vars.$white;
+        background-color: Vars.$orange;
       }
 
       &__name {
@@ -130,72 +108,22 @@
         font-weight: 600;
         font-size: 1.2rem;
         padding: 0.5rem 0.8rem;
+        border-radius: 12px;
         margin: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
 
       &__score {
         text-align: center;
-        font-weight: 600;
-        font-size: 2.5rem;
+        font-size: 2rem;
         padding: 0.5rem 0;
         margin: 0;
-        text-shadow: 2px 2px 0 #bcbcbc, 4px 4px 0 #9c9c9c;
       }
 
-      &__states {
-        display: flex;
-        flex-direction: row;
-        width: fit-content;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 0.3rem;
-        margin-bottom: 0.2rem;
-
-        .state-item {
-          display: flex;
-          position: relative;
-          align-items: center;
-          justify-content: center;
-          border-radius: 30%;
-          background-color: #ffffff;
-          width: 2rem;
-          height: 2rem;
-          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-          border: 2px solid Vars.$red;
-          overflow: hidden;
-
-          img {
-            width: 1.5rem;
-          }
-
-          &__count {
-            opacity: 0;
-            position: absolute;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: Vars.$red;
-            font-size: 1.3rem;
-            animation: fadeOut 3s infinite alternate-reverse;
-            background-color: Vars.$white;
-            width: 100%;
-            height: 100%;
-            left: 0;
-            top: 0;
-          }
-        }
-      }
-
-      @keyframes fadeOut {
-        0%,
-        80% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 1;
-        }
-      }
-
+      &__states,
       &__bonus {
         display: flex;
         flex-direction: row;
@@ -205,25 +133,42 @@
         gap: 0.3rem;
         margin-bottom: 0.2rem;
 
+        .state-item,
         .bonus-item {
-          // display: none;
           display: flex;
+          position: relative;
           align-items: center;
           justify-content: center;
           border-radius: 30%;
           background-color: #ffffff;
           width: 2rem;
           height: 2rem;
-          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-          border: 2px solid Vars.$orange;
-
-          &.active {
-            display: flex;
-          }
+          border: 2px solid Vars.$red;
 
           img {
             width: 1.5rem;
           }
+
+          &__count {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: Vars.$white;
+            background-color: Vars.$red;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            width: 1rem;
+            height: 1rem;
+            top: -0.5rem;
+            right: -0.5rem;
+          }
+        }
+      }
+
+      &__bonus {
+        .bonus-item {
+          border: 2px solid Vars.$orange;
         }
       }
     }
@@ -382,6 +327,25 @@
       font-size: 2rem;
       margin: 0.6rem 0;
       line-height: 2.5rem;
+    }
+  }
+
+  @media screen and (max-height: 785px) {
+    .player-header {
+      scale: 0.8;
+
+      &:nth-child(2) {
+        position: absolute;
+        top: 100px !important;
+        left: 0;
+        transform-origin: left;
+      }
+      &:nth-child(3) {
+        position: absolute;
+        top: 100px !important;
+        right: 0;
+        transform-origin: right;
+      }
     }
   }
 }
@@ -551,6 +515,9 @@
   &__image {
     text-align: center;
     margin-bottom: 1.5rem;
+    font-size: 3rem;
+    font-weight: 700;
+    color: Vars.$sky;
     img {
       height: 10vh;
     }
@@ -601,27 +568,11 @@
   }
 }
 
-@keyframes pulseY {
+@keyframes pulse {
   from {
     transform: scale(1);
   }
   to {
-    transform: scale(0.95) translateY(-5px);
-  }
-}
-@keyframes pulseXL {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(0.95) translateX(-5);
-  }
-}
-@keyframes pulseXR {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(0.95) translateX(5);
+    transform: scale(0.95);
   }
 }

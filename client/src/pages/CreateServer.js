@@ -13,7 +13,6 @@ const CreateServer = () => {
   const [serverType, setServerType] = useState(type || "classic");
   const [requiredScore, setRequiredScore] = useState(1000);
   const [autoRemovePenality, setAutoRemovePenality] = useState(false);
-  const [canDrawLastDiscard, setCanDrawLastDiscard] = useState(false);
   const [cardCounts, setCardCounts] = useState("x1");
 
   const { socket, user } = useAuth();
@@ -71,10 +70,6 @@ const CreateServer = () => {
         return setErrorMessage("Valeur de 'autoRemovePenality' incorrecte.");
       }
 
-      if (typeof canDrawLastDiscard !== "boolean") {
-        return setErrorMessage("Valeur de 'canDrawLastDiscard' incorrecte.");
-      }
-
       if (typeof cardCounts !== "string") {
         return setErrorMessage("Valeur de 'cardCounts' incorrecte.");
       }
@@ -102,7 +97,6 @@ const CreateServer = () => {
       serverData = {
         ...serverData,
         cardCounts,
-        canDrawLastDiscard,
         autoRemovePenality,
         requiredScore,
       };
@@ -131,9 +125,6 @@ const CreateServer = () => {
 
   const handlePenalityChange = (event) => {
     setAutoRemovePenality(event.target.value === "true");
-  };
-  const handleDrawChange = (event) => {
-    setCanDrawLastDiscard(event.target.value === "true");
   };
   const handleCardCountsChange = (event) => {
     setCardCounts(event.target.value);
@@ -345,39 +336,6 @@ const CreateServer = () => {
                     onChange={handlePenalityChange}
                   />
                   <label className="btn" htmlFor="autoRemovePenality2">
-                    Non
-                  </label>
-                </div>
-              </div>
-
-              <div className="custom-server-section">
-                <h3 className="page-subtitle">
-                  Piocher la dernière carte défaussée
-                </h3>
-                <p className="disclaimer">
-                  Les joueurs peuvent piocher la dernière carte défaussée
-                </p>
-                <div className="draw-selection selector">
-                  <input
-                    id="canDrawLastDiscard1"
-                    type="radio"
-                    name="draw-last-discard"
-                    value="true"
-                    checked={canDrawLastDiscard === true}
-                    onChange={handleDrawChange}
-                  />
-                  <label className="btn" htmlFor="canDrawLastDiscard1">
-                    Oui
-                  </label>
-                  <input
-                    id="canDrawLastDiscard2"
-                    type="radio"
-                    name="draw-last-discard"
-                    value="false"
-                    checked={canDrawLastDiscard === false}
-                    onChange={handleDrawChange}
-                  />
-                  <label className="btn" htmlFor="canDrawLastDiscard2">
                     Non
                   </label>
                 </div>

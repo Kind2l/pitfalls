@@ -37,8 +37,11 @@ const Orbit = ({ players, serverInfos }) => {
       <div className="planet">
         <ImageLoader name="planet4" alt="Planète" />
       </div>
-      <div className="hotel" style={{ right: hotelRight }}>
-        <ImageLoader name="hotel" alt="Hotel" />
+      <div className="hotel-planet" style={{ right: hotelRight }}>
+        <ImageLoader name="hotel-planet" alt="Planète de l'hotel" />
+        <div className="hotel">
+          <ImageLoader name="arrival" alt="Hotel en or" />
+        </div>
       </div>
 
       {playerKeys.map((key) => {
@@ -59,7 +62,7 @@ const Orbit = ({ players, serverInfos }) => {
             }}
           >
             <div className={`car player${player.position}`}>
-              <div className="car__name">{player.username}</div>
+              <div className="car__name cherry-font">{player.username}</div>
               <div className="car__image">
                 <ImageLoader name={`cars/car_${player.position}`} />
               </div>

@@ -172,21 +172,19 @@ const WaitingRoom = ({ setGameIsStarted }) => {
             <p>
               L'objectif est de parcourir 1000 km avec 110 cartes disponibles.
               Chaque joueur a une main de 7 cartes, les malus disparaissent
-              après 3 tours et il n'y a pas de pioche dans la défausse.
+              après 8 tours..
             </p>
           ) : serverType === "infinite" ? (
             <p>
               L'objectif est de parcourir 1000 km avec un nombre illimité de
               cartes (sauf les bonus). Chaque joueur a une main de 7 cartes, les
-              malus disparaissent après 3 tours et il n'y a pas de pioche dans
-              la défausse.
+              malus restent actifs jusqu'à la parade.
             </p>
           ) : serverType === "hardcore" ? (
             <p>
               L'objectif est de parcourir 1000 km avec 110 cartes disponibles.
               Chaque joueur commence avec une main de 3 cartes, les malus
-              restent actifs jusqu'à la parade, et il est possible de piocher la
-              dernière carte défaussée.
+              restent actifs jusqu'à la parade.
             </p>
           ) : (
             <p>Partie personnalisée.</p>
@@ -231,6 +229,7 @@ const WaitingRoom = ({ setGameIsStarted }) => {
       </div>
 
       <form className="waiting-room-chat" onSubmit={handleSendMessage}>
+        <h3>Messages</h3>
         <ul>
           {messages.map((msg) => (
             <li key={msg.id} className="message">

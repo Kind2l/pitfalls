@@ -1,5 +1,5 @@
 import { Howl } from "howler";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import effectAccident from "../audio/accident.mp3";
 import background1 from "../audio/background1.mp3";
 import background2 from "../audio/background2.mp3";
@@ -69,6 +69,27 @@ export const SoundProvider = ({ children }) => {
     const savedVolume = localStorage.getItem("pitfalls-effects-volume");
     return savedVolume !== null ? Number(savedVolume) : 0.8; // Si la valeur existe, la convertir, sinon 0.5
   });
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (currentMusic) {
+          currentMusic.pause();
+        }
+      } else {
+        if (currentMusic) {
+          currentMusic.play();
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [currentMusic]);
+
   /**
    * Joue une musique.
    * @param {string} musicName - Nom de la musique dans MusicList.

@@ -157,10 +157,6 @@ const BoardHeader = ({ serverInfos }) => {
             <strong>Score requis</strong> {serverInfos.requiredScore}
           </li>
           <li>
-            <strong>Pioche carte défaussée</strong>{" "}
-            {serverInfos.canDrawLastDiscard ? "Oui" : "Non"}
-          </li>
-          <li>
             <strong>Suppression auto des pénalités</strong>{" "}
             {serverInfos.autoRemovePenality ? "Oui" : "Non"}
           </li>

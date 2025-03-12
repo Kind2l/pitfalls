@@ -107,7 +107,6 @@ exports.createServer = (request, callback) => {
         host,
         maxPlayers,
         handSize: 3,
-        canDrawLastDiscard: true,
       });
     }
     if (type === "infinite") {
@@ -127,15 +126,14 @@ exports.createServer = (request, callback) => {
         host,
         type,
         maxPlayers,
-        canDrawLastDiscard: request?.canDrawLastDiscard || null,
         requiredScore: request?.requiredScore || null,
         autoRemovePenality: request?.autoRemovePenality || null,
       });
 
       if (request?.cardCounts === "unlimited") {
-        newServer = { ...newServer, isDeckUnlimited: true };
+        newServer.isDeckUnlimited = true;
       } else if (request?.cardCounts) {
-        newServer = { ...newServer, cardCounts: request.cardCounts };
+        newServer.cardCounts = request.cardCounts;
       }
     }
 
@@ -226,6 +224,7 @@ exports.joinServer = (request, callback) => {
 
     socket.join(`server_${server_id}`);
     socket.leave("subscription:server-list");
+    console.log("JOIN ERR", servers[server_id], user.id, user.username);
     servers[server_id].addPlayer(user.id, user.username);
 
     io.emit("subscription:server-list", { servers: getFilteredServers() });
@@ -394,6 +393,8 @@ exports.leaveServer = (req, callback) => {
       if (totalPlayers === 0) {
         delete servers[serverId];
       } else if (totalPlayers === 1 && server.start && !server.gameOver) {
+        console.log("🚪 leaveServer: Fin de la partie.");
+        req.server_id = serverId;
         this.endGame(req);
       } else {
         socket.to("server_" + serverId).emit("server:update", server);
@@ -566,7 +567,7 @@ exports.initServer = (request, callback) => {
  * @param {function} callback - La fonction de rappel à exécuter après avoir démarré le jeu.
  */
 exports.startGame = (request, callback) => {
-  const server = servers.find((s) => s.id === parseInt(request.server_id));
+  const server = Object.values(servers).find((s) => s.id === request.server_id);
 
   // Vérifie si le serveur existe et s'il y a suffisamment de joueurs
   if (!server || server.players.length < 2) {
@@ -690,7 +691,6 @@ const handleAttackCard = (request, callback, card, playerUsername, players) => {
     }
 
     attackedPlayer.states[card.tag].value = true;
-    attackedPlayer.states[card.tag].count = 0;
     servers[request.server_id].updatePlayer(
       attackedPlayer.username,
       attackedPlayer
@@ -987,9 +987,12 @@ const handleBorneCard = (request, callback, card, playerUsername, player) => {
  * @param {object} player - Le joueur.
  */
 const handleBonusCard = (request, callback, card, playerUsername, player) => {
+  console.log("carte : ", card);
+
   switch (card.tag) {
     case "infatiguable":
-      player.bonus.infatiguable.value = true;
+      console.log("application de infatiguable");
+      player.bonus.infatiguable = true;
       player.states.fatigue.value = false;
       break;
     case "cartedepolice":
@@ -1009,6 +1012,8 @@ const handleBonusCard = (request, callback, card, playerUsername, player) => {
       break;
   }
 
+  console.log("player update with bonus :", player);
+
   servers[request.server_id].updatePlayer(playerUsername, player);
   servers[request.server_id].removeCard(playerUsername, card.id);
   servers[request.server_id].drawCard(playerUsername);
@@ -1018,7 +1023,6 @@ const handleBonusCard = (request, callback, card, playerUsername, player) => {
     data: { actionState: true, player: playerUsername, card },
   });
 
-  console.log("deck", Object.keys(servers[request.server_id].deck).length);
   if (Object.keys(servers[request.server_id].deck).length === 0) {
     return this.endGame(request);
   }
@@ -1041,10 +1045,10 @@ const updateStatesCount = ({ server, playerUsername }) => {
     let state = server.players[playerUsername].states[stateKey];
 
     if (state.value) {
-      state.count++;
+      state.count--;
 
-      if (state.count >= 4) {
-        state.count = 0;
+      if (state.count <= 0) {
+        state.count = 8;
         state.value = false;
       }
     }
@@ -1069,7 +1073,6 @@ exports.removeCard = (request, callback) => {
   servers[request.server_id].drawCard(playerUsername);
   servers[request.server_id].nextPlayer();
 
-  console.log("deck", Object.keys(servers[request.server_id].deck).length);
   if (Object.keys(servers[request.server_id].deck).length === 0) {
     return this.endGame(request);
   }
@@ -1091,6 +1094,7 @@ exports.removeCard = (request, callback) => {
  */
 exports.endGame = (request) => {
   console.log("endGame: Entrée dans la fonction");
+  console.log("endGame: Requête", request);
   if (!request) {
     console.log("endGame: Aucune requête");
     return false;

@@ -124,21 +124,40 @@ function generateCards(cardCounts) {
     deviation: 1,
     pilote: 1,
     infatiguable: 1,
-    feurouge: 5,
-    zonedecontrole: 4,
-    embouteillage: 3,
-    accident: 3,
-    fatigue: 3,
-    feuvert: 14,
-    findezonedecontrole: 6,
-    findembouteillage: 6,
-    reparation: 6,
-    repose: 6,
-    25: 10,
-    50: 10,
-    75: 10,
-    100: 12,
-    200: 4,
+    feurouge: 2,
+    zonedecontrole: 2,
+    embouteillage: 2,
+    accident: 2,
+    fatigue: 2,
+    feuvert: 12,
+    findezonedecontrole: 2,
+    findembouteillage: 2,
+    reparation: 2,
+    repose: 2,
+    25: 12,
+    50: 12,
+    75: 12,
+    100: 2,
+    200: 2,
+    // cartedepolice: 1,
+    // deviation: 1,
+    // pilote: 1,
+    // infatiguable: 1,
+    // feurouge: 5,
+    // zonedecontrole: 4,
+    // embouteillage: 3,
+    // accident: 3,
+    // fatigue: 3,
+    // feuvert: 14,
+    // findezonedecontrole: 6,
+    // findembouteillage: 6,
+    // reparation: 6,
+    // repose: 6,
+    // 25: 10,
+    // 50: 10,
+    // 75: 10,
+    // 100: 12,
+    // 200: 4,
   };
 
   let generatedCards = [];
@@ -187,7 +206,6 @@ class GameModel {
     maxPlayers,
     handSize,
     isDeckUnlimited,
-    canDrawLastDiscard,
     requiredScore,
     autoRemovePenality,
     cardCounts,
@@ -202,7 +220,6 @@ class GameModel {
     this.maxPlayers = maxPlayers || null;
     this.handSize = handSize || 6;
     this.isDeckUnlimited = isDeckUnlimited || false;
-    this.canDrawLastDiscard = canDrawLastDiscard || false;
     this.requiredScore = requiredScore || 1000;
     this.autoRemovePenality = autoRemovePenality || false;
     this.cardCounts = cardCounts || null;
@@ -256,7 +273,7 @@ class GameModel {
   }
 
   addPlayer(id, username) {
-    console.log(`addPlayer: Entrée dans la fonction`);
+    console.log(`addPlayerModel: Entrée dans la fonction`);
 
     let playerCount = Object.keys(this.players).length;
 

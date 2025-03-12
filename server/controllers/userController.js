@@ -12,6 +12,8 @@ const {
   databaseInsertUser,
   databaseFindUserByEmail,
   databaseUpdateUserToken,
+  databaseUpdateUserPassword,
+  databaseDeleteUserByUsername,
 } = require("../utils/queries.js");
 const {
   removeUserFromServerByUsername,
@@ -58,6 +60,16 @@ const loginSchema = Joi.object({
       )
     )
     .required(),
+  password: Joi.string()
+    .min(8)
+    .max(16)
+    .pattern(
+      new RegExp("^(?=.*\\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9]).{8,16}$")
+    )
+    .required(),
+});
+
+const updatePasswordSchema = Joi.object({
   password: Joi.string()
     .min(8)
     .max(16)
@@ -144,6 +156,104 @@ exports.register = async (req, res) => {
   }
 };
 
+exports.updateAccount = async (req, res) => {
+  console.log("updateAccount: Entrée dans la fonction");
+
+  try {
+    const { username, oldPassword, newPassword } = req?.body;
+
+    if (!username || !oldPassword || !newPassword) {
+      return res.status(400).json({ message: "Tous les champs sont requis." });
+    }
+
+    const validate = await updatePasswordSchema.validateAsync({
+      password: newPassword,
+    });
+
+    if (!validate) {
+      return res
+        .status(401)
+        .json({ message: "Nouveau mot de passe incorrect." });
+    }
+
+    const user = await databaseFindUserByUsername(username);
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
+    }
+
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isPasswordValid) {
+      return res
+        .status(401)
+        .json({ message: "Ancien mot de passe incorrect." });
+    }
+
+    const isSamePassword = await bcrypt.compare(oldPassword, newPassword);
+
+    if (isSamePassword) {
+      return res
+        .status(401)
+        .json({ message: "Choisissez un nouveau mot de passe." });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 5);
+
+    const isUpdated = await databaseUpdateUserPassword(
+      username,
+      hashedNewPassword
+    );
+
+    if (!isUpdated) {
+      return res
+        .status(500)
+        .json({ message: "Erreur lors de la mise à jour du mot de passe." });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Mot de passe mis à jour avec succès.",
+    });
+  } catch (error) {
+    console.error(`updateAccount: Erreur`, error);
+    return res.status(500).json({ message: "Mise à jour échouée." });
+  }
+};
+
+exports.deleteAccount = async (req, res) => {
+  console.log("deleteAccount: Entrée dans la fonction");
+
+  try {
+    const { username } = req?.body;
+
+    if (!username) {
+      return res.status(400).json({ message: "Nom d'utilisateur requis." });
+    }
+
+    const user = await databaseFindUserByUsername(username);
+
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur non trouvé." });
+    }
+
+    const isRemoved = await databaseDeleteUserByUsername(username);
+
+    if (!isRemoved) {
+      return res
+        .status(500)
+        .json({ message: "Erreur lors de la suppression de l'utilisateur." });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Utilisateur ${username} supprimé avec succès.`,
+    });
+  } catch (error) {
+    console.error(`deleteAccount: Erreur`, error);
+    return res.status(500).json({ message: "Suppression échouée." });
+  }
+};
 /**
  * Connecte un utilisateur.
  *

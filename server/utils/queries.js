@@ -16,7 +16,23 @@ const databaseFindUserByUsername = async (username) => {
     throw err;
   }
 };
-
+/**
+ * Supprime un utilisateur par son nom d'utilisateur dans la base de données.
+ * @param {string} username - Nom d'utilisateur à supprimer.
+ * @returns {Promise<boolean>} Indique si la suppression a réussi.
+ */
+const databaseDeleteUserByUsername = async (username) => {
+  try {
+    const { rowCount } = await db.query(
+      "DELETE FROM users WHERE username = $1",
+      [username]
+    );
+    return rowCount > 0;
+  } catch (err) {
+    console.error("Erreur dans databaseDeleteUserByUsername:", err);
+    throw err;
+  }
+};
 /**
  * Recherche un utilisateur par son adresse email dans la base de données.
  * @param {string} email - Adresse à rechercher.
@@ -54,7 +70,24 @@ const databaseInsertUser = async (username, hashedPassword, email) => {
     throw err;
   }
 };
-
+/**
+ * Met à jour le mot de passe d'un utilisateur dans la base de données.
+ * @param {string} username - Nom d'utilisateur.
+ * @param {string} hashedPassword - Nouveau mot de passe hashé.
+ * @returns {Promise<boolean>} Indique si la mise à jour a réussi.
+ */
+const databaseUpdateUserPassword = async (username, hashedPassword) => {
+  try {
+    const { rowCount } = await db.query(
+      "UPDATE users SET password = $1 WHERE username = $2",
+      [hashedPassword, username]
+    );
+    return rowCount > 0;
+  } catch (err) {
+    console.error("Erreur dans databaseUpdateUserPassword:", err);
+    throw err;
+  }
+};
 /**
  * Met à jour le token d'un utilisateur dans la base de données.
  * @param {string} username - Nom d'utilisateur.
@@ -93,8 +126,10 @@ const findUserByIdInDatabase = async (userId) => {
 
 module.exports = {
   databaseFindUserByUsername,
+  databaseDeleteUserByUsername,
   databaseFindUserByEmail,
   databaseInsertUser,
+  databaseUpdateUserPassword,
   databaseUpdateUserToken,
   findUserByIdInDatabase,
 };

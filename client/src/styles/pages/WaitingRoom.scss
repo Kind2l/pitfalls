@@ -77,6 +77,10 @@
     flex-direction: column;
     margin-top: 0.5rem;
 
+    h3 {
+      text-align: center;
+    }
+
     ul {
       background-color: Vars.$dark_white;
       min-height: 5rem;

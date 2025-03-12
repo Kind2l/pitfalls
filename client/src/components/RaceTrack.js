@@ -67,9 +67,7 @@ const RaceTrack = ({ players, serverInfos }) => {
                         </span>
                       </div>
                     ) : key === "zonedecontrole" ? (
-                      <div key={key} className={`car__malus ${key}`}>
-                        <span>50</span>
-                      </div>
+                      ""
                     ) : key === "embouteillage" ? (
                       <div key={key} className={`car__malus ${key}`}>
                         <ImageLoader name={`effects/${key}`} />
@@ -102,6 +100,41 @@ const RaceTrack = ({ players, serverInfos }) => {
           >
             <ImageLoader name={`decorations/bush2`} />
           </div>
+          <div
+            className={`back-decoration grass1 ${playerSpeed(player?.states)}`}
+          >
+            <ImageLoader name={`decorations/grass1`} />
+          </div>
+          <div
+            className={`back-decoration grass2 ${playerSpeed(player?.states)}`}
+          >
+            <ImageLoader name={`decorations/grass2`} />
+          </div>
+          <div
+            className={`back-decoration grass3 ${playerSpeed(player?.states)}`}
+          >
+            <ImageLoader name={`decorations/grass3`} />
+          </div>
+          <div
+            className={`back-decoration grass4 ${playerSpeed(player?.states)}`}
+          >
+            <ImageLoader name={`decorations/grass4`} />
+          </div>
+          <div
+            className={`back-decoration tree1 ${playerSpeed(player?.states)}`}
+          >
+            <ImageLoader name={`decorations/tree1`} />
+          </div>
+          <div
+            className={`back-decoration tree2 ${playerSpeed(player?.states)}`}
+          >
+            <ImageLoader name={`decorations/tree2`} />
+          </div>
+          <div
+            className={`back-decoration tree3 ${playerSpeed(player?.states)}`}
+          >
+            <ImageLoader name={`decorations/tree3`} />
+          </div>
 
           <div
             className={`front-decoration light ${playerSpeed(player?.states)}`}
@@ -122,26 +155,6 @@ const RaceTrack = ({ players, serverInfos }) => {
             className={`front-decoration bush3 ${playerSpeed(player?.states)}`}
           >
             <ImageLoader name={`decorations/bush3`} />
-          </div>
-          <div
-            className={`front-decoration grass1 ${playerSpeed(player?.states)}`}
-          >
-            <ImageLoader name={`decorations/grass1`} />
-          </div>
-          <div
-            className={`front-decoration grass2 ${playerSpeed(player?.states)}`}
-          >
-            <ImageLoader name={`decorations/grass2`} />
-          </div>
-          <div
-            className={`front-decoration grass3 ${playerSpeed(player?.states)}`}
-          >
-            <ImageLoader name={`decorations/grass3`} />
-          </div>
-          <div
-            className={`front-decoration grass4 ${playerSpeed(player?.states)}`}
-          >
-            <ImageLoader name={`decorations/grass4`} />
           </div>
         </>
       )}

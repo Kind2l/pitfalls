@@ -35,24 +35,14 @@ const PlayerDashboard = ({
         {Object.entries(states).map(
           ([key, obj]) =>
             obj.value && (
-              <>
-                <span key={key} className="states-item">
-                  <ImageLoader name={`icons/${key}`} alt={labels[key]} />
-                  {autoRemovePenality && (
-                    <span className="states-item_count cherry-font">
-                      {Number(obj.count) === 0
-                        ? "4"
-                        : Number(obj.count) === 1
-                        ? "3"
-                        : Number(obj.count) === 2
-                        ? "2"
-                        : Number(obj.count) === 3
-                        ? "1"
-                        : ""}
-                    </span>
-                  )}
-                </span>
-              </>
+              <span key={key} className="states-item">
+                <ImageLoader name={`icons/${key}`} alt={labels[key]} />
+                {autoRemovePenality && (
+                  <span className="states-item_count">
+                    {obj.count === 1 ? "" : obj.count - 1}
+                  </span>
+                )}
+              </span>
             )
         )}
       </div>
@@ -81,11 +71,7 @@ const PlayerDashboard = ({
   }
 
   function PlayerHeaderScore({ score = Number }) {
-    return (
-      <div className="score cherry-font">
-        {Number(score) > 1 ? `${Number(score)} kms` : `${Number(score)} km`}
-      </div>
-    );
+    return <div className="score cherry-font">{Number(score)}</div>;
   }
 
   return (

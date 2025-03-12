@@ -13,6 +13,8 @@ const {
   register,
   login,
   loginAsGuest,
+  updateAccount,
+  deleteAccount,
 } = require("./controllers/userController.js");
 const loginLimiter = require("./middlewares/loginLimiter.js");
 const { addUser, findUserByUsername } = require("./utils/data.js");
@@ -63,6 +65,8 @@ app.get("/ping", (req, res) => {
   res.send("pong");
 });
 app.post("/register", register);
+app.delete("/delete-account", deleteAccount);
+app.put("/update-account", updateAccount);
 app.post("/login", loginLimiter, login);
 app.post("/guest-login", loginAsGuest);
 app.get("/check-auth", (req, res) => {

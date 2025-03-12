@@ -12,7 +12,8 @@ let servers = {};
  *
  */
 const addUser = ({ username, id, socket_id, isGuest }) => {
-  console.log(`data addPlayer: Entrée dans la fonction`);
+  console.log(`data addUser: Entrée dans la fonction`);
+  console.log(username, id, socket_id, isGuest);
 
   if (!username || !id || !socket_id) {
     return false;
@@ -20,13 +21,13 @@ const addUser = ({ username, id, socket_id, isGuest }) => {
 
   users[username] = {
     username,
-    id: Number(id),
+    id: id,
     socket_id,
     current_server: null,
     isGuest,
   };
 
-  console.log("UTILISATEURS - add", users);
+  console.log("UTILISATEURS - addUser", users);
   return true;
 };
 

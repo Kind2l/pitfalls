@@ -123,6 +123,7 @@
         bottom: 100px;
         max-width: 100%;
         font-size: 0.7rem;
+        opacity: 0.8;
       }
 
       &__malus {
@@ -162,7 +163,7 @@
           height: 70px;
           width: fit-content;
           bottom: 0;
-          right: 10px;
+          right: -80px;
           z-index: 1;
           img {
             height: 100%;
@@ -266,71 +267,30 @@
     &.light {
       height: 150px;
       &.fast {
-        animation: streaking 4s linear infinite;
+        animation: streaking 3.5s linear infinite;
       }
       &.slow {
-        animation: streaking 10s linear infinite;
+        animation: streaking 9s linear infinite;
       }
     }
 
     &.bush1 {
       height: 30px;
       &.fast {
-        animation: streaking 3s 0.5s linear infinite;
+        animation: streaking 3.2s 0.4s linear infinite;
       }
       &.slow {
-        animation: streaking 8s 0.5s linear infinite;
+        animation: streaking 8.2s 0.4s linear infinite;
       }
     }
 
     &.bush2 {
       height: 30px;
       &.fast {
-        animation: streaking 2.8s 0.3s linear infinite;
+        animation: streaking 3s 0.2s linear infinite;
       }
       &.slow {
-        animation: streaking 7.5s 0.3s linear infinite;
-      }
-    }
-
-    &.grass1 {
-      height: 20px;
-      max-width: 100px;
-      &.fast {
-        animation: streaking 3s 0s linear infinite;
-      }
-      &.slow {
-        animation: streaking 7s 0s linear infinite;
-      }
-    }
-    &.grass2 {
-      height: 20px;
-      max-width: 100px;
-      &.fast {
-        animation: streaking 3.2s 0.2s linear infinite;
-      }
-      &.slow {
-        animation: streaking 7.2s 0.2s linear infinite;
-      }
-    }
-    &.grass3 {
-      height: 25px;
-      max-width: 100px;
-      &.fast {
-        animation: streaking 3.4s 0.4s linear infinite;
-      }
-      &.slow {
-        animation: streaking 7.4s 0.4s linear infinite;
-      }
-    }
-    &.grass4 {
-      height: 15px;
-      max-width: 100px;
-      &.fast {
-        animation: streaking 3.6s 0.5s linear infinite;
-      }
-      &.slow {
-        animation: streaking 7.6s 0.5s linear infinite;
+        animation: streaking 7.8s 0.2s linear infinite;
       }
     }
   }
@@ -340,7 +300,7 @@
     overflow: hidden;
     bottom: 70px;
     height: 100%;
-    z-index: 3;
+    z-index: 1;
     left: 120%;
 
     img {
@@ -350,20 +310,88 @@
     &.bush1 {
       height: 30px;
       &.fast {
-        animation: streaking 3s 0.5s linear infinite;
+        animation: streaking 3.5s 0.5s linear infinite;
       }
       &.slow {
-        animation: streaking 8s 0.5s linear infinite;
+        animation: streaking 8s 1s linear infinite;
       }
     }
 
     &.bush2 {
       height: 30px;
       &.fast {
-        animation: streaking 2.8s 0.3s linear infinite;
+        animation: streaking 3.5s 1s linear infinite;
       }
       &.slow {
-        animation: streaking 7.5s 0.3s linear infinite;
+        animation: streaking 8.5s 1.5s linear infinite;
+      }
+    }
+    &.grass1 {
+      height: 20px;
+      max-width: 100px;
+      &.fast {
+        animation: streaking 4s 1.5s linear infinite;
+      }
+      &.slow {
+        animation: streaking 9s 2s linear infinite;
+      }
+    }
+    &.grass2 {
+      height: 20px;
+      max-width: 100px;
+      &.fast {
+        animation: streaking 4.5s 2s linear infinite;
+      }
+      &.slow {
+        animation: streaking 9.5s 2.5s linear infinite;
+      }
+    }
+    &.grass3 {
+      height: 25px;
+      max-width: 100px;
+      &.fast {
+        animation: streaking 5s 2.5s linear infinite;
+      }
+      &.slow {
+        animation: streaking 10s 3s linear infinite;
+      }
+    }
+    &.grass4 {
+      height: 15px;
+      max-width: 100px;
+      &.fast {
+        animation: streaking 5.5s 3s linear infinite;
+      }
+      &.slow {
+        animation: streaking 10.5s 3.5s linear infinite;
+      }
+    }
+
+    &.tree1 {
+      height: 130px;
+      &.fast {
+        animation: streaking 6s 3.5s linear infinite;
+      }
+      &.slow {
+        animation: streaking 11s 4s linear infinite;
+      }
+    }
+    &.tree2 {
+      height: 110px;
+      &.fast {
+        animation: streaking 6.5s 4s linear infinite;
+      }
+      &.slow {
+        animation: streaking 11.5s 4.5s linear infinite;
+      }
+    }
+    &.tree3 {
+      height: 150px;
+      &.fast {
+        animation: streaking 7s 4.5s linear infinite;
+      }
+      &.slow {
+        animation: streaking 12s 5s linear infinite;
       }
     }
   }
@@ -380,12 +408,12 @@
 
 @keyframes streaking {
   0% {
-    left: 120%;
+    left: 150%;
   }
   80% {
-    left: -20%;
+    left: -50%;
   }
   100% {
-    left: -20%;
+    left: -50%;
   }
 }

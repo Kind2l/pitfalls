@@ -54,47 +54,36 @@
         background-color: #ffffff;
         width: 1.8rem;
         height: 1.8rem;
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
         border: 2px solid Vars.$red;
-        overflow: hidden;
 
         img {
           width: 1.5rem;
         }
         &_count {
-          opacity: 0;
           position: absolute;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: Vars.$red;
-          font-size: 1.3rem;
-          animation: fadeOut 3s infinite alternate-reverse;
-          background-color: Vars.$white;
-          width: 100%;
-          height: 100%;
-          left: 0;
-          top: 0;
+          color: Vars.$white;
+          background-color: Vars.$red;
+          border-radius: 50%;
+          font-size: 0.7rem;
+          width: 1rem;
+          height: 1rem;
+          top: -0.5rem;
+          right: -0.5rem;
         }
-      }
-    }
-    @keyframes fadeOut {
-      0%,
-      80% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
       }
     }
     .bonus-item {
       border-color: Vars.$orange !important;
     }
     .score {
-      text-align: center;
       display: flex;
       align-items: center;
       justify-content: center;
+      text-align: center;
+      font-size: 2rem;
     }
   }
 

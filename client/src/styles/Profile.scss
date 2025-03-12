@@ -1,0 +1,11 @@
+@use "@Styles/utils/variables" as Vars;
+.profile {
+  padding: 2rem 0.3rem;
+  overflow-x: hidden;
+  form {
+    margin-bottom: 2rem;
+    .form-input {
+      margin-bottom: 1rem;
+    }
+  }
+}

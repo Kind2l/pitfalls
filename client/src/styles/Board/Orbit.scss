@@ -2,23 +2,18 @@
 
 .orbit {
   position: fixed;
-  bottom: 150px;
+  bottom: 260px;
   left: 0;
   width: 100%;
   aspect-ratio: 1 / 1;
 
-  // @media (max-height: 400px) {
-  //   width: 50vw;
-  //   bottom: -80%;
-  // }
-
   .planet {
     position: absolute;
-    top: 70%;
+    bottom: -350px;
     left: 0%;
     transform: translateY(-50%);
-    width: 70%;
-    height: 70%;
+    width: 90%;
+    height: 90%;
     z-index: 11;
     img {
       position: absolute;
@@ -31,17 +26,18 @@
     }
   }
 
-  .hotel {
+  .hotel-planet {
     position: absolute;
-    bottom: 60%;
+    bottom: -120px;
     right: 0;
     transform: translateY(-50%);
     width: 60%;
     height: fit-content;
+    aspect-ratio: 1 / 1;
     z-index: 10;
     transition: right 2s ease;
 
-    img {
+    > img {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -49,15 +45,25 @@
       width: 100%;
       z-index: 1;
     }
+    .hotel {
+      position: absolute;
+      top: -58px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      img {
+        width: 100%;
+      }
+    }
   }
 
   .car-orbit {
     position: absolute;
-    top: 70%;
+    bottom: -350px;
     left: 0%;
     transform: translateY(-50%);
-    height: 70%;
-    width: 70%;
+    height: 90%;
+    width: 90%;
     transition: transform 2s ease;
     z-index: 10;
     .car {
@@ -89,12 +95,15 @@
         transform: translateX(-50%);
         text-align: center;
         color: Vars.$white;
-        padding: 0.1rem 0.1rem;
+        padding: 0.1rem 0.3rem;
         border-radius: 10px;
-        filter: opacity(0.5);
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
+        bottom: 100px;
+        max-width: 100%;
+        font-size: 0.5rem;
+        opacity: 0.8;
       }
 
       &.player1 {
@@ -106,18 +115,18 @@
       &.player2 {
         .car__name {
           background-color: Vars.$red;
-          bottom: 3.5rem;
+          bottom: 3.1rem;
         }
       }
       &.player3 {
         .car__name {
-          bottom: 4rem;
+          bottom: 3.2rem;
           background-color: Vars.$green;
         }
       }
       &.player4 {
         .car__name {
-          bottom: 4.5rem;
+          bottom: 3.3rem;
           background-color: Vars.$orange;
         }
       }
